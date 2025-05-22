@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AutenticacaoLocal';
 
-const LoginUsuario = () => {
+const LoginPrestadorSer = () => {
   const [nome, setNome] = useState('');
   const [tipo, setTipo] = useState('cliente'); // 'admin', 'prestador', 'cliente'
   const { login } = useAuth();
@@ -38,4 +38,4 @@ const LoginUsuario = () => {
   );
 };
 
-export default LoginUsuario;
+export default LoginPrestadorSer;

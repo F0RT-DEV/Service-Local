@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AutenticacaoLocal';
 import FormularioCadastro from '../../components/FormularioCadastro';
 
-export default function CadastroAdmin() {
+export default function CadastroPrestador() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleCadastro = (dados) => {
-    login('admin', dados.nome);
-    navigate('/admin/dashboard');
+    login('prestador', dados.nome);
+    navigate('/prestador/dashboard');
   };
 
   return (
     <div className="p-4">
-      <h2>Cadastro de Administrador</h2>
-      <FormularioCadastro tipo="admin" onSubmit={handleCadastro} />
+      <h2>Cadastro de Prestador de Serviço</h2>
+      <FormularioCadastro tipo="prestador" onSubmit={handleCadastro} />
     </div>
   );
 }
