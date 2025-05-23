@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import db from '../db.js';
 
 export function getAll() {
@@ -9,5 +10,6 @@ export function getById(id) {
 }
 
 export function create(user) {
-  return db('users').insert(user);
+  const id = uuidv4();
+  return db('users').insert({ id, ...user });
 }

@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use('/users', usersRoutes);
+app.use('/', usersRoutes);
 
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
