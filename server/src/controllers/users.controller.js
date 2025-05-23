@@ -1,16 +1,29 @@
-import * as User from '../models/users.model.js';
+import bcrypt from 'bcrypt';
+import * as userModel from '../models/users.model.js';
 
-export async function index(req, res) {
-  const users = await User.getAll();
-  res.json(users);
-}
+export async function createUser(req, res) {
+  try {
+    const { name, email, password, phone, role } = req.body;
 
-export async function show(req, res) {
-  const user = await User.getById(req.params.id);
-  res.json(user);
-}
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'name, email e password são obrigatórios' });
+    }
 
-export async function store(req, res) {
-  const id = await User.create(req.body);
-  res.status(201).json({ id: id[0] });
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await userModel.create({
+      name,
+      email,
+      password_hash: passwordHash,
+      phone,
+      role: role || 'client',
+    });
+
+    res.status(201).json({ message: 'Usuário criado com sucesso!' });
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Email já cadastrado' });
+    }
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 }

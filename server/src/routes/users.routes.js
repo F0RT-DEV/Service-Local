@@ -3,8 +3,6 @@ import * as UsersController from '../controllers/users.controller.js';
 
 const router = Router();
 
-router.get('/', UsersController.index);
-router.get('/:id', UsersController.show);
-router.post('/', UsersController.store);
+router.post('/users', UsersController.createUser);
 
 export default router;
