@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import * as userModel from '../models/users.model.js';
 
+
 export async function createUser(req, res) {
   try {
     const { name, email, password, phone, role } = req.body;
@@ -24,7 +25,7 @@ export async function createUser(req, res) {
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: 'Email já cadastrado' });
     }
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    res.status(500).json({ error });
   }
 }
 export async function getUsers(req, res) {
