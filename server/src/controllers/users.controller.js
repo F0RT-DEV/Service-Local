@@ -1,29 +1,67 @@
-import bcrypt from 'bcrypt';
-import * as userModel from '../models/users.model.js';
+import bcrypt from "bcrypt";
+import * as userModel from "../models/users.model.js";
+import {createUserSchema} from "../schemas/user.schema.js";
 
 export async function createUser(req, res) {
-  try {
-    const { name, email, password, phone, role } = req.body;
+	try {
+		// ✅ Validação com Zod
+		const result = createUserSchema.safeParse(req.body);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'name, email e password são obrigatórios' });
-    }
+		if (!result.success) {
+			const errors = result.error.format();
+			return res.status(400).json({error: "Dados inválidos", details: errors});
+		}
 
-    const passwordHash = await bcrypt.hash(password, 10);
+		const {name, email, password, phone, role} = result.data;
 
-    await userModel.create({
-      name,
-      email,
-      password_hash: passwordHash,
-      phone,
-      role: role || 'client',
-    });
+		const passwordHash = await bcrypt.hash(password, 10);
 
-    res.status(201).json({ message: 'Usuário criado com sucesso!' });
-  } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({ error: 'Email já cadastrado' });
-    }
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
+		await userModel.create({
+			name,
+			email,
+			password_hash: passwordHash,
+			phone,
+			role: role || "client",
+
+		});
+
+		res.status(201).json({message: "Usuário criado com sucesso!"});
+	} catch (error) {
+		if (error.code === "ER_DUP_ENTRY") {
+			return res.status(409).json({error: "Email já cadastrado"});
+		}
+		res.status(500).json({error});
+	}
+}
+
+export async function getUsers(req, res) {
+	try {
+		const users = await userModel.getAll();
+		res.status(200).json(users);
+	} catch (error) {
+		res.status(500).json({error: "Erro interno do servidor"});
+	}
+}
+export async function getUserById(req, res) {
+	const {id} = req.params;
+
+	try {
+		const user = await userModel.getById(id);
+
+		if (!user) {
+			return res.status(404).json({error: "Usuário não encontrado"});
+		}
+
+		res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({error: "Erro interno do servidor"});
+	}
+}
+export async function getPrestador(req, res) {
+	try {
+		const prestadores = await userModel.getPrestador();
+		res.status(200).json(prestadores);
+	} catch (error) {
+		res.status(500).json({error: "Erro interno do servidor"});
+	}
 }

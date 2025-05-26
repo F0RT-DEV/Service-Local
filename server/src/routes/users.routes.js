@@ -1,8 +1,16 @@
-import { Router } from 'express';
-import * as UsersController from '../controllers/users.controller.js';
+import {Router} from "express";
+import * as UsersController from "../controllers/users.controller.js";
 
 const router = Router();
 
-router.post('/users', UsersController.createUser);
+// Rotas do Angelo
+router.post("/auth/register", UsersController.createUser);
+router.get("/users", UsersController.getUsers);
+router.get("/users/:id", UsersController.getUserById);
+
+// Rotas de Prestador
+router.get("/prestador", UsersController.getPrestador);
+
+
 
 export default router;
