@@ -8,9 +8,6 @@ router.post("/auth/register", UsersController.createUser);
 router.get("/users", UsersController.getUsers);
 router.get("/users/:id", UsersController.getUserById);
 
-// Rotas de Prestador
-router.get("/prestador", UsersController.getPrestador);
-
 
 
 export default router;

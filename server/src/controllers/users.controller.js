@@ -57,11 +57,3 @@ export async function getUserById(req, res) {
 		res.status(500).json({error: "Erro interno do servidor"});
 	}
 }
-export async function getPrestador(req, res) {
-	try {
-		const prestadores = await userModel.getPrestador();
-		res.status(200).json(prestadores);
-	} catch (error) {
-		res.status(500).json({error: "Erro interno do servidor"});
-	}
-}
