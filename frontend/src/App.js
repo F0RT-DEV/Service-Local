@@ -1,33 +1,83 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AutenticacaoLocal';
-import DashboardUser from './pages/Usuario/DashboardUser';
-import DashboardADM from './pages/Admin/DashboardADM';
-import DashboardPrestador from './pages/PrestadorServico/DashboardPrestador';
-import Login from './pages/PrestadorServico/Login';
-import Cadastro from './pages/PrestadorServico/Cadastro';
-import PaginaRegistro from './pages/PrestadorServico/PaginaRegistro';
-import CadastroUsuario from './pages/Usuario/CadastroUsuario';
-import CadastroPrestador from './pages/PrestadorServico/CadastroPrestador';
-import CadastroADM from './pages/Admin/CadastroADM';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AutenticacaoProvider, useAuth } from './context/AutenticacaoLocal';
+import NavBarra from './components/NavBarra';
+import Footer from './components/Footer';
+import CadastroMultiStep from './pages/CadastroMultiStep';
+import PaginaInicial from './pages/PaginaInicial';
+import './App.css';
+
+// Componente de rota protegida
+const ProtectedRoute = ({ children, tipoPermitido }) => {
+  const { estaAutenticado, getUsuario, carregando } = useAuth();
+  
+  if (carregando) {
+    return <div className="loading">Carregando...</div>;
+  }
+  
+  if (!estaAutenticado()) {
+    return <Navigate to="/" replace />;
+  }
+  
+  const usuario = getUsuario();
+  
+  if (tipoPermitido && usuario.tipo !== tipoPermitido) {
+    return <Navigate to="/\" replace />;
+  }
+  
+  return children;
+};
+
+// Componentes simulados para as páginas de dashboard
+const DashboardUsuario = () => (
+  <div className="container mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-4">Dashboard do Usuário</h1>
+    <p>Bem-vindo à sua área do usuário!</p>
+  </div>
+);
+
+const DashboardPrestador = () => (
+  <div className="container mx-auto p-4">
+    <h1 className="text-2xl font-bold mb-4">Dashboard do Prestador</h1>
+    <p>Bem-vindo à sua área de prestador de serviços!</p>
+  </div>
+);
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/registro" element={<PaginaRegistro />} />
-          <Route path="/usuario/dashboard" element={<DashboardUser />} />
-          <Route path="/admin/dashboard" element={<DashboardADM />} />
-          <Route path="/prestador/dashboard" element={<DashboardPrestador />} />
-          <Route path="/cadastro/Usuario" element={<CadastroUsuario />} />
-          <Route path="/cadastro/prestador" element={<CadastroPrestador />} />
-          <Route path="/cadastro/admin" element={<CadastroADM />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <AutenticacaoProvider>
+      <Router>
+        <div className="app-container">
+          <NavBarra />
+          
+          <main className="app-content">
+            <Routes>
+              <Route path="/" element={<PaginaInicial />} />
+              <Route path="/cadastro" element={<CadastroMultiStep />} />
+              
+              <Route 
+                path="/usuario/dashboard" 
+                element={
+                  <ProtectedRoute tipoPermitido="usuario">
+                    <DashboardUsuario />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/prestador/dashboard" 
+                element={
+                  <ProtectedRoute tipoPermitido="prestador">
+                    <DashboardPrestador />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
+          
+          <Footer />
+        </div>
+      </Router>
+    </AutenticacaoProvider>
   );
 }
 

@@ -1,0 +1,54 @@
+.tipo-usuario-opcoes {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.tipo-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  border: 2px solid #E5E7EB;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.tipo-card:hover {
+  border-color: #BFDBFE;
+  background-color: #F9FAFB;
+}
+
+.tipo-card.selecionado {
+  border-color: #3B82F6;
+  background-color: #EFF6FF;
+}
+
+.icone-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.icone-container.usuario {
+  background-color: #DBEAFE;
+  color: #2563EB;
+}
+
+.icone-container.prestador {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+@media (max-width: 640px) {
+  .tipo-usuario-opcoes {
+    flex-direction: column;
+  }
+}

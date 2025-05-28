@@ -1,16 +1,9 @@
-import React from 'react';
-import { useAuth } from '../../context/AutenticacaoLocal';
+import React from 'react'
 
-const Dashboard = () => {
-  const { usuario, logout } = useAuth();
-
+const DashboardADM = () => {
   return (
-    <div>
-      <h2>Bem-vindo, {usuario?.nome}!</h2>
-      <p>Tipo de usuário: {usuario?.tipo}</p>
-      <button onClick={logout}>Sair</button>
-    </div>
-  );
-};
+    <div>DashboardADM</div>
+  )
+}
 
-export default Dashboard;
+export default DashboardADM

@@ -1,0 +1,78 @@
+.progresso-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.passo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+.passo-circulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #D1D5DB;
+  color: #6B7280;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.passo-circulo.ativo {
+  border-color: #3B82F6;
+  color: #3B82F6;
+  background-color: #EFF6FF;
+}
+
+.passo-circulo.concluido {
+  background-color: #3B82F6;
+  border-color: #3B82F6;
+  color: white;
+}
+
+.passo-texto {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6B7280;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.passo-texto.ativo {
+  color: #3B82F6;
+  font-weight: 500;
+}
+
+.passo-texto.concluido {
+  color: #1F2937;
+  font-weight: 500;
+}
+
+.passo-linha {
+  flex: 1;
+  height: 2px;
+  background-color: #D1D5DB;
+  position: relative;
+  margin: 0 0.5rem;
+  z-index: 0;
+  transition: background-color 0.3s ease;
+}
+
+.passo-linha.concluido {
+  background-color: #3B82F6;
+}
+
+@media (max-width: 480px) {
+  .passo-texto {
+    font-size: 0.75rem;
+  }
+}

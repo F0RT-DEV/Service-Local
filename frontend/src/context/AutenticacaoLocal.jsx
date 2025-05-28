@@ -1,4 +1,6 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// Constante para armazenar a chave no localStorage
 const CHAVE_LOCAL_STORAGE = 'usuario';
 
 /**
@@ -10,63 +12,81 @@ const gerarToken = (usuario) => {
   return btoa(JSON.stringify({ ...usuario, timestamp: Date.now() }));
 };
 
-/**
- * Serviço de autenticação local.
- * Permite login, logout, leitura e verificação de autenticação usando localStorage.
- */
-const AutenticacaoLocal = () => {
-  /**
-   * Realiza o login do usuário e salva no localStorage.
-   * @param {string} tipo - Tipo de usuário: 'admin', 'cliente' ou 'prestador'.
-   * @param {string} nome - Nome do usuário.
-   * @returns {Object} Dados do usuário autenticado com token.
-   */
-  const login = (tipo, nome) => {
-    const usuario = { nome, tipo };
-    const token = gerarToken(usuario);
-    const dadosCompletos = { ...usuario, token };
+// Criação do contexto
+const AutenticacaoContext = createContext(null);
+
+// Hook personalizado para usar o contexto de autenticação
+export const useAuth = () => {
+  const context = useContext(AutenticacaoContext);
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de um AutenticacaoProvider');
+  }
+  return context;
+};
+
+// Provedor do contexto de autenticação
+export const AutenticacaoProvider = ({ children }) => {
+  const [usuario, setUsuario] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+
+  // Carrega o usuário do localStorage ao iniciar
+  useEffect(() => {
+    const recuperarUsuario = () => {
+      const dadosArmazenados = localStorage.getItem(CHAVE_LOCAL_STORAGE);
+      if (dadosArmazenados) {
+        try {
+          const usuarioArmazenado = JSON.parse(dadosArmazenados);
+          setUsuario(usuarioArmazenado);
+        } catch (e) {
+          console.error('Erro ao decodificar usuário do localStorage:', e);
+          localStorage.removeItem(CHAVE_LOCAL_STORAGE);
+        }
+      }
+      setCarregando(false);
+    };
+
+    recuperarUsuario();
+  }, []);
+
+  // Função para realizar login
+  const login = (tipo, nome, dadosAdicionais = {}) => {
+    const dadosUsuario = { nome, tipo, ...dadosAdicionais };
+    const token = gerarToken(dadosUsuario);
+    const dadosCompletos = { ...dadosUsuario, token };
+    
     localStorage.setItem(CHAVE_LOCAL_STORAGE, JSON.stringify(dadosCompletos));
+    setUsuario(dadosCompletos);
+    
     return dadosCompletos;
   };
 
-  /**
-   * Remove os dados do usuário do localStorage (logout).
-   */
+  // Função para realizar logout
   const logout = () => {
     localStorage.removeItem(CHAVE_LOCAL_STORAGE);
+    setUsuario(null);
   };
 
-  /**
-   * Retorna o usuário atual salvo no localStorage, se existir.
-   * @returns {Object|null} Dados do usuário ou null se não houver.
-   */
-  const getUsuario = () => {
-    const dados = localStorage.getItem(CHAVE_LOCAL_STORAGE);
-    if (!dados) return null;
-    try {
-      return JSON.parse(dados);
-    } catch (e) {
-      console.error('Erro ao decodificar usuário do localStorage:', e);
-      return null;
-    }
-  };
+  // Verifica se o usuário está autenticado
+  const estaAutenticado = () => !!usuario;
 
-  /**
-   * Verifica se há um usuário autenticado.
-   * @returns {boolean} true se autenticado, false caso contrário.
-   */
-  const estaAutenticado = () => {
-    return !!getUsuario();
-  };
+  // Obtém o usuário atual
+  const getUsuario = () => usuario;
 
-  // Exporta os métodos como um "serviço" único
-  return {
+  // Valor do contexto
+  const valor = {
+    usuario,
+    carregando,
     login,
     logout,
-    getUsuario,
     estaAutenticado,
+    getUsuario
   };
+
+  return (
+    <AutenticacaoContext.Provider value={valor}>
+      {children}
+    </AutenticacaoContext.Provider>
+  );
 };
 
-// Exporta a instância imediatamente
-export default AutenticacaoLocal();
+export default AutenticacaoContext;
