@@ -84,6 +84,115 @@
   margin-bottom: 3rem;
   color: #1F2937;
 }
+/* Serviços Section */
+.servicos-section {
+  padding: 4rem 0;
+  background-color: #f9fafb;
+}
+
+.servicos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.servico-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.servico-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.servico-header {
+  padding: 1.5rem;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.servico-avatar {
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.servico-avatar svg {
+  color: #2563eb;
+}
+
+.servico-header h3 {
+  margin: 0;
+  flex-grow: 1;
+  font-size: 1.1rem;
+}
+
+.servico-avaliacao {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.servico-body {
+  padding: 1.5rem;
+}
+
+.servico-body p {
+  margin: 0.5rem 0;
+  color: #4b5563;
+}
+
+.servico-body strong {
+  color: #1f2937;
+}
+
+.servico-descricao {
+  margin-top: 1rem !important;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.servico-footer {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.btn-servico {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-servico:hover {
+  background: #1d4ed8;
+}
+
+.carregando, .sem-servicos {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.ver-todos {
+  text-align: center;
+  margin-top: 2rem;
+}
 
 .passos-grid {
   display: grid;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserIcon, LogOut } from 'lucide-react';
+import { UserIcon, LogOut, List } from 'lucide-react';
 import { useAuth } from '../context/AutenticacaoLocal';
 import './NavBarra.css';
 
@@ -26,19 +26,26 @@ const NavBar = () => {
           
           <div className="navbar-right">
             {estaAutenticado() ? (
-              <div className="user-info">
-                <div className="user-avatar">
-                  <UserIcon size={18} />
-                </div>
-                <span className="user-name">{usuario.nome}</span>
+              <div className="user-actions">
+                <Link to="/cards" className="services-button">
+                  <List size={18} className="services-icon" />
+                  <span>Buscar Serviços</span>
+                </Link>
                 
-                <button 
-                  onClick={handleLogout}
-                  className="logout-button"
-                >
-                  <LogOut size={18} />
-                  <span>Sair</span>
-                </button>
+                <div className="user-info">
+                  <div className="user-avatar">
+                    <UserIcon size={18} />
+                  </div>
+                  <span className="user-name">{usuario.nome}</span>
+                  
+                  <button 
+                    onClick={handleLogout}
+                    className="logout-button"
+                  >
+                    <LogOut size={18} />
+                    <span>Sair</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div>

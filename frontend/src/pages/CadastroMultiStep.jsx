@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Passo1TipoUsuario from '../components/cadastro/Passo1TipoUsuario';
-import Passo2DadosBasicos from '../components/cadastro/Passo2DadosBasicos';
-import Passo3DadosEspecificos from '../components/cadastro/Passo3DadosEspecificos';
-import ProgressoCadastro from '../components/cadastro/ProgressoCadastro';
-import { useAuth } from '../context/AutenticacaoLocal';
-import './CadastroMultiStep.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Passo1TipoUsuario from "../components/cadastro/Passo1TipoUsuario";
+import Passo2DadosBasicos from "../components/cadastro/Passo2DadosBasicos";
+import Passo3DadosEspecificos from "../components/cadastro/Passo3DadosEspecificos";
+import ProgressoCadastro from "../components/cadastro/ProgressoCadastro";
+import { useAuth } from "../context/AutenticacaoLocal";
+import "./CadastroMultiStep.css";
 
 const CadastroMultiStep = () => {
   const [passo, setPasso] = useState(1);
   const [dadosCadastro, setDadosCadastro] = useState({
-    tipo: '',
-    nome: '',
-    email: '',
-    senha: '',
-    telefone: '',
+    tipo: "",
+    nome: "",
+    email: "",
+    senha: "",
+    telefone: "",
     // Campos específicos para prestador
-    area: '',
-    experiencia: '',
-    descricao: '',
+    area: "",
+    experiencia: "",
+    descricao: "",
     // Campos específicos para usuário comum
-    endereco: '',
-    cidade: '',
-    estado: '',
+    endereco: "",
+    cidade: "",
+    estado: "",
   });
   const [erros, setErros] = useState({});
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const CadastroMultiStep = () => {
 
   const validarPasso1 = () => {
     if (!dadosCadastro.tipo) {
-      setErros({ tipo: 'Por favor, selecione um tipo de usuário' });
+      setErros({ tipo: "Por favor, selecione um tipo de usuário" });
       return false;
     }
     setErros({});
@@ -39,38 +39,47 @@ const CadastroMultiStep = () => {
 
   const validarPasso2 = () => {
     const novosErros = {};
-    
-    if (!dadosCadastro.nome.trim()) novosErros.nome = 'Nome é obrigatório';
-    if (!dadosCadastro.email.trim()) novosErros.email = 'Email é obrigatório';
-    else if (!/\S+@\S+\.\S+/.test(dadosCadastro.email)) novosErros.email = 'Email inválido';
-    if (!dadosCadastro.senha.trim()) novosErros.senha = 'Senha é obrigatória';
-    else if (dadosCadastro.senha.length < 6) novosErros.senha = 'Senha deve ter pelo menos 6 caracteres';
-    if (!dadosCadastro.telefone.trim()) novosErros.telefone = 'Telefone é obrigatório';
-    
+
+    if (!dadosCadastro.nome.trim()) novosErros.nome = "Nome é obrigatório";
+    if (!dadosCadastro.email.trim()) novosErros.email = "Email é obrigatório";
+    else if (!/\S+@\S+\.\S+/.test(dadosCadastro.email))
+      novosErros.email = "Email inválido";
+    if (!dadosCadastro.senha.trim()) novosErros.senha = "Senha é obrigatória";
+    else if (dadosCadastro.senha.length < 6)
+      novosErros.senha = "Senha deve ter pelo menos 6 caracteres";
+    if (!dadosCadastro.telefone.trim())
+      novosErros.telefone = "Telefone é obrigatório";
+
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   };
 
   const validarPasso3 = () => {
     const novosErros = {};
-    
-    if (dadosCadastro.tipo === 'prestador') {
-      if (!dadosCadastro.area.trim()) novosErros.area = 'Área de atuação é obrigatória';
-      if (!dadosCadastro.experiencia.trim()) novosErros.experiencia = 'Experiência é obrigatória';
-      if (!dadosCadastro.descricao.trim()) novosErros.descricao = 'Descrição dos serviços é obrigatória';
+
+    if (dadosCadastro.tipo === "prestador") {
+      if (!dadosCadastro.area.trim())
+        novosErros.area = "Área de atuação é obrigatória";
+      if (!dadosCadastro.experiencia.trim())
+        novosErros.experiencia = "Experiência é obrigatória";
+      if (!dadosCadastro.descricao.trim())
+        novosErros.descricao = "Descrição dos serviços é obrigatória";
     } else {
-      if (!dadosCadastro.endereco.trim()) novosErros.endereco = 'Endereço é obrigatório';
-      if (!dadosCadastro.cidade.trim()) novosErros.cidade = 'Cidade é obrigatória';
-      if (!dadosCadastro.estado.trim()) novosErros.estado = 'Estado é obrigatório';
+      if (!dadosCadastro.endereco.trim())
+        novosErros.endereco = "Endereço é obrigatório";
+      if (!dadosCadastro.cidade.trim())
+        novosErros.cidade = "Cidade é obrigatória";
+      if (!dadosCadastro.estado.trim())
+        novosErros.estado = "Estado é obrigatório";
     }
-    
+
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   };
 
   const avancarPasso = () => {
     let valido = false;
-    
+
     switch (passo) {
       case 1:
         valido = validarPasso1();
@@ -81,7 +90,7 @@ const CadastroMultiStep = () => {
       default:
         valido = true;
     }
-    
+
     if (valido) {
       setPasso(passo + 1);
       window.scrollTo(0, 0);
@@ -95,11 +104,11 @@ const CadastroMultiStep = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDadosCadastro(prev => ({ ...prev, [name]: value }));
-    
+    setDadosCadastro((prev) => ({ ...prev, [name]: value }));
+
     // Limpar erro do campo que foi alterado
     if (erros[name]) {
-      setErros(prev => {
+      setErros((prev) => {
         const novosErros = { ...prev };
         delete novosErros[name];
         return novosErros;
@@ -108,26 +117,29 @@ const CadastroMultiStep = () => {
   };
 
   const handleTipoUsuario = (tipo) => {
-    setDadosCadastro(prev => ({ ...prev, tipo }));
+    setDadosCadastro((prev) => ({ ...prev, tipo }));
     setErros({});
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (validarPasso3()) {
-      // Aqui você integraria com a API real
-      console.log('Dados completos para envio:', dadosCadastro);
-      
-      // Login simulado com os dados
+      // Salva no localStorage
+      const cadastrosSalvos =
+        JSON.parse(localStorage.getItem("cadastros")) || [];
+      cadastrosSalvos.push(dadosCadastro);
+      localStorage.setItem("cadastros", JSON.stringify(cadastrosSalvos));
+
+      // Login simulado
       login(dadosCadastro.tipo, dadosCadastro.nome);
-      
-      // Redirecionar com base no tipo de usuário
-      if (dadosCadastro.tipo === 'prestador') {
-        navigate('/prestador/dashboard');
-      } else {
-        navigate('/usuario/dashboard');
-      }
+
+      // Redirecionar
+      navigate(
+        dadosCadastro.tipo === "prestador"
+          ? "/prestador/dashboard"
+          : "/usuario/dashboard"
+      );
     }
   };
 
@@ -135,7 +147,7 @@ const CadastroMultiStep = () => {
     switch (passo) {
       case 1:
         return (
-          <Passo1TipoUsuario 
+          <Passo1TipoUsuario
             tipoSelecionado={dadosCadastro.tipo}
             onSelecionar={handleTipoUsuario}
             erro={erros.tipo}
@@ -143,7 +155,7 @@ const CadastroMultiStep = () => {
         );
       case 2:
         return (
-          <Passo2DadosBasicos 
+          <Passo2DadosBasicos
             dados={dadosCadastro}
             onChange={handleChange}
             erros={erros}
@@ -151,7 +163,7 @@ const CadastroMultiStep = () => {
         );
       case 3:
         return (
-          <Passo3DadosEspecificos 
+          <Passo3DadosEspecificos
             tipo={dadosCadastro.tipo}
             dados={dadosCadastro}
             onChange={handleChange}
@@ -166,15 +178,15 @@ const CadastroMultiStep = () => {
   return (
     <div className="cadastro-container">
       <h1 className="text-2xl font-bold text-center mb-6">Crie sua conta</h1>
-      
+
       <ProgressoCadastro passoAtual={passo} totalPassos={3} />
-      
-      <form onSubmit={passo === 3 ? handleSubmit : e => e.preventDefault()}>
+
+      <form onSubmit={passo === 3 ? handleSubmit : (e) => e.preventDefault()}>
         {renderPasso()}
-        
+
         <div className="flex justify-between mt-8">
           {passo > 1 && (
-            <button 
+            <button
               type="button"
               onClick={voltarPasso}
               className="btn-secundario"
@@ -182,9 +194,9 @@ const CadastroMultiStep = () => {
               Voltar
             </button>
           )}
-          
+
           {passo < 3 ? (
-            <button 
+            <button
               type="button"
               onClick={avancarPasso}
               className="btn-primario ml-auto"
@@ -192,10 +204,7 @@ const CadastroMultiStep = () => {
               Continuar
             </button>
           ) : (
-            <button 
-              type="submit"
-              className="btn-primario ml-auto"
-            >
+            <button type="submit" className="btn-primario ml-auto">
               Finalizar Cadastro
             </button>
           )}
