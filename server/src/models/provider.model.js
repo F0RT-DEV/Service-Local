@@ -8,3 +8,9 @@ export function getAll() {
  export function getById(id) {
 	return db("providers").where({id}).first();
 }
+export function putProvider(id, data) {
+	return db("providers").where({id}).update({
+		...data,
+		updated_at: new Date(),
+	});
+}
