@@ -1,59 +1,58 @@
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 import * as userModel from "../models/users.model.js";
-import {createUserSchema} from "../schemas/user.schema.js";
+import * as providerModel from "../models/provider.model.js";
+import { createUserSchema } from "../schemas/user.schema.js";
 
 export async function createUser(req, res) {
-	try {
-		// ✅ Validação com Zod
-		const result = createUserSchema.safeParse(req.body);
+  try {
+    const result = createUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: "Dados inválidos", details: result.error.format() });
+    }
 
-		if (!result.success) {
-			const errors = result.error.format();
-			return res.status(400).json({error: "Dados inválidos", details: errors});
-		}
+    const { name, email, password, phone, role, ...addressData } = result.data;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const userId = uuidv4();
 
-		const {name, email, password, phone, role} = result.data;
+    await userModel.create({
+      id: userId,
+      name,
+      email,
+      password_hash: passwordHash,
+      phone,
+      role: role || "client",
+      ...addressData
+    });
 
-		const passwordHash = await bcrypt.hash(password, 10);
+    if (role === "provider") {
+      await providerModel.create({ user_id: userId });
+    }
 
-		await userModel.create({
-			name,
-			email,
-			password_hash: passwordHash,
-			phone,
-			role: role || "client",
-
-		});
-
-		res.status(201).json({message: "Usuário criado com sucesso!"});
-	} catch (error) {
-		if (error.code === "ER_DUP_ENTRY") {
-			return res.status(409).json({error: "Email já cadastrado"});
-		}
-		res.status(500).json({error});
-	}
+    res.status(201).json({ message: "Usuário criado com sucesso!", user_id: userId, role });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ error: "Email já cadastrado" });
+    }
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
 }
 
 export async function getUsers(req, res) {
-	try {
-		const users = await userModel.getAll();
-		res.status(200).json(users);
-	} catch (error) {
-		res.status(500).json({error: "Erro interno do servidor"});
-	}
+  try {
+    const users = await userModel.getAll();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
 }
+
 export async function getUserById(req, res) {
-	const {id} = req.params;
-
-	try {
-		const user = await userModel.getById(id);
-
-		if (!user) {
-			return res.status(404).json({error: "Usuário não encontrado"});
-		}
-
-		res.status(200).json(user);
-	} catch (error) {
-		res.status(500).json({error: "Erro interno do servidor"});
-	}
+  try {
+    const user = await userModel.getById(req.params.id);
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
 }

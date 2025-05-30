@@ -1,13 +1,10 @@
-import {Router} from "express";
-import * as UsersController from "../controllers/users.controller.js";
+import { Router } from "express";
+import { createUser, getUsers, getUserById } from "../controllers/users.controller.js";
 
 const router = Router();
 
-// Rotas do Angelo
-router.post("/auth/register", UsersController.createUser);
-router.get("/users", UsersController.getUsers);
-router.get("/users/:id", UsersController.getUserById);
-
-
+router.post("/register", createUser);
+router.get("/users", getUsers);
+router.get("/users/:id", getUserById);
 
 export default router;
