@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid"; 
-import * as categoryModel from "../models/category.model.js";
+import * as categoryModel from "../models/Category/category.model.js";
 
 export async function createCategory(req, res) {
   const { name } = req.body;

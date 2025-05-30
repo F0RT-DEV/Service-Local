@@ -1,4 +1,4 @@
-import db from "../db.js";
+import db from "../../db.js";
 
 export function create(category) {
   return db("categories").insert(category);
