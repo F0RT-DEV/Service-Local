@@ -1,6 +1,7 @@
 import db from "../db.js";
 import { v4 as uuidv4 } from "uuid";
 
+// Basic CRUD operations
 export function getAll() {
   return db("providers");
 }
@@ -22,84 +23,79 @@ export function updateByUserId(user_id, updates) {
   return db("providers").where({ user_id }).update(updates);
 }
 
+// Category-related operations
 export function addCategories(providerId, categoryIds) {
   const rows = categoryIds.map(category_id => ({
+    id: uuidv4(),
     provider_id: providerId,
     category_id
   }));
   return db("providers_categories").insert(rows);
 }
+
+// Complex queries with categories
 export async function getAllWithCategories() {
-  const rows = await db("providers as p")
-    .leftJoin("providers_categories as pc", "p.id", "pc.provider_id")
-    .leftJoin("categories as c", "pc.category_id", "c.id")
+  const providers = await db("providers")
     .select(
-      "p.id as provider_id",
-      "p.user_id",
-      "p.bio",
-      "p.cnpj",
-      "p.status",
+      "id as provider_id",
+      "user_id",
+      "bio",
+      "cnpj",
+      "status",
+      "areas_of_expertise",
+      "availability"
+    );
+
+  if (providers.length === 0) return [];
+
+  const categories = await db("providers_categories as pc")
+    .join("categories as c", "pc.category_id", "c.id")
+    .select(
+      "pc.provider_id",
       "c.id as category_id",
       "c.name as category_name"
     );
 
-  const providersMap = new Map();
-
-  rows.forEach(row => {
-    if (!providersMap.has(row.provider_id)) {
-      providersMap.set(row.provider_id, {
-        id: row.provider_id,
-        user_id: row.user_id,
-        bio: row.bio,
-        cnpj: row.cnpj,
-        status: row.status,
-        categories: []
-      });
-    }
-    if (row.category_id) {
-      providersMap.get(row.provider_id).categories.push({
-        id: row.category_id,
-        name: row.category_name
-      });
-    }
-  });
-
-  return Array.from(providersMap.values());
+  return providers.map(provider => ({
+    ...provider,
+    categories: categories
+      .filter(c => c.provider_id === provider.provider_id)
+      .map(({ category_id, category_name }) => ({ 
+        id: category_id, 
+        name: category_name 
+      }))
+  }));
 }
+
 export async function getByIdWithCategories(id) {
-  const rows = await db("providers as p")
-    .leftJoin("providers_categories as pc", "p.id", "pc.provider_id")
-    .leftJoin("categories as c", "pc.category_id", "c.id")
+  const provider = await db("providers")
+    .where("id", id)
     .select(
-      "p.id as provider_id",
-      "p.user_id",
-      "p.bio",
-      "p.cnpj",
-      "p.status",
+      "id as provider_id",
+      "user_id",
+      "bio",
+      "cnpj",
+      "status",
+      "areas_of_expertise",
+      "availability"
+    )
+    .first();
+
+  if (!provider) return null;
+
+  const categories = await db("providers_categories as pc")
+    .join("categories as c", "pc.category_id", "c.id")
+    .where("pc.provider_id", id)
+    .select(
       "c.id as category_id",
       "c.name as category_name"
-    )
-    .where("p.id", id);
+    );
 
-  if (rows.length === 0) return null;
-
-  const provider = {
-    id: rows[0].provider_id,
-    user_id: rows[0].user_id,
-    bio: rows[0].bio,
-    cnpj: rows[0].cnpj,
-    status: rows[0].status,
-    categories: []
+  return {
+    ...provider,
+    categories: categories.map(({ category_id, category_name }) => ({
+      id: category_id,
+      name: category_name
+    }))
   };
-
-  rows.forEach(row => {
-    if (row.category_id) {
-      provider.categories.push({
-        id: row.category_id,
-        name: row.category_name
-      });
-    }
-  });
-
-  return provider;
 }

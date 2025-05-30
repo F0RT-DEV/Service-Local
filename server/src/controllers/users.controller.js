@@ -6,12 +6,30 @@ import { createUserSchema } from "../schemas/user.schema.js";
 
 export async function createUser(req, res) {
   try {
+    // Validate with Zod
     const result = createUserSchema.safeParse(req.body);
     if (!result.success) {
-      return res.status(400).json({ error: "Dados inválidos", details: result.error.format() });
+      return res.status(400).json({ 
+        error: "Dados inválidos", 
+        details: result.error.format() 
+      });
     }
 
-    const { name, email, password, phone, role, ...addressData } = result.data;
+    const { 
+      name, 
+      email, 
+      password, 
+      phone, 
+      role, 
+      cep, 
+      logradouro, 
+      complemento, 
+      bairro, 
+      localidade, 
+      uf, 
+      numero 
+    } = result.data;
+
     const passwordHash = await bcrypt.hash(password, 10);
     const userId = uuidv4();
 
@@ -22,14 +40,24 @@ export async function createUser(req, res) {
       password_hash: passwordHash,
       phone,
       role: role || "client",
-      ...addressData
+      cep,
+      logradouro,
+      complemento,
+      bairro,
+      localidade,
+      uf,
+      numero
     });
 
     if (role === "provider") {
       await providerModel.create({ user_id: userId });
     }
 
-    res.status(201).json({ message: "Usuário criado com sucesso!", user_id: userId, role });
+    res.status(201).json({ 
+      message: "Usuário criado com sucesso!", 
+      user_id: userId, 
+      role 
+    });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ error: "Email já cadastrado" });
