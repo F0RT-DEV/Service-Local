@@ -2,14 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const CHAVE_LOCAL_STORAGE = 'usuario';
 
-// Função para salvar dados de forma ofuscada
 const salvarUsuarioLocalStorage = (dados) => {
   const dadosString = JSON.stringify(dados);
   const dadosOfuscados = btoa(dadosString);
   localStorage.setItem(CHAVE_LOCAL_STORAGE, dadosOfuscados);
 };
 
-// Função para recuperar dados de forma ofuscada
 const recuperarUsuarioLocalStorage = () => {
   const dadosOfuscados = localStorage.getItem(CHAVE_LOCAL_STORAGE);
   if (!dadosOfuscados) return null;
@@ -23,11 +21,6 @@ const recuperarUsuarioLocalStorage = () => {
   }
 };
 
-/**
- * Gera um token simulado (mock) em formato base64, contendo os dados do usuário e um timestamp.
- * @param {Object} usuario - Objeto com dados do usuário.
- * @returns {string} Token base64.
- */
 const gerarToken = (usuario) => {
   return btoa(JSON.stringify({ ...usuario, timestamp: Date.now() }));
 };
@@ -45,9 +38,8 @@ export const useAuth = () => {
 export const AutenticacaoProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [carregando, setCarregando] = useState(true);
-  const [feedback, setFeedback] = useState(""); // Novo estado para feedback visual
+  const [feedback, setFeedback] = useState("");
 
-  // Carrega o usuário do localStorage ao iniciar
   useEffect(() => {
     const usuarioArmazenado = recuperarUsuarioLocalStorage();
     if (usuarioArmazenado) {
@@ -56,7 +48,16 @@ export const AutenticacaoProvider = ({ children }) => {
     setCarregando(false);
   }, []);
 
-  // Função para realizar login
+  // ⚠️ Novo useEffect para limpar feedback após 5s
+  useEffect(() => {
+    if (feedback) {
+      const timer = setTimeout(() => {
+        setFeedback("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback]);
+
   const login = (tipo, nome, dadosAdicionais = {}) => {
     if (!tipo || !nome) {
       setFeedback("Tipo e nome são obrigatórios para login.");
@@ -72,7 +73,6 @@ export const AutenticacaoProvider = ({ children }) => {
     return dadosCompletos;
   };
 
-  // Função para realizar logout
   const logout = () => {
     localStorage.removeItem(CHAVE_LOCAL_STORAGE);
     setUsuario(null);
@@ -95,7 +95,6 @@ export const AutenticacaoProvider = ({ children }) => {
 
   return (
     <AutenticacaoContext.Provider value={valor}>
-      {/* Exibe feedback visual se houver */}
       {feedback && (
         <div style={{
           background: "#fde047",
@@ -103,7 +102,8 @@ export const AutenticacaoProvider = ({ children }) => {
           padding: "10px",
           margin: "10px 0",
           borderRadius: "5px",
-          textAlign: "center"
+          textAlign: "center",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         }}>
           {feedback}
         </div>
