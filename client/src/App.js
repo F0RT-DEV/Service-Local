@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import CadastroMultiStep from './pages/CadastroMultiStep';
 import PaginaInicial from './pages/PaginaInicial';
 import CardsCadastros from './pages/CardsCadastros'; // Importe o novo componente
+import Login from './components/Login';
 import './App.css';
 
 // Componente de rota protegida
@@ -61,6 +62,7 @@ function App() {
           <main className="app-content">
             <Routes>
               <Route path="/" element={<PaginaInicial />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<CadastroMultiStep />} />
               
               {/* Novas rotas para os cards */}

@@ -33,6 +33,7 @@ const PaginaInicial = () => {
           <p>Conectamos você com prestadores de serviços técnicos qualificados para resolver seus problemas com rapidez e segurança.</p>
           <div className="hero-buttons">
             <Link to="/cadastro" className="btn-primary">Criar uma conta</Link>
+             <Link to="/login" className="btn-secondary">Entrar</Link>
             <a href="#servicos" className="btn-secondary">Ver serviços</a>
           </div>
         </div>

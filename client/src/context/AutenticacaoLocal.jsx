@@ -1,7 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Constante para armazenar a chave no localStorage
 const CHAVE_LOCAL_STORAGE = 'usuario';
+
+// Função para salvar dados de forma ofuscada
+const salvarUsuarioLocalStorage = (dados) => {
+  const dadosString = JSON.stringify(dados);
+  const dadosOfuscados = btoa(dadosString);
+  localStorage.setItem(CHAVE_LOCAL_STORAGE, dadosOfuscados);
+};
+
+// Função para recuperar dados de forma ofuscada
+const recuperarUsuarioLocalStorage = () => {
+  const dadosOfuscados = localStorage.getItem(CHAVE_LOCAL_STORAGE);
+  if (!dadosOfuscados) return null;
+  try {
+    const dadosString = atob(dadosOfuscados);
+    return JSON.parse(dadosString);
+  } catch (e) {
+    console.error('Erro ao decodificar usuário do localStorage:', e);
+    localStorage.removeItem(CHAVE_LOCAL_STORAGE);
+    return null;
+  }
+};
 
 /**
  * Gera um token simulado (mock) em formato base64, contendo os dados do usuário e um timestamp.
@@ -12,10 +32,8 @@ const gerarToken = (usuario) => {
   return btoa(JSON.stringify({ ...usuario, timestamp: Date.now() }));
 };
 
-// Criação do contexto
 const AutenticacaoContext = createContext(null);
 
-// Hook personalizado para usar o contexto de autenticação
 export const useAuth = () => {
   const context = useContext(AutenticacaoContext);
   if (!context) {
@@ -24,39 +42,33 @@ export const useAuth = () => {
   return context;
 };
 
-// Provedor do contexto de autenticação
 export const AutenticacaoProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [carregando, setCarregando] = useState(true);
+  const [feedback, setFeedback] = useState(""); // Novo estado para feedback visual
 
   // Carrega o usuário do localStorage ao iniciar
   useEffect(() => {
-    const recuperarUsuario = () => {
-      const dadosArmazenados = localStorage.getItem(CHAVE_LOCAL_STORAGE);
-      if (dadosArmazenados) {
-        try {
-          const usuarioArmazenado = JSON.parse(dadosArmazenados);
-          setUsuario(usuarioArmazenado);
-        } catch (e) {
-          console.error('Erro ao decodificar usuário do localStorage:', e);
-          localStorage.removeItem(CHAVE_LOCAL_STORAGE);
-        }
-      }
-      setCarregando(false);
-    };
-
-    recuperarUsuario();
+    const usuarioArmazenado = recuperarUsuarioLocalStorage();
+    if (usuarioArmazenado) {
+      setUsuario(usuarioArmazenado);
+    }
+    setCarregando(false);
   }, []);
 
   // Função para realizar login
   const login = (tipo, nome, dadosAdicionais = {}) => {
+    if (!tipo || !nome) {
+      setFeedback("Tipo e nome são obrigatórios para login.");
+      return null;
+    }
     const dadosUsuario = { nome, tipo, ...dadosAdicionais };
     const token = gerarToken(dadosUsuario);
     const dadosCompletos = { ...dadosUsuario, token };
-    
-    localStorage.setItem(CHAVE_LOCAL_STORAGE, JSON.stringify(dadosCompletos));
+
+    salvarUsuarioLocalStorage(dadosCompletos);
     setUsuario(dadosCompletos);
-    
+    setFeedback(""); // Limpa feedback ao logar
     return dadosCompletos;
   };
 
@@ -64,26 +76,38 @@ export const AutenticacaoProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem(CHAVE_LOCAL_STORAGE);
     setUsuario(null);
+    setFeedback("Logout realizado com sucesso.");
   };
 
-  // Verifica se o usuário está autenticado
   const estaAutenticado = () => !!usuario;
-
-  // Obtém o usuário atual
   const getUsuario = () => usuario;
 
-  // Valor do contexto
   const valor = {
     usuario,
     carregando,
     login,
     logout,
     estaAutenticado,
-    getUsuario
+    getUsuario,
+    feedback,
+    setFeedback
   };
 
   return (
     <AutenticacaoContext.Provider value={valor}>
+      {/* Exibe feedback visual se houver */}
+      {feedback && (
+        <div style={{
+          background: "#fde047",
+          color: "#92400e",
+          padding: "10px",
+          margin: "10px 0",
+          borderRadius: "5px",
+          textAlign: "center"
+        }}>
+          {feedback}
+        </div>
+      )}
       {children}
     </AutenticacaoContext.Provider>
   );
