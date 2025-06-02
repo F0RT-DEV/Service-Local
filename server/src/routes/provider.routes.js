@@ -1,9 +1,14 @@
 import { Router } from "express";
-import * as providerController from "../controllers/provider.controller.js";
+import {
+	updateProvider,
+	getPrestadores,
+	getPrestadorById
+} from "../controllers/provider.controller.js";
+
 const router = Router();
 
-// Rotas de Prestador
-router.get("/prestador", providerController.getPrestador);
-router.get("/prestador/:id", providerController.getPrestadorById);
+router.put("/register/provider/:id", updateProvider);
+router.get("/providers", getPrestadores);
+router.get("/providers/:id", getPrestadorById);
 
 export default router;
