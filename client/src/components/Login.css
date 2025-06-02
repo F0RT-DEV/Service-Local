@@ -1,0 +1,73 @@
+/* Fundo da página */
+body {
+  background: linear-gradient(to right, #e0f2fe, #bae6fd);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container principal */
+.container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 4rem;
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: scale(1.01);
+}
+
+/* Título */
+h2 {
+  color: #1e3a8a;
+}
+
+/* Campos de entrada */
+input,
+select {
+  border: 1px solid #cbd5e1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  width: 90%;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Rótulos */
+label {
+  font-weight: 500;
+  color: #334155;
+  margin-right: 10px;
+}
+
+/* Botão de envio */
+button[type="submit"] {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: bold;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  margin: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #1d4ed8;
+}
+
+/* Mensagem de erro */
+.mensagem-erro {
+  color: #dc2626;
+  font-weight: 500;
+}

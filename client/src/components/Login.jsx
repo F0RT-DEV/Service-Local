@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AutenticacaoLocal";
+import "./Login.css"; // Certifique-se de ter o CSS adequado para estilização
 
 const Login = () => {
   const [email, setEmail] = useState("");
