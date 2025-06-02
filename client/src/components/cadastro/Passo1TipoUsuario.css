@@ -1,54 +1,164 @@
+/* Passo1TipoUsuario.css */
+.passo-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.passo-container h2 {
+  color: #1f2937;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.passo-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+}
+
 .tipo-usuario-opcoes {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .tipo-card {
-  flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1.5rem;
-  border: 2px solid #E5E7EB;
-  border-radius: 0.5rem;
+  padding: 2.5rem 2rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .tipo-card:hover {
-  border-color: #BFDBFE;
-  background-color: #F9FAFB;
+  transform: translateY(-2px);
+  border-color: #93c5fd;
+  background-color: #f8fafc;
 }
 
 .tipo-card.selecionado {
-  border-color: #3B82F6;
-  background-color: #EFF6FF;
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.tipo-card.selecionado::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #3b82f6;
+  animation: slideIn 0.3s ease-out;
 }
 
 .icone-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
 }
 
 .icone-container.usuario {
-  background-color: #DBEAFE;
-  color: #2563EB;
+  background-color: #dbeafe;
+  color: #2563eb;
 }
 
 .icone-container.prestador {
-  background-color: #FEF3C7;
-  color: #D97706;
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.tipo-card:hover .icone-container {
+  transform: scale(1.05);
+}
+
+.tipo-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+
+.tipo-card p {
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.975rem;
+}
+
+.mensagem-erro {
+  color: #ef4444;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background-color: #fef2f2;
+  border-radius: 0.5rem;
+  border: 1px solid #fee2e2;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 640px) {
+  .passo-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
   .tipo-usuario-opcoes {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .tipo-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .icone-container {
+    width: 72px;
+    height: 72px;
   }
 }

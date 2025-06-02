@@ -1,7 +1,35 @@
 import React from 'react';
 import './Passo3DadosEspecificos.css';
 
-const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros }) => {
+// Lista de categorias disponíveis
+const CATEGORIAS = [
+  { id: 'eletricista', nome: 'Eletricista' },
+  { id: 'encanador', nome: 'Encanador' },
+  { id: 'informatica', nome: 'Informática' },
+  { id: 'construcao', nome: 'Construção Civil' },
+  { id: 'pintura', nome: 'Pintura' },
+  { id: 'jardim', nome: 'Jardinagem' },
+];
+
+const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastro, etapaAnterior }) => {
+  const handleCategoriaChange = (e) => {
+    const { value, checked } = e.target;
+    let novasCategorias = [...(dados.categorias || [])];
+    
+    if (checked) {
+      novasCategorias.push(value);
+    } else {
+      novasCategorias = novasCategorias.filter(cat => cat !== value);
+    }
+    
+    onChange({
+      target: {
+        name: 'categorias',
+        value: novasCategorias
+      }
+    });
+  };
+
   return (
     <div className="passo-container">
       <h2 className="text-xl font-semibold mb-6">
@@ -9,33 +37,43 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros }) => {
       </h2>
       
       {tipo === 'prestador' ? (
-        // Campos para prestador de serviços
         <>
           <div className="form-grupo">
-            <label htmlFor="area">Área de atuação</label>
-            <input
-              id="area"
-              name="area"
-              type="text"
-              value={dados.area}
-              onChange={onChange}
-              placeholder="Ex: Encanador, Eletricista, Técnico em Informática"
-              className={erros.area ? 'input-erro' : ''}
-            />
-            {erros.area && <p className="mensagem-erro">{erros.area}</p>}
+            <label>Áreas de atuação</label>
+            <div className="categorias-container">
+              {CATEGORIAS.map(categoria => (
+                <div key={categoria.id} className="categoria-option">
+                  <input
+                    type="checkbox"
+                    id={`categoria-${categoria.id}`}
+                    value={categoria.id}
+                    checked={(dados.categorias || []).includes(categoria.id)}
+                    onChange={handleCategoriaChange}
+                  />
+                  <label htmlFor={`categoria-${categoria.id}`}>
+                    {categoria.nome}
+                  </label>
+                </div>
+              ))}
+            </div>
+            {erros.categorias && <p className="mensagem-erro">{erros.categorias}</p>}
           </div>
           
           <div className="form-grupo">
             <label htmlFor="experiencia">Anos de experiência</label>
-            <input
+            <select
               id="experiencia"
               name="experiencia"
-              type="text"
-              value={dados.experiencia}
+              value={dados.experiencia || ''}
               onChange={onChange}
-              placeholder="Ex: 5 anos"
               className={erros.experiencia ? 'input-erro' : ''}
-            />
+            >
+              <option value="">Selecione</option>
+              <option value="menos-1">Menos de 1 ano</option>
+              <option value="1-3">1-3 anos</option>
+              <option value="3-5">3-5 anos</option>
+              <option value="5+">Mais de 5 anos</option>
+            </select>
             {erros.experiencia && <p className="mensagem-erro">{erros.experiencia}</p>}
           </div>
           
@@ -52,53 +90,31 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros }) => {
             />
             {erros.descricao && <p className="mensagem-erro">{erros.descricao}</p>}
           </div>
+          
         </>
       ) : (
-        // Campos para usuário comum
-        <>
-          <div className="form-grupo">
-            <label htmlFor="endereco">Endereço</label>
-            <input
-              id="endereco"
-              name="endereco"
-              type="text"
-              value={dados.endereco || ''}
-              onChange={onChange}
-              placeholder="Rua, número, complemento"
-              className={erros.endereco ? 'input-erro' : ''}
-            />
-            {erros.endereco && <p className="mensagem-erro">{erros.endereco}</p>}
-          </div>
-          
-          <div className="form-grupo">
-            <label htmlFor="cidade">Cidade</label>
-            <input
-              id="cidade"
-              name="cidade"
-              type="text"
-              value={dados.cidade || ''}
-              onChange={onChange}
-              placeholder="Digite sua cidade"
-              className={erros.cidade ? 'input-erro' : ''}
-            />
-            {erros.cidade && <p className="mensagem-erro">{erros.cidade}</p>}
-          </div>
-          
-          <div className="form-grupo">
-            <label htmlFor="estado">Estado</label>
-            <input
-              id="estado"
-              name="estado"
-              type="text"
-              value={dados.estado || ''}
-              onChange={onChange}
-              placeholder="Digite seu estado"
-              className={erros.estado ? 'input-erro' : ''}
-            />
-            {erros.estado && <p className="mensagem-erro">{erros.estado}</p>}
-          </div>
-        </>
+        // Campos para usuário comum (opcional)
+        <div className="form-grupo">
+          <p>Você será direcionado para a busca de prestadores de serviço.</p>
+        </div>
       )}
+      <div className="botoes-navegacao">
+        <button 
+          type="button" 
+          onClick={etapaAnterior}
+          className="botao-voltar"
+        >
+          Voltar
+        </button>
+        <button 
+          type="button" 
+          onClick={finalizarCadastro}
+          className="botao-continuar"
+        >
+          Finalizar Cadastro
+        </button>
+      </div>
+      
     </div>
   );
 };

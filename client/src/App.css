@@ -8,6 +8,7 @@
 .app-content {
   flex: 1;
   padding: 1rem;
+
 }
 
 .container {
@@ -20,7 +21,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   font-size: 1.25rem;
   color: #4B5563;
 }

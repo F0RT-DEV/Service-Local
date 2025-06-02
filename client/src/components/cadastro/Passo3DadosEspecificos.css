@@ -1,20 +1,33 @@
-.form-grupo textarea {
+.categorias-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.categoria-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.categoria-option input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+.form-grupo select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #D1D5DB;
   border-radius: 0.375rem;
   background-color: white;
+}
+
+.form-grupo textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 0.375rem;
   resize: vertical;
-  min-height: 120px;
-  transition: border-color 0.2s;
-}
-
-.form-grupo textarea:focus {
-  outline: none;
-  border-color: #3B82F6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-.form-grupo textarea::placeholder {
-  color: #9CA3AF;
 }

@@ -1,217 +1,105 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AutenticacaoLocal";
+
 import Passo1TipoUsuario from "../components/cadastro/Passo1TipoUsuario";
 import Passo2DadosBasicos from "../components/cadastro/Passo2DadosBasicos";
 import Passo3DadosEspecificos from "../components/cadastro/Passo3DadosEspecificos";
-import ProgressoCadastro from "../components/cadastro/ProgressoCadastro";
-import { useAuth } from "../context/AutenticacaoLocal";
-import "./CadastroMultiStep.css";
 
-const CadastroMultiStep = () => {
-  const [passo, setPasso] = useState(1);
-  const [dadosCadastro, setDadosCadastro] = useState({
-    tipo: "",
-    nome: "",
-    email: "",
-    senha: "",
-    telefone: "",
-    // Campos específicos para prestador
-    area: "",
-    experiencia: "",
-    descricao: "",
-    // Campos específicos para usuário comum
-    endereco: "",
-    cidade: "",
-    estado: "",
-  });
+function CadastroMultiStep() {
+  const [etapaAtual, setEtapaAtual] = useState(1);
   const [erros, setErros] = useState({});
+  const [formData, setFormData] = useState({
+    tipo: "", nome: "", email: "", telefone: "", cpf: "", cnpj: "",
+    rua: "", numero: "", complemento: "", cep: "", estado: "", cidade: "",
+    categorias: [], experiencia: "", descricao: ""
+  });
+
+  const { login } = useAuth(); // do contexto
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const validarPasso1 = () => {
-    if (!dadosCadastro.tipo) {
-      setErros({ tipo: "Por favor, selecione um tipo de usuário" });
-      return false;
-    }
-    setErros({});
-    return true;
-  };
+  const proximaEtapa = () => setEtapaAtual(prev => prev + 1);
+  const etapaAnterior = () => setEtapaAtual(prev => prev - 1);
 
-  const validarPasso2 = () => {
-    const novosErros = {};
-
-    if (!dadosCadastro.nome.trim()) novosErros.nome = "Nome é obrigatório";
-    if (!dadosCadastro.email.trim()) novosErros.email = "Email é obrigatório";
-    else if (!/\S+@\S+\.\S+/.test(dadosCadastro.email))
-      novosErros.email = "Email inválido";
-    if (!dadosCadastro.senha.trim()) novosErros.senha = "Senha é obrigatória";
-    else if (dadosCadastro.senha.length < 6)
-      novosErros.senha = "Senha deve ter pelo menos 6 caracteres";
-    if (!dadosCadastro.telefone.trim())
-      novosErros.telefone = "Telefone é obrigatório";
-
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0;
-  };
-
-  const validarPasso3 = () => {
-    const novosErros = {};
-
-    if (dadosCadastro.tipo === "prestador") {
-      if (!dadosCadastro.area.trim())
-        novosErros.area = "Área de atuação é obrigatória";
-      if (!dadosCadastro.experiencia.trim())
-        novosErros.experiencia = "Experiência é obrigatória";
-      if (!dadosCadastro.descricao.trim())
-        novosErros.descricao = "Descrição dos serviços é obrigatória";
-    } else {
-      if (!dadosCadastro.endereco.trim())
-        novosErros.endereco = "Endereço é obrigatório";
-      if (!dadosCadastro.cidade.trim())
-        novosErros.cidade = "Cidade é obrigatória";
-      if (!dadosCadastro.estado.trim())
-        novosErros.estado = "Estado é obrigatório";
-    }
-
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0;
-  };
-
-  const avancarPasso = () => {
-    let valido = false;
-
-    switch (passo) {
-      case 1:
-        valido = validarPasso1();
-        break;
-      case 2:
-        valido = validarPasso2();
-        break;
-      default:
-        valido = true;
-    }
-
-    if (valido) {
-      setPasso(passo + 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const voltarPasso = () => {
-    setPasso(passo - 1);
-    window.scrollTo(0, 0);
+  const handleSelecionarTipo = (tipo) => {
+    setFormData(prev => ({ ...prev, tipo }));
+    proximaEtapa();
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDadosCadastro((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    // Limpar erro do campo que foi alterado
-    if (erros[name]) {
-      setErros((prev) => {
-        const novosErros = { ...prev };
-        delete novosErros[name];
-        return novosErros;
-      });
+  const validarPasso2 = () => {
+    const novosErros = {};
+    if (!formData.nome.trim()) novosErros.nome = "Nome é obrigatório.";
+    if (!formData.email.trim()) novosErros.email = "Email é obrigatório.";
+    if (!formData.telefone.trim()) novosErros.telefone = "Telefone é obrigatório.";
+    if (!formData.cpf.trim()) novosErros.cpf = "CPF é obrigatório.";
+    if (!formData.rua.trim()) novosErros.rua = "Rua é obrigatória.";
+    if (!formData.numero.trim()) novosErros.numero = "Número é obrigatório.";
+    if (!formData.cep.trim()) novosErros.cep = "CEP é obrigatório.";
+    if (!formData.estado.trim()) novosErros.estado = "Estado é obrigatório.";
+    if (!formData.cidade.trim()) novosErros.cidade = "Cidade é obrigatória.";
+
+    if (formData.tipo === 'prestador' && !formData.cnpj.trim()) {
+      novosErros.cnpj = "CNPJ é obrigatório para prestadores.";
     }
+
+    setErros(novosErros);
+    return Object.keys(novosErros).length === 0;
   };
 
-  const handleTipoUsuario = (tipo) => {
-    setDadosCadastro((prev) => ({ ...prev, tipo }));
-    setErros({});
-  };
+  const finalizarCadastro = () => {
+    const cadastros = JSON.parse(localStorage.getItem("cadastros")) || [];
+    const novoCadastro = { ...formData };
+    cadastros.push(novoCadastro);
+    localStorage.setItem("cadastros", JSON.stringify(cadastros));
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    login(novoCadastro); // simula login com contexto
 
-    if (validarPasso3()) {
-      // Salva no localStorage
-      const cadastrosSalvos =
-        JSON.parse(localStorage.getItem("cadastros")) || [];
-      cadastrosSalvos.push(dadosCadastro);
-      localStorage.setItem("cadastros", JSON.stringify(cadastrosSalvos));
-
-      // Login simulado
-      login(dadosCadastro.tipo, dadosCadastro.nome);
-
-      // Redirecionar
-      navigate(
-        dadosCadastro.tipo === "prestador"
-          ? "/prestador/dashboard"
-          : "/usuario/dashboard"
-      );
-    }
-  };
-
-  const renderPasso = () => {
-    switch (passo) {
-      case 1:
-        return (
-          <Passo1TipoUsuario
-            tipoSelecionado={dadosCadastro.tipo}
-            onSelecionar={handleTipoUsuario}
-            erro={erros.tipo}
-          />
-        );
-      case 2:
-        return (
-          <Passo2DadosBasicos
-            dados={dadosCadastro}
-            onChange={handleChange}
-            erros={erros}
-          />
-        );
-      case 3:
-        return (
-          <Passo3DadosEspecificos
-            tipo={dadosCadastro.tipo}
-            dados={dadosCadastro}
-            onChange={handleChange}
-            erros={erros}
-          />
-        );
-      default:
-        return null;
+    if (novoCadastro.tipo === 'usuario') {
+      navigate('/usuario/dashboard');
+    } else if (novoCadastro.tipo === 'prestador') {
+      navigate('/prestador/dashboard');
+    } else {
+      navigate('/');
     }
   };
 
   return (
-    <div className="cadastro-container">
-      <h1 className="text-2xl font-bold text-center mb-6">Crie sua conta</h1>
-
-      <ProgressoCadastro passoAtual={passo} totalPassos={3} />
-
-      <form onSubmit={passo === 3 ? handleSubmit : (e) => e.preventDefault()}>
-        {renderPasso()}
-
-        <div className="flex justify-between mt-8">
-          {passo > 1 && (
-            <button
-              type="button"
-              onClick={voltarPasso}
-              className="btn-secundario"
-            >
-              Voltar
-            </button>
-          )}
-
-          {passo < 3 ? (
-            <button
-              type="button"
-              onClick={avancarPasso}
-              className="btn-primario ml-auto"
-            >
-              Continuar
-            </button>
-          ) : (
-            <button type="submit" className="btn-primario ml-auto">
-              Finalizar Cadastro
-            </button>
-          )}
-        </div>
-      </form>
+    <div>
+      {etapaAtual === 1 && (
+        <Passo1TipoUsuario
+          tipoSelecionado={formData.tipo}
+          onSelecionar={handleSelecionarTipo}
+          erro={formData.tipo ? null : "Por favor, selecione um tipo de conta"}
+        />
+      )}
+      {etapaAtual === 2 && (
+        <Passo2DadosBasicos
+          dados={formData}
+          onChange={handleChange}
+          erros={erros}
+          validarPasso2={validarPasso2} // Passa a função diretamente
+          proximaEtapa={proximaEtapa} // Adiciona esta prop
+          etapaAnterior={etapaAnterior}
+          finalizarCadastro={finalizarCadastro}
+        />
+      )}
+      {etapaAtual === 3 && (
+        <Passo3DadosEspecificos
+          tipo={formData.tipo}
+          dados={formData}
+          onChange={handleChange}
+          erros={erros}
+          finalizarCadastro={finalizarCadastro}
+          etapaAnterior={etapaAnterior}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default CadastroMultiStep;
