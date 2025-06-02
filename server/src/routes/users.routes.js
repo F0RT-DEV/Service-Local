@@ -3,12 +3,15 @@ import {
 	createUser,
 	getUsers,
 	getUserById,
+	loginUser
 } from "../controllers/users.controller.js";
+import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
 router.post("/register", createUser);
-router.get("/users", getUsers);
-router.get("/users/:id", getUserById);
+router.post("/login", loginUser);
+router.get("/users", authenticateToken, getUsers);
+router.get("/users/:id", authenticateToken, getUserById);
 
 export default router;
