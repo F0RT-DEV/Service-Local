@@ -18,6 +18,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "server": "json-server --watch src/data/db.json --port 5000",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,6 +45,7 @@
     "@babel/plugin-transform-numeric-separator": "^7.27.1",
     "@babel/plugin-transform-optional-chaining": "^7.27.1",
     "@babel/plugin-transform-private-methods": "^7.27.1",
-    "@babel/plugin-transform-private-property-in-object": "^7.27.1"
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
+    "json-server": "^1.0.0-beta.3"
   }
 }

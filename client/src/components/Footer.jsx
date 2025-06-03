@@ -1,34 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Footer.css';
+import styles from './Footer.module.css';
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <p className="footer-title">TechServices</p>
-            <p className="footer-subtitle">Conectando profissionais técnicos e clientes</p>
+    <footer className={styles.footer}>
+      <div className={styles['footer-container']}>
+        <div className={styles['footer-content']}>
+          <div className={styles['footer-brand']}>
+            <p className={styles['footer-title']}>TechServices</p>
+            <p className={styles['footer-subtitle']}>Conectando profissionais técnicos e clientes</p>
           </div>
           
-          <div className="footer-links">
-            <Link to="/sobre" className="footer-link">
+          <div className={styles['footer-links']}>
+            <Link to="/sobre" className={styles['footer-link']}>
               Sobre
             </Link>
-            <Link to="/termos" className="footer-link">
+            <Link to="/termos" className={styles['footer-link']}>
               Termos
             </Link>
-            <Link to="/privacidade" className="footer-link">
+            <Link to="/privacidade" className={styles['footer-link']}>
               Privacidade
             </Link>
-            <Link to="/contato" className="footer-link">
+            <Link to="/contato" className={styles['footer-link']}>
               Contato
             </Link>
           </div>
         </div>
         
-        <div className="footer-bottom">
+        <div className={styles['footer-bottom']}>
           &copy; {new Date().getFullYear()} TechServices. Todos os direitos reservados.
         </div>
       </div>

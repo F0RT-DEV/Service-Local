@@ -1,0 +1,110 @@
+{
+  "servicosCategorias": [
+    {
+      "nome": "Eletricista Residencial",
+      "area": "Elétrica",
+      "id": "3a5b"
+    },
+    {
+      "nome": "Encanador",
+      "area": "Hidráulica",
+      "id": "3fcc"
+    },
+    {
+      "nome": "Pintor",
+      "area": "Pintura",
+      "id": "c11f"
+    },
+    {
+      "nome": "Marceneiro",
+      "area": "Marcenaria",
+      "id": "0551"
+    },
+    {
+      "nome": "Jardineiro",
+      "area": "Jardinagem",
+      "id": "cd35"
+    },
+    {
+      "nome": "Pedreiro",
+      "area": "Construção Civil",
+      "id": "a787"
+    },
+    {
+      "nome": "Serralheiro",
+      "area": "Metalurgia",
+      "id": "827e"
+    },
+    {
+      "nome": "Técnico de Ar Condicionado",
+      "area": "Climatização",
+      "id": "9b5d"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "1",
+      "nome": "Douglas",
+      "email": "DouglasFbi@gmail.com",
+      "senha": "1234",
+      "tipo": "usuario"
+    },
+    {
+      "id": "2",
+      "nome": "Lev Fort",
+      "email": "LevFortao@gmail.com",
+      "senha": "123456",
+      "tipo": "prestador"
+    },
+    {
+      "id": "3",
+      "nome": "João Victor",
+      "email": "joaovictor@gmail.com",
+      "senha": "18",
+      "tipo": "adm"
+    },
+    {
+      "id": "7a01",
+      "tipo": "usuario",
+      "nome": "FortBhrow",
+      "email": "FortaoAzou@gmail.com",
+      "senha": "123654",
+      "telefone": "27992295623",
+      "cpf": "12345678990",
+      "cnpj": "12345678912111",
+      "rua": "Avenida Pedro Depiante",
+      "numero": "25",
+      "complemento": "casa",
+      "cep": "29062565",
+      "estado": "espirito santo",
+      "cidade": "vitória ",
+      "categorias": [],
+      "experiencia": "",
+      "descricao": ""
+    }
+  ],
+  "servicos": [
+    {
+      "imagem": "https://www.crtba.org.br/wp-content/uploads/2021/08/vitoria-eletrotecnica.jpg",
+      "nome": "Destruidor de vasos",
+      "area": "Limpeza",
+      "descricao": "se precisar de um profissional para destruir um vaso e comigo mesmo (vovó fez uma feijoada que não caiu muito bem) ",
+      "experiencia": "10 anos",
+      "regiao": "Centro",
+      "valor": "15000",
+      "prestadorId": "2",
+      "id": "3379"
+    },
+    {
+      "imagem": "https://abeg.srv.br/wp-content/uploads/2021/10/abg-insdustrial-bg-01.jpg",
+      "nome": "Hacker Freelancer ",
+      "area": "Tecnologia da vunerabilidade",
+      "descricao": "Vou hackear geral se não me contratar 🤨",
+      "experiencia": "20 anos",
+      "regiao": "Vitoria",
+      "valor": "50000",
+      "prestadorId": "2",
+      "id": "3566"
+    }
+  ]
+}

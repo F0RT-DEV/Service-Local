@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserIcon, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../context/AutenticacaoLocal';
-import './NavBarra.css'; // Certifique-se de ter o CSS adequado para estilização
+import styles from './NavBarra.module.css';
 
 const NavBarra = () => {
   const { estaAutenticado, getUsuario, logout } = useAuth();
@@ -10,7 +10,7 @@ const NavBarra = () => {
   const [dropdownAberto, setDropdownAberto] = useState(false);
   const navigate = useNavigate();
   const usuario = getUsuario();
-  
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -27,53 +27,53 @@ const NavBarra = () => {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-content">
-          <div className="navbar-brand">
-            <Link to="/" className="navbar-logo">
+    <nav className={styles.navbar}>
+      <div className={styles['navbar-container']}>
+        <div className={styles['navbar-content']}>
+          <div className={styles['navbar-brand']}>
+            <Link to="/" className={styles['navbar-logo']}>
               TechServices
             </Link>
           </div>
 
           {/* Botão de menu para mobile */}
-          <button className="menu-button" onClick={toggleMenu}>
+          <button className={styles['menu-button']} onClick={toggleMenu}>
             <Menu size={24} />
           </button>
 
-          <div className={`navbar-right ${menuAberto ? 'active' : ''}`}>
+          <div className={`${styles['navbar-right']} ${menuAberto ? styles.active : ''}`}>
             {estaAutenticado() ? (
               <>
-                <div className="nav-links">
-                  <Link to="/cards" className="nav-link">
+                <div className={styles['nav-links']}>
+                  <Link to="/usuario/dashboard" className={styles['nav-link']}>
                     Buscar Serviços
                   </Link>
                   {usuario?.tipo === 'prestador' && (
-                    <Link to="/prestar-servicos" className="nav-link">
+                    <Link to="/prestador/dashboard" className={styles['nav-link']}>
                       Prestar Serviços
                     </Link>
                   )}
                 </div>
 
-                <div className="user-actions">
-                  <div 
-                    className="user-info" 
+                <div className={styles['user-actions']}>
+                  <div
+                    className={styles['user-info']}
                     onClick={toggleDropdown}
                     onMouseEnter={() => setDropdownAberto(true)}
                     onMouseLeave={() => setDropdownAberto(false)}
                   >
-                    <div className="user-avatar">
+                    <div className={styles['user-avatar']}>
                       <UserIcon size={18} />
                     </div>
-                    <span className="user-name">
-                      {usuario?.nome || 'Usuário'}
+                    <span className={styles['user-name']}>
+                      {usuario?.nome && usuario.nome.trim() !== "" ? usuario.nome : 'Usuário'}
                     </span>
-                    
+
                     {dropdownAberto && (
-                      <div className="dropdown-menu">
-                        <button 
+                      <div className={styles['dropdown-menu']}>
+                        <button
                           onClick={handleLogout}
-                          className="logout-button"
+                          className={styles['logout-button']}
                         >
                           <LogOut size={16} />
                           <span>Sair</span>
@@ -84,11 +84,11 @@ const NavBarra = () => {
                 </div>
               </>
             ) : (
-              <div className="auth-buttons">
-                {/* <Link to="/login" className="login-button">
+              <div className={styles['auth-buttons']}>
+                <Link to="/login" className={styles['login-button']}>
                   Entrar
-                </Link> */}
-                <Link to="/cadastro" className="register-button">
+                </Link>
+                <Link to="/cadastro" className={styles['register-button']}>
                   Cadastrar
                 </Link>
               </div>

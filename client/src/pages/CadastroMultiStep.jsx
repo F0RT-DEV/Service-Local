@@ -1,21 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AutenticacaoLocal";
-
 import Passo1TipoUsuario from "../components/cadastro/Passo1TipoUsuario";
 import Passo2DadosBasicos from "../components/cadastro/Passo2DadosBasicos";
 import Passo3DadosEspecificos from "../components/cadastro/Passo3DadosEspecificos";
+import styles from "./CadastroMultiStep.module.css";
 
 function CadastroMultiStep() {
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [erros, setErros] = useState({});
+  const [cadastroSucesso, setCadastroSucesso] = useState(false);
   const [formData, setFormData] = useState({
-    tipo: "", nome: "", email: "", telefone: "", cpf: "", cnpj: "",
+    tipo: "", nome: "", email: "", senha: "", telefone: "", cpf: "", cnpj: "",
     rua: "", numero: "", complemento: "", cep: "", estado: "", cidade: "",
     categorias: [], experiencia: "", descricao: ""
   });
 
-  const { login } = useAuth(); // do contexto
   const navigate = useNavigate();
 
   const proximaEtapa = () => setEtapaAtual(prev => prev + 1);
@@ -35,6 +34,7 @@ function CadastroMultiStep() {
     const novosErros = {};
     if (!formData.nome.trim()) novosErros.nome = "Nome é obrigatório.";
     if (!formData.email.trim()) novosErros.email = "Email é obrigatório.";
+    if (!formData.senha.trim()) novosErros.senha = "Senha é obrigatória.";
     if (!formData.telefone.trim()) novosErros.telefone = "Telefone é obrigatório.";
     if (!formData.cpf.trim()) novosErros.cpf = "CPF é obrigatório.";
     if (!formData.rua.trim()) novosErros.rua = "Rua é obrigatória.";
@@ -51,25 +51,35 @@ function CadastroMultiStep() {
     return Object.keys(novosErros).length === 0;
   };
 
+  // Salva o usuário no db.json via POST
   const finalizarCadastro = () => {
-    const cadastros = JSON.parse(localStorage.getItem("cadastros")) || [];
-    const novoCadastro = { ...formData };
-    cadastros.push(novoCadastro);
-    localStorage.setItem("cadastros", JSON.stringify(cadastros));
-
-    login(novoCadastro); // simula login com contexto
-
-    if (novoCadastro.tipo === 'usuario') {
-      navigate('/usuario/dashboard');
-    } else if (novoCadastro.tipo === 'prestador') {
-      navigate('/prestador/dashboard');
-    } else {
-      navigate('/');
-    }
+    fetch("http://localhost:5000/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Erro ao cadastrar usuário");
+        return res.json();
+      })
+      .then(() => {
+        setCadastroSucesso(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 1000);
+      })
+      .catch(() => {
+        setErros({ geral: "Erro ao cadastrar. Tente novamente." });
+      });
   };
 
   return (
-    <div>
+    <div className={styles['container']}>
+      {cadastroSucesso && (
+        <div className={styles['mensagem-sucesso']}>
+          CADASTRO REALIZADO COM SUCESSO!
+        </div>
+      )}
       {etapaAtual === 1 && (
         <Passo1TipoUsuario
           tipoSelecionado={formData.tipo}
@@ -82,8 +92,8 @@ function CadastroMultiStep() {
           dados={formData}
           onChange={handleChange}
           erros={erros}
-          validarPasso2={validarPasso2} // Passa a função diretamente
-          proximaEtapa={proximaEtapa} // Adiciona esta prop
+          validarPasso2={validarPasso2}
+          proximaEtapa={proximaEtapa}
           etapaAnterior={etapaAnterior}
           finalizarCadastro={finalizarCadastro}
         />
@@ -97,6 +107,9 @@ function CadastroMultiStep() {
           finalizarCadastro={finalizarCadastro}
           etapaAnterior={etapaAnterior}
         />
+      )}
+      {erros.geral && (
+        <div className={styles['mensagem-erro']}>{erros.geral}</div>
       )}
     </div>
   );

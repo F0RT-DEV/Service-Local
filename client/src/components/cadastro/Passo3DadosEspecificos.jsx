@@ -1,27 +1,28 @@
-import React from 'react';
-import './Passo3DadosEspecificos.css';
-
-// Lista de categorias disponíveis
-const CATEGORIAS = [
-  { id: 'eletricista', nome: 'Eletricista' },
-  { id: 'encanador', nome: 'Encanador' },
-  { id: 'informatica', nome: 'Informática' },
-  { id: 'construcao', nome: 'Construção Civil' },
-  { id: 'pintura', nome: 'Pintura' },
-  { id: 'jardim', nome: 'Jardinagem' },
-];
+import React, { useEffect, useState } from 'react';
+import styles from './Passo3DadosEspecificos.module.css';
 
 const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastro, etapaAnterior }) => {
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/servicosCategorias')
+      .then(res => res.json())
+      .then(data => {
+        const areasUnicas = Array.from(new Set(data.map(servico => servico.area)));
+        setCategorias(areasUnicas);
+      });
+  }, []);
+
   const handleCategoriaChange = (e) => {
     const { value, checked } = e.target;
     let novasCategorias = [...(dados.categorias || [])];
-    
+
     if (checked) {
       novasCategorias.push(value);
     } else {
       novasCategorias = novasCategorias.filter(cat => cat !== value);
     }
-    
+
     onChange({
       target: {
         name: 'categorias',
@@ -31,42 +32,42 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
   };
 
   return (
-    <div className="passo-container">
-      <h2 className="text-xl font-semibold mb-6">
+    <div className={styles['passo-container']}>
+      <h2 className={`${styles['text-xl']} ${styles['font-semibold']} ${styles['mb-6']}`}>
         {tipo === 'prestador' ? 'Informações profissionais' : 'Informações de localização'}
       </h2>
       
       {tipo === 'prestador' ? (
         <>
-          <div className="form-grupo">
+          <div className={styles['form-grupo']}>
             <label>Áreas de atuação</label>
-            <div className="categorias-container">
-              {CATEGORIAS.map(categoria => (
-                <div key={categoria.id} className="categoria-option">
+            <div className={styles['categorias-container']}>
+              {categorias.map(area => (
+                <div key={area} className={styles['categoria-option']}>
                   <input
                     type="checkbox"
-                    id={`categoria-${categoria.id}`}
-                    value={categoria.id}
-                    checked={(dados.categorias || []).includes(categoria.id)}
+                    id={`categoria-${area}`}
+                    value={area}
+                    checked={(dados.categorias || []).includes(area)}
                     onChange={handleCategoriaChange}
                   />
-                  <label htmlFor={`categoria-${categoria.id}`}>
-                    {categoria.nome}
+                  <label htmlFor={`categoria-${area}`}>
+                    {area}
                   </label>
                 </div>
               ))}
             </div>
-            {erros.categorias && <p className="mensagem-erro">{erros.categorias}</p>}
+            {erros.categorias && <p className={styles['mensagem-erro']}>{erros.categorias}</p>}
           </div>
           
-          <div className="form-grupo">
+          <div className={styles['form-grupo']}>
             <label htmlFor="experiencia">Anos de experiência</label>
             <select
               id="experiencia"
               name="experiencia"
               value={dados.experiencia || ''}
               onChange={onChange}
-              className={erros.experiencia ? 'input-erro' : ''}
+              className={erros.experiencia ? styles['input-erro'] : ''}
             >
               <option value="">Selecione</option>
               <option value="menos-1">Menos de 1 ano</option>
@@ -74,10 +75,10 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
               <option value="3-5">3-5 anos</option>
               <option value="5+">Mais de 5 anos</option>
             </select>
-            {erros.experiencia && <p className="mensagem-erro">{erros.experiencia}</p>}
+            {erros.experiencia && <p className={styles['mensagem-erro']}>{erros.experiencia}</p>}
           </div>
           
-          <div className="form-grupo">
+          <div className={styles['form-grupo']}>
             <label htmlFor="descricao">Descrição dos serviços</label>
             <textarea
               id="descricao"
@@ -86,35 +87,32 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
               onChange={onChange}
               placeholder="Descreva os serviços que você oferece..."
               rows="4"
-              className={erros.descricao ? 'input-erro' : ''}
+              className={erros.descricao ? styles['input-erro'] : ''}
             />
-            {erros.descricao && <p className="mensagem-erro">{erros.descricao}</p>}
+            {erros.descricao && <p className={styles['mensagem-erro']}>{erros.descricao}</p>}
           </div>
-          
         </>
       ) : (
-        // Campos para usuário comum (opcional)
-        <div className="form-grupo">
+        <div className={styles['form-grupo']}>
           <p>Você será direcionado para a busca de prestadores de serviço.</p>
         </div>
       )}
-      <div className="botoes-navegacao">
+      <div className={styles['botoes-navegacao']}>
         <button 
           type="button" 
           onClick={etapaAnterior}
-          className="botao-voltar"
+          className={styles['botao-voltar']}
         >
           Voltar
         </button>
         <button 
           type="button" 
           onClick={finalizarCadastro}
-          className="botao-continuar"
+          className={styles['botao-continuar']}
         >
           Finalizar Cadastro
         </button>
       </div>
-      
     </div>
   );
 };

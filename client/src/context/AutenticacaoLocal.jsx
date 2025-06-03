@@ -53,25 +53,39 @@ export const AutenticacaoProvider = ({ children }) => {
     if (feedback) {
       const timer = setTimeout(() => {
         setFeedback("");
-      }, 5000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [feedback]);
 
-  const login = (tipo, nome, dadosAdicionais = {}) => {
-    if (!tipo || !nome) {
-      setFeedback("Tipo e nome são obrigatórios para login.");
+const login = async (tipo, email, senha) => {
+  if (!tipo || !email || !senha) {
+    setFeedback("Tipo, email e senha são obrigatórios para login.");
+    return null;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/usuarios?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(senha)}&tipo=${encodeURIComponent(tipo)}`);
+    const usuarios = await res.json();
+    const usuarioEncontrado = usuarios[0];
+
+    if (!usuarioEncontrado) {
+      setFeedback("Credenciais inválidas. Verifique seus dados.");
       return null;
     }
-    const dadosUsuario = { nome, tipo, ...dadosAdicionais };
-    const token = gerarToken(dadosUsuario);
-    const dadosCompletos = { ...dadosUsuario, token };
+
+    const token = gerarToken(usuarioEncontrado);
+    const dadosCompletos = { ...usuarioEncontrado, token };
 
     salvarUsuarioLocalStorage(dadosCompletos);
     setUsuario(dadosCompletos);
     setFeedback(""); // Limpa feedback ao logar
     return dadosCompletos;
-  };
+  } catch (error) {
+    setFeedback("Erro ao conectar ao servidor.");
+    return null;
+  }
+};
 
   const logout = () => {
     localStorage.removeItem(CHAVE_LOCAL_STORAGE);

@@ -1,4 +1,4 @@
-import './Passo2DadosBasicos.css';
+import styles from './Passo2DadosBasicos.module.css';
 import PropTypes from 'prop-types';
 
 const Passo2DadosBasicos = ({ 
@@ -8,39 +8,37 @@ const Passo2DadosBasicos = ({
   validarPasso2 = () => true,
   proximaEtapa = () => {},
   etapaAnterior = () => {},
-  finalizarCadastro = () => {} // Adicionamos esta prop
+  finalizarCadastro = () => {}
 }) => {
   const handleContinuar = () => {
     if (validarPasso2()) {
-      // Se for usuário comum, finaliza o cadastro direto
       if (dados.tipo === 'usuario') {
         finalizarCadastro();
       } else {
-        // Se for prestador, vai para a próxima etapa
         proximaEtapa();
       }
     }
   };
 
   return (
-    <div className="passo-container2">
-      <h2 className="text-xl font-semibold mb-6">Informações básicas</h2>
+    <div className={styles['passo-container2']}>
+      <h2 className={`${styles['text-xl']} ${styles['font-semibold']} ${styles['mb-6']}`}>Informações básicas</h2>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="nome">Nome completo</label>
         <input
           id="nome"
           name="nome"
           type="text"
-          value={dados.nome || ''}
+          value={dados.nome}
           onChange={onChange}
           placeholder="Digite seu nome completo"
-          className={erros.nome ? 'input-erro' : ''}
+          className={erros.nome ? styles['input-erro'] : ''}
         />
-        {erros.nome && <p className="mensagem-erro">{erros.nome}</p>}
+        {erros.nome && <p className={styles['mensagem-erro']}>{erros.nome}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="email">Email</label>
         <input
           id="email"
@@ -49,12 +47,25 @@ const Passo2DadosBasicos = ({
           value={dados.email}
           onChange={onChange}
           placeholder="Digite seu email"
-          className={erros.email ? 'input-erro' : ''}
+          className={erros.email ? styles['input-erro'] : ''}
         />
-        {erros.email && <p className="mensagem-erro">{erros.email}</p>}
+        {erros.email && <p className={styles['mensagem-erro']}>{erros.email}</p>}
+      </div>
+      <div className={styles['form-group']}>
+        <label htmlFor="senha">Senha</label>
+        <input
+          id="senha"
+          name="senha"
+          type="password"
+          value={dados.senha}
+          onChange={onChange}
+          placeholder="Digite sua senha"
+          className={erros.senha ? styles['input-erro'] : ''}
+        />
+        {erros.senha && <p className={styles['mensagem-erro']}>{erros.senha}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="telefone">Telefone</label>
         <input
           id="telefone"
@@ -63,12 +74,12 @@ const Passo2DadosBasicos = ({
           value={dados.telefone}
           onChange={onChange}
           placeholder="(XX) XXXXX-XXXX"
-          className={erros.telefone ? 'input-erro' : ''}
+          className={erros.telefone ? styles['input-erro'] : ''}
         />
-        {erros.telefone && <p className="mensagem-erro">{erros.telefone}</p>}
+        {erros.telefone && <p className={styles['mensagem-erro']}>{erros.telefone}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="cpf">CPF</label>
         <input
           id="cpf"
@@ -77,12 +88,12 @@ const Passo2DadosBasicos = ({
           value={dados.cpf}
           onChange={onChange}
           placeholder="Digite seu CPF"
-          className={erros.cpf ? 'input-erro' : ''}
+          className={erros.cpf ? styles['input-erro'] : ''}
         />
-        {erros.cpf && <p className="mensagem-erro">{erros.cpf}</p>}
+        {erros.cpf && <p className={styles['mensagem-erro']}>{erros.cpf}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="cnpj">CNPJ</label>
         <input
           id="cnpj"
@@ -91,14 +102,14 @@ const Passo2DadosBasicos = ({
           value={dados.cnpj}
           onChange={onChange}
           placeholder="Digite seu CNPJ"
-          className={erros.cnpj ? 'input-erro' : ''}
+          className={erros.cnpj ? styles['input-erro'] : ''}
         />
-        {erros.cnpj && <p className="mensagem-erro">{erros.cnpj}</p>}
+        {erros.cnpj && <p className={styles['mensagem-erro']}>{erros.cnpj}</p>}
       </div>
       
-      <h3 className="text-lg font-semibold mt-6 mb-4">Endereço</h3>
+      <h3 className={`${styles['text-lg']} ${styles['font-semibold']} ${styles['mt-6']} ${styles['mb-4']}`}>Endereço</h3>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="rua">Rua</label>
         <input
           id="rua"
@@ -107,12 +118,12 @@ const Passo2DadosBasicos = ({
           value={dados.rua}
           onChange={onChange}
           placeholder="Digite o nome da rua"
-          className={erros.rua ? 'input-erro' : ''}
+          className={erros.rua ? styles['input-erro'] : ''}
         />
-        {erros.rua && <p className="mensagem-erro">{erros.rua}</p>}
+        {erros.rua && <p className={styles['mensagem-erro']}>{erros.rua}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="numero">Número</label>
         <input
           id="numero"
@@ -121,12 +132,12 @@ const Passo2DadosBasicos = ({
           value={dados.numero}
           onChange={onChange}
           placeholder="Digite o número"
-          className={erros.numero ? 'input-erro' : ''}
+          className={erros.numero ? styles['input-erro'] : ''}
         />
-        {erros.numero && <p className="mensagem-erro">{erros.numero}</p>}
+        {erros.numero && <p className={styles['mensagem-erro']}>{erros.numero}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="complemento">Complemento</label>
         <input
           id="complemento"
@@ -135,12 +146,12 @@ const Passo2DadosBasicos = ({
           value={dados.complemento}
           onChange={onChange}
           placeholder="Digite o complemento"
-          className={erros.complemento ? 'input-erro' : ''}
+          className={erros.complemento ? styles['input-erro'] : ''}
         />
-        {erros.complemento && <p className="mensagem-erro">{erros.complemento}</p>}
+        {erros.complemento && <p className={styles['mensagem-erro']}>{erros.complemento}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="cep">CEP</label>
         <input
           id="cep"
@@ -149,12 +160,12 @@ const Passo2DadosBasicos = ({
           value={dados.cep}
           onChange={onChange}
           placeholder="Digite o CEP"
-          className={erros.cep ? 'input-erro' : ''}
+          className={erros.cep ? styles['input-erro'] : ''}
         />
-        {erros.cep && <p className="mensagem-erro">{erros.cep}</p>}
+        {erros.cep && <p className={styles['mensagem-erro']}>{erros.cep}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="estado">Estado</label>
         <input
           id="estado"
@@ -163,12 +174,12 @@ const Passo2DadosBasicos = ({
           value={dados.estado}
           onChange={onChange}
           placeholder="Digite o estado"
-          className={erros.estado ? 'input-erro' : ''}
+          className={erros.estado ? styles['input-erro'] : ''}
         />
-        {erros.estado && <p className="mensagem-erro">{erros.estado}</p>}
+        {erros.estado && <p className={styles['mensagem-erro']}>{erros.estado}</p>}
       </div>
       
-      <div className="form-group">
+      <div className={styles['form-group']}>
         <label htmlFor="cidade">Cidade</label>
         <input
           id="cidade"
@@ -177,23 +188,23 @@ const Passo2DadosBasicos = ({
           value={dados.cidade}
           onChange={onChange}
           placeholder="Digite a cidade"
-          className={erros.cidade ? 'input-erro' : ''}
+          className={erros.cidade ? styles['input-erro'] : ''}
         />
-        {erros.cidade && <p className="mensagem-erro">{erros.cidade}</p>}
+        {erros.cidade && <p className={styles['mensagem-erro']}>{erros.cidade}</p>}
       </div>
       
-      <div className="botoes-navegacao">
+      <div className={styles['botoes-navegacao']}>
         <button 
           type="button" 
           onClick={etapaAnterior}
-          className="botao-voltar"
+          className={styles['botao-voltar']}
         >
           Voltar
         </button>
         <button 
           type="button" 
           onClick={handleContinuar}
-          className="botao-continuar"
+          className={styles['botao-continuar']}
         >
           {dados.tipo === 'usuario' ? 'Finalizar Cadastro' : 'Continuar'}
         </button>
@@ -202,11 +213,11 @@ const Passo2DadosBasicos = ({
   );
 };
 
-// Validação das props
 Passo2DadosBasicos.propTypes = {
   dados: PropTypes.shape({
     nome: PropTypes.string,
     email: PropTypes.string,
+    senha: PropTypes.string,
     telefone: PropTypes.string,
     cpf: PropTypes.string,
     cnpj: PropTypes.string,
