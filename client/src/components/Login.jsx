@@ -54,17 +54,7 @@ const handleSubmit = async (e) => {
             placeholder="Digite sua senha"
           />
         </div>
-        <div className={styles['form-group']}>
-          <label className={styles['label']}>Tipo de Conta</label>
-          <select
-            className={styles['input']}
-            value={tipo}
-            onChange={e => setTipo(e.target.value)}
-          >
-            <option value="usuario">Usuário</option>
-            <option value="prestador">Prestador</option>
-          </select>
-        </div>
+        
         {erro && <p className={styles['mensagem-erro']}>{erro}</p>}
         <button
           type="submit"
