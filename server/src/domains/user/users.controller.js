@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs"; // Confirme se está correto
 import {v4 as uuidv4} from "uuid";
-import * as userModel from "../models/users.model.js";
-import * as providerModel from "../models/provider.model.js";
+import * as userModel from "./users.model.js";
+import * as providerModel from "../provider/provider.model.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-import {UserSchema} from "../schemas/userSchema.js"; // Corrigido o caminho!
+import {UserSchema} from "../../schemas/userSchema.js"; // Corrigido o caminho!
 
 export async function createUser(req, res) {
 	try {

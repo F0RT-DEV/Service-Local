@@ -4,8 +4,8 @@ import {
 	getUsers,
 	getUserById,
 	loginUser
-} from "../controllers/users.controller.js";
-import { authenticateToken } from "../middlewares/authMiddleware.js";
+} from "../../domains/user/users.controller.js";
+import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = Router();
 

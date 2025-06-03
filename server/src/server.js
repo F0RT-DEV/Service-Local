@@ -1,9 +1,9 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import usersRoutes from "./routes/users.routes.js";
+import usersRoutes from "./routes/client/users.routes.js";
 import dotenv from "dotenv";
-import providerRoutes from "./routes/provider.routes.js";
-import categoryRoutes from "./routes/category.routes.js";
+import providerRoutes from "./routes/provider/provider.routes.js";
+import categoryRoutes from "./routes/public/category.routes.js";
 dotenv.config();
 
 const app = express();

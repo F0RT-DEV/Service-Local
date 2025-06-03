@@ -1,5 +1,5 @@
-import db from "../db.js";
-import * as providerModel from "../models/provider.model.js";
+import db from "../../db.js";
+import * as providerModel from "./provider.model.js";
 
 export async function updateProvider(req, res) {
   const { id } = req.params; // user_id

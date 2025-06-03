@@ -3,7 +3,7 @@ import {
 	updateProvider,
 	getPrestadores,
 	getPrestadorById
-} from "../controllers/provider.controller.js";
+} from "../../domains/provider/provider.controller.js";
 
 const router = Router();
 
