@@ -182,7 +182,7 @@
       "descricao": "Vou hackear geral se não me contratar 🤨",
       "experiencia": "20 anos",
       "regiao": "Vitoria",
-      "valor": "50000",
+      "valor": "100000",
       "prestadorId": "2",
       "id": "3566"
     },
@@ -196,6 +196,64 @@
       "regiao": "Vila Velha",
       "valor": "500",
       "prestadorId": "2056"
+    },
+    {
+      "id": "75b2",
+      "imagem": "https://www.totvs.com/wp-content/uploads/2023/10/prestacao-de-servicos-3.jpg",
+      "nome": "Limpador de vrido",
+      "area": "contrução civil",
+      "descricao": "limpo vidros de predios",
+      "experiencia": "9 anos",
+      "regiao": "Vila Toria",
+      "valor": "500",
+      "prestadorId": "2"
+    }
+  ],
+  "ordensServico": [
+    {
+      "id": "1",
+      "clienteId": "1",
+      "prestadorId": "2",
+      "servicoId": "3379",
+      "status": "pendente",
+      "dataSolicitacao": "2025-06-04T10:00:00Z",
+      "mensagem": "Preciso do serviço para amanhã"
+    },
+    {
+      "id": "385e",
+      "clienteId": "e0b2",
+      "prestadorId": "2",
+      "servicoId": "3379",
+      "status": "pendente",
+      "dataSolicitacao": "2025-06-04T12:56:11.197Z",
+      "mensagem": "gdshhgsh"
+    },
+    {
+      "id": "ee27",
+      "clienteId": "e0b2",
+      "prestadorId": "2",
+      "servicoId": "3379",
+      "status": "concluída",
+      "dataSolicitacao": "2025-06-04T13:02:00.439Z",
+      "mensagem": "Solicitação automática"
+    },
+    {
+      "id": "e2e0",
+      "clienteId": "e0b2",
+      "prestadorId": "2",
+      "servicoId": "75b2",
+      "status": "cancelada",
+      "dataSolicitacao": "2025-06-04T13:29:46.016Z",
+      "mensagem": "e por hora o pagamento"
+    },
+    {
+      "id": "d8bf",
+      "clienteId": "e0b2",
+      "prestadorId": "2",
+      "servicoId": "75b2",
+      "status": "pendente",
+      "dataSolicitacao": "2025-06-04T14:19:59.199Z",
+      "mensagem": "Solicitação automática"
     }
   ]
 }
