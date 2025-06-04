@@ -7,7 +7,9 @@ import PaginaInicial from './pages/PaginaInicial';
 import DashboardUser from './pages/Usuario/DashboardUser';
 import DashboardPrestador from './pages/PrestadorServico/DashboardPrestador';
 import Login from './components/Login';
+import PerfilUsuario from './pages/PerfilUsuario';
 import './App.css';
+
 
 // Componente de rota protegida
 const ProtectedRoute = ({ children, tipoPermitido }) => {
@@ -42,7 +44,7 @@ function App() {
               <Route path="/" element={<PaginaInicial />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<CadastroMultiStep />} />
-
+              <Route path="/usuario/perfil" element={<ProtectedRoute tipoPermitido="usuario"><PerfilUsuario /></ProtectedRoute>} />
               {/* Dashboard do Usuário Comum */}
               <Route 
                 path="/usuario/dashboard" 

@@ -1,0 +1,36 @@
+.perfil-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 2rem;
+}
+.perfil-dados p {
+  margin: 0.5rem 0;
+}
+.btn-editar, .btn-salvar, .btn-cancelar {
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-editar { background: #2563eb; color: #fff; }
+.btn-salvar { background: #22c55e; color: #fff; }
+.btn-cancelar { background: #aaa; color: #fff; }
+.perfil-form label {
+  display: block;
+  margin: 0.5rem 0 0.2rem 0;
+}
+.perfil-form input {
+  width: 100%;
+  padding: 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 0.7rem;
+}
+.perfil-actions {
+  display: flex;
+  gap: 1rem;
+}

@@ -68,7 +68,18 @@
 .user-actions {
   position: relative;
 }
-
+.profile-button {
+  background: none;
+  border: none;
+  color: #222;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.profile-button:hover {
+  background: #f3f4f6;
+}
 .user-info {
   display: flex;
   align-items: center;

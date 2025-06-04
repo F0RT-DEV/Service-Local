@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserIcon, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../context/AutenticacaoLocal';
@@ -10,6 +10,7 @@ const NavBarra = () => {
   const [dropdownAberto, setDropdownAberto] = useState(false);
   const navigate = useNavigate();
   const usuario = getUsuario();
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -23,8 +24,28 @@ const NavBarra = () => {
   };
 
   const toggleDropdown = () => {
-    setDropdownAberto(!dropdownAberto);
+    setDropdownAberto((prev) => !prev);
   };
+
+  // Fecha o dropdown ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setDropdownAberto(false);
+      }
+    }
+    if (dropdownAberto) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownAberto]);
 
   return (
     <nav className={styles.navbar}>
@@ -59,8 +80,8 @@ const NavBarra = () => {
                   <div
                     className={styles['user-info']}
                     onClick={toggleDropdown}
-                    onMouseEnter={() => setDropdownAberto(true)}
-                    onMouseLeave={() => setDropdownAberto(false)}
+                    tabIndex={0}
+                    ref={dropdownRef}
                   >
                     <div className={styles['user-avatar']}>
                       <UserIcon size={18} />
@@ -71,6 +92,15 @@ const NavBarra = () => {
 
                     {dropdownAberto && (
                       <div className={styles['dropdown-menu']}>
+                        <button
+                          onClick={() => {
+                            setDropdownAberto(false);
+                            navigate('/usuario/perfil');
+                          }}
+                          className={styles['profile-button']}
+                        >
+                          <span>Perfil</span>
+                        </button>
                         <button
                           onClick={handleLogout}
                           className={styles['logout-button']}
