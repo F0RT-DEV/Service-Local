@@ -1,22 +1,24 @@
 import db from "../../db.js";
 import {v4 as uuidv4} from "uuid";
 
-export function getAll() {
-	return db("users").select(
-		"id",
-		"name",
-		"email",
-		"phone",
-		"role",
-		"cep",
-		"logradouro",
-		"complemento",
-		"bairro",
-		"localidade",
-		"uf",
-		"numero",
-		"created_at"
-	);
+export function getAllProviders() {
+	return db("users")
+		.where({})
+		.select(
+			"id",
+			"name",
+			"email",
+			"phone",
+			"role",
+			"cep",
+			"logradouro",
+			"complemento",
+			"bairro",
+			"localidade",
+			"uf",
+			"numero",
+			"created_at"
+		);
 }
 
 export function getById(id) {
