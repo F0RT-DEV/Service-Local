@@ -81,6 +81,46 @@
       "categorias": [],
       "experiencia": "",
       "descricao": ""
+    },
+    {
+      "id": "7987",
+      "tipo": "usuario",
+      "nome": "Andre",
+      "email": "andre@gmail.com",
+      "senha": "123",
+      "telefone": "27999998888",
+      "cpf": "12345678910",
+      "cnpj": "29001009321784",
+      "rua": "Av rodovia",
+      "numero": "777",
+      "complemento": "Casa",
+      "cep": "29000-000",
+      "estado": "Espirito Santo",
+      "cidade": "Serra",
+      "categorias": [],
+      "experiencia": "",
+      "descricao": ""
+    },
+    {
+      "id": "6986",
+      "tipo": "prestador",
+      "nome": "luiz",
+      "email": "luiz@gmail.com",
+      "senha": "123",
+      "telefone": "27999998888",
+      "cpf": "12345678910",
+      "cnpj": "29001009321784",
+      "rua": "Av rodovoa",
+      "numero": "777",
+      "complemento": "Casa",
+      "cep": "29000-000",
+      "estado": "Espirito Santo",
+      "cidade": "Serra",
+      "categorias": [
+        "Elétrica"
+      ],
+      "experiencia": "1-3",
+      "descricao": "sou eletricista"
     }
   ],
   "servicos": [
