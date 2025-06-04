@@ -245,7 +245,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Carlos Silva"
                 className={styles["author-image"]}
               />
@@ -268,7 +268,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Ana Oliveira"
                 className={styles["author-image"]}
               />
@@ -291,7 +291,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/men/75.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Roberto Santos"
                 className={styles["author-image"]}
               />
