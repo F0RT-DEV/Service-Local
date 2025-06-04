@@ -66,15 +66,17 @@ const NavBarra = () => {
             {estaAutenticado() ? (
               <>
                 <div className={styles['nav-links']}>
-                  <Link to="/usuario/dashboard" className={styles['nav-link']}>
-                    Buscar Serviços
-                  </Link>
-                  {usuario?.tipo === 'prestador' && (
-                    <Link to="/prestador/dashboard" className={styles['nav-link']}>
-                      Prestar Serviços
-                    </Link>
-                  )}
-                </div>
+  {usuario?.tipo === 'usuario' && (
+    <Link to="/usuario/dashboard" className={styles['nav-link']}>
+      Buscar Serviços
+    </Link>
+  )}
+  {usuario?.tipo === 'prestador' && (
+    <Link to="/prestador/dashboard" className={styles['nav-link']}>
+      Prestar Serviços
+    </Link>
+  )}
+</div>
 
                 <div className={styles['user-actions']}>
                   <div

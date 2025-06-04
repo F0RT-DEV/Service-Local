@@ -6,7 +6,6 @@ import styles from "./Login.module.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipo, setTipo] = useState("usuario");
   const [erro, setErro] = useState("");
   const { setFeedback, login } = useAuth(); 
   const navigate = useNavigate();
@@ -17,13 +16,18 @@ const handleSubmit = async (e) => {
     setErro("Preencha todos os campos.");
     return;
   }
-  const usuario = await login(tipo, email, senha);
+  // Não passa mais o tipo, só email e senha
+  const usuario = await login(null, email, senha);
   if (usuario) {
     setFeedback("Login realizado com sucesso!");
-    if (tipo === "usuario") {
+    // Redireciona conforme o tipo retornado do backend
+    if (usuario.tipo === "usuario") {
       navigate("/usuario/dashboard");
-    } else {
+    } else if (usuario.tipo === "prestador") {
       navigate("/prestador/dashboard");
+    } else {
+      // Caso queira tratar outros tipos
+      navigate("/");
     }
   } else {
     setErro("Dados inválidos.");

@@ -121,6 +121,46 @@
       ],
       "experiencia": "1-3",
       "descricao": "sou eletricista"
+    },
+    {
+      "id": "2056",
+      "tipo": "prestador",
+      "nome": "Douglas Ferreira Borges",
+      "email": "Lev222@gmail.com",
+      "senha": "123456",
+      "telefone": "27992295187",
+      "cpf": "12345678968",
+      "cnpj": "12345678998750",
+      "rua": "Av. Pedro Depiante",
+      "numero": "25",
+      "complemento": "casa",
+      "cep": "29062565",
+      "estado": "Solteiro(a)",
+      "cidade": "Vitoria",
+      "categorias": [
+        "Elétrica"
+      ],
+      "experiencia": "3-5",
+      "descricao": "fdfsbvsbvdgb"
+    },
+    {
+      "id": "e0b2",
+      "tipo": "usuario",
+      "nome": "Douglas Borges",
+      "email": "Douglasgg@gmail.com",
+      "senha": "1234",
+      "telefone": "27992295187",
+      "cpf": "12345678968",
+      "cnpj": "12345678998750",
+      "rua": "Av. Pedro Depiante",
+      "numero": "25",
+      "complemento": "casa",
+      "cep": "29062565",
+      "estado": "Solteiro(a)",
+      "cidade": "Vitoria",
+      "categorias": [],
+      "experiencia": "",
+      "descricao": ""
     }
   ],
   "servicos": [
@@ -145,6 +185,17 @@
       "valor": "50000",
       "prestadorId": "2",
       "id": "3566"
+    },
+    {
+      "id": "f5dd",
+      "imagem": "https://cunzolo.com/site/catalogo/235/plataformas.jpg",
+      "nome": "Guintacheiro",
+      "area": "contrução civil",
+      "descricao": "Manobrista de guindache",
+      "experiencia": "10 anos",
+      "regiao": "Vila Velha",
+      "valor": "500",
+      "prestadorId": "2056"
     }
   ]
 }

@@ -58,14 +58,17 @@ export const AutenticacaoProvider = ({ children }) => {
     }
   }, [feedback]);
 
-const login = async (tipo, email, senha) => {
-  if (!tipo || !email || !senha) {
-    setFeedback("Tipo, email e senha são obrigatórios para login.");
+const login = async (_tipo, email, senha) => {
+  if (!email || !senha) {
+    setFeedback("Email e senha são obrigatórios para login.");
     return null;
   }
 
   try {
-    const res = await fetch(`http://localhost:5000/usuarios?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(senha)}&tipo=${encodeURIComponent(tipo)}`);
+    // Busca apenas por email e senha (sem tipo)
+    const res = await fetch(
+      `http://localhost:5000/usuarios?email=${encodeURIComponent(email.trim())}&senha=${encodeURIComponent(senha)}`
+    );
     const usuarios = await res.json();
     const usuarioEncontrado = usuarios[0];
 
