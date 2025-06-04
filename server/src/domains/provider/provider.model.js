@@ -117,3 +117,8 @@ export async function getByIdWithCategories(id) {
 		throw error;
 	}
 }
+
+export function getInformactionsMe(id) {
+	return db("providers").where({id}).first();
+}
+

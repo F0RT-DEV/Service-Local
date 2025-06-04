@@ -1,14 +1,16 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
 	updateProvider,
-	getPrestadores,
-	getPrestadorById
+	getAuthenticatedProfile
+	
 } from "../../domains/provider/provider.controller.js";
+import {verifyProviderRole} from "../../middlewares/role.middleware.js";
+import {authenticateToken} from "../../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.put("/register/provider/:id", updateProvider);
-router.get("/providers", getPrestadores);
-router.get("/providers/:id", getPrestadorById);
+router.put("/register/provider/:id",authenticateToken, verifyProviderRole, updateProvider);
+
+
 
 export default router;

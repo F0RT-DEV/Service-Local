@@ -83,9 +83,9 @@ export async function createUser(req, res) {
 	}
 }
 
-export async function getUsers(req, res) {
+export async function getProviders(req, res) {
 	try {
-		const users = await userModel.getAll();
+		const users = await userModel.getAllProviders();
 		res.status(200).json(users);
 	} catch (error) {
 		console.error("Erro ao buscar usuários:", error);
