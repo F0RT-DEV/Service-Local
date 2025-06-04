@@ -1,18 +1,22 @@
 import express from "express";
-import cookieParser from "cookie-parser";
-import usersRoutes from "./routes/client/users.routes.js";
 import dotenv from "dotenv";
 import providerRoutes from "./routes/provider/provider.routes.js";
-import categoryRoutes from "./routes/public/category.routes.js";
+import catalogoRoutes from "./routes/public/catalogo.routes.js";
+import adminRoutes from "./routes/admin/admin.routes.js";
+import publicRoutes from "./routes/public/auth.routes.js";
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use("/", usersRoutes);
-app.use("/", providerRoutes); // Assuming you want to use the same routes for providers
 
-app.use("/", categoryRoutes); 
-app.use(cookieParser()); // Middleware para gerenciar cookies
+
+app.use("/", providerRoutes); 
+app.use("/", adminRoutes);
+app.use("/", catalogoRoutes);
+app.use("/", publicRoutes);
+
+
+
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
 	console.log(`Servidor rodando em http://localhost:${PORT}`);
