@@ -19,32 +19,7 @@ const PaginaInicial = () => {
             <p className={styles.subtitle}>
               Soluções técnicas com segurança, agilidade e transparência
             </p>
-            <div className={styles["search-container"]}>
-              <div className={styles["search-box"]}>
-                <div className={styles["search-input-wrapper"]}>
-                  <select className={styles["search-select"]}>
-                    <option>Qual serviço você precisa?</option>
-                    <option>Encanador</option>
-                    <option>Eletricista</option>
-                    <option>Técnico de Informática</option>
-                    <option>Marceneiro</option>
-                    <option>Pintor</option>
-                  </select>
-                </div>
-                <div className={styles["search-input-wrapper"]}>
-                  <input
-                    type="text"
-                    placeholder="Digite sua localização"
-                    className={styles["search-input"]}
-                  />
-                </div>
-                <button
-                  className={`${styles.btn} ${styles["btn-accent"]} ${styles["search-button"]}`}
-                >
-                  <i className="fas fa-search"></i> Buscar
-                </button>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -245,7 +220,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Carlos Silva"
                 className={styles["author-image"]}
               />
@@ -268,7 +243,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Ana Oliveira"
                 className={styles["author-image"]}
               />
@@ -291,7 +266,7 @@ const PaginaInicial = () => {
             </p>
             <div className={styles.author}>
               <img
-                src="https://randomuser.me/api/portraits/men/75.jpg"
+                src="https://labes.inf.ufes.br/wp-content/uploads/sem-foto.jpg"
                 alt="Roberto Santos"
                 className={styles["author-image"]}
               />
