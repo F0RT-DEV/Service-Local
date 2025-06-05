@@ -5,12 +5,11 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
   const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/servicosCategorias')
+    // Busca categorias do backend real
+    fetch('http://localhost:3333/categories')
       .then(res => res.json())
-      .then(data => {
-        const areasUnicas = Array.from(new Set(data.map(servico => servico.area)));
-        setCategorias(areasUnicas);
-      });
+      .then(data => setCategorias(data))
+      .catch(() => setCategorias([]));
   }, []);
 
   const handleCategoriaChange = (e) => {
@@ -42,17 +41,17 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
           <div className={styles['form-grupo']}>
             <label>Áreas de atuação</label>
             <div className={styles['categorias-container']}>
-              {categorias.map(area => (
-                <div key={area} className={styles['categoria-option']}>
+              {categorias.map(cat => (
+                <div key={cat.id} className={styles['categoria-option']}>
                   <input
                     type="checkbox"
-                    id={`categoria-${area}`}
-                    value={area}
-                    checked={(dados.categorias || []).includes(area)}
+                    id={`categoria-${cat.id}`}
+                    value={cat.id}
+                    checked={(dados.categorias || []).includes(String(cat.id))}
                     onChange={handleCategoriaChange}
                   />
-                  <label htmlFor={`categoria-${area}`}>
-                    {area}
+                  <label htmlFor={`categoria-${cat.id}`}>
+                    {cat.name}
                   </label>
                 </div>
               ))}
@@ -90,6 +89,19 @@ const Passo3DadosEspecificos = ({ tipo, dados, onChange, erros, finalizarCadastr
               className={erros.descricao ? styles['input-erro'] : ''}
             />
             {erros.descricao && <p className={styles['mensagem-erro']}>{erros.descricao}</p>}
+          </div>
+          <div className={styles['form-grupo']}>
+            <label htmlFor="cnpj">CNPJ</label>
+            <input
+              id="cnpj"
+              name="cnpj"
+              type="text"
+              value={dados.cnpj || ''}
+              onChange={onChange}
+              placeholder="Digite seu CNPJ"
+              className={erros.cnpj ? styles['input-erro'] : ''}
+            />
+            {erros.cnpj && <p className={styles['mensagem-erro']}>{erros.cnpj}</p>}
           </div>
         </>
       ) : (

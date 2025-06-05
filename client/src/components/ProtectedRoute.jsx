@@ -1,25 +1,26 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AutenticacaoLocal';
+
+const getUsuarioLocal = () => {
+  try {
+    const usuario = localStorage.getItem("usuario");
+    return usuario ? JSON.parse(usuario) : null;
+  } catch {
+    return null;
+  }
+};
 
 const ProtectedRoute = ({ children, tipoPermitido }) => {
-  const { estaAutenticado, getUsuario, carregando } = useAuth();
-  
-  if (carregando) {
-    return <div className="loading">Carregando...</div>;
-  }
-  
-  if (!estaAutenticado()) {
+  const usuario = getUsuarioLocal();
+
+  if (!usuario) {
     return <Navigate to="/" replace />;
   }
-  
-  if (tipoPermitido) {
-    const usuario = getUsuario();
-    if (usuario.tipo !== tipoPermitido) {
-      return <Navigate to="/\" replace />;
-    }
+
+  if (tipoPermitido && usuario.role !== tipoPermitido) {
+    return <Navigate to="/" replace />;
   }
-  
+
   return children;
 };
 

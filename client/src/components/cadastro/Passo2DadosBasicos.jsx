@@ -11,6 +11,8 @@ const Passo2DadosBasicos = ({
   finalizarCadastro = () => {}
 }) => {
   const handleContinuar = () => {
+    console.log("Cliquei no botão");
+    console.log("Tipo selecionado:", dados.tipo);
     if (validarPasso2()) {
       if (dados.tipo === 'usuario') {
         finalizarCadastro();
@@ -93,20 +95,6 @@ const Passo2DadosBasicos = ({
         {erros.cpf && <p className={styles['mensagem-erro']}>{erros.cpf}</p>}
       </div>
       
-      <div className={styles['form-group']}>
-        <label htmlFor="cnpj">CNPJ</label>
-        <input
-          id="cnpj"
-          name="cnpj"
-          type="text"
-          value={dados.cnpj}
-          onChange={onChange}
-          placeholder="Digite seu CNPJ"
-          className={erros.cnpj ? styles['input-erro'] : ''}
-        />
-        {erros.cnpj && <p className={styles['mensagem-erro']}>{erros.cnpj}</p>}
-      </div>
-      
       <h3 className={`${styles['text-lg']} ${styles['font-semibold']} ${styles['mt-6']} ${styles['mb-4']}`}>Endereço</h3>
       
       <div className={styles['form-group']}>
@@ -149,6 +137,20 @@ const Passo2DadosBasicos = ({
           className={erros.complemento ? styles['input-erro'] : ''}
         />
         {erros.complemento && <p className={styles['mensagem-erro']}>{erros.complemento}</p>}
+      </div>
+      
+      <div className={styles['form-group']}>
+        <label htmlFor="bairro">Bairro</label>
+        <input
+          id="bairro"
+          name="bairro"
+          type="text"
+          value={dados.bairro}
+          onChange={onChange}
+          placeholder="Digite o bairro"
+          className={erros.bairro ? styles['input-erro'] : ''}
+        />
+        {erros.bairro && <p className={styles['mensagem-erro']}>{erros.bairro}</p>}
       </div>
       
       <div className={styles['form-group']}>
@@ -220,10 +222,10 @@ Passo2DadosBasicos.propTypes = {
     senha: PropTypes.string,
     telefone: PropTypes.string,
     cpf: PropTypes.string,
-    cnpj: PropTypes.string,
     rua: PropTypes.string,
     numero: PropTypes.string,
     complemento: PropTypes.string,
+    bairro: PropTypes.string,
     cep: PropTypes.string,
     estado: PropTypes.string,
     cidade: PropTypes.string

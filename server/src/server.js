@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors"; 
 import providerRoutes from "./routes/provider/provider.routes.js";
 import catalogoRoutes from "./routes/public/catalogo.routes.js";
 import adminRoutes from "./routes/admin/admin.routes.js";
@@ -7,6 +8,7 @@ import publicRoutes from "./routes/public/auth.routes.js";
 dotenv.config();
 
 const app = express();
+app.use(cors()); 
 app.use(express.json());
 
 

@@ -1,38 +1,46 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AutenticacaoLocal";
+import axios from "axios";
 import styles from "./Login.module.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
-  const { setFeedback, login } = useAuth(); 
   const navigate = useNavigate();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!email.trim() || !senha.trim()) {
-    setErro("Preencha todos os campos.");
-    return;
-  }
-  // Não passa mais o tipo, só email e senha
-  const usuario = await login(null, email, senha);
-  if (usuario) {
-    setFeedback("Login realizado com sucesso!");
-    // Redireciona conforme o tipo retornado do backend
-    if (usuario.tipo === "usuario") {
-      navigate("/usuario/dashboard");
-    } else if (usuario.tipo === "prestador") {
-      navigate("/prestador/dashboard");
-    } else {
-      // Caso queira tratar outros tipos
-      navigate("/");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErro("");
+    if (!email.trim() || !senha.trim()) {
+      setErro("Preencha todos os campos.");
+      return;
     }
-  } else {
-    setErro("Dados inválidos.");
-  }
-};
+    try {
+      const res = await axios.post("http://localhost:3333/login", {
+        email,
+        password: senha,
+      });
+      const { token, user } = res.data;
+      // Salva token e usuário no localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("usuario", JSON.stringify(user));
+      
+      // Redireciona conforme o role do backend
+      if (user.role === "client") {
+        navigate("/usuario/dashboard");
+      } else if (user.role === "provider") {
+        navigate("/prestador/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      setErro(
+        error.response?.data?.error ||
+        "Erro ao conectar ao servidor. Tente novamente."
+      );
+    }
+  };
 
   return (
     <div className={styles['container']}>
@@ -58,7 +66,6 @@ const handleSubmit = async (e) => {
             placeholder="Digite sua senha"
           />
         </div>
-        
         {erro && <p className={styles['mensagem-erro']}>{erro}</p>}
         <button
           type="submit"

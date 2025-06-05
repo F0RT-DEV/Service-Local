@@ -1,46 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AutenticacaoLocal';
 import styles from './PerfilUsuario.module.css';
 
+const getUsuarioLocal = () => {
+  try {
+    const usuario = localStorage.getItem("usuario");
+    return usuario ? JSON.parse(usuario) : null;
+  } catch {
+    return null;
+  }
+};
+
 const PerfilUsuario = () => {
-  const { usuario, setFeedback } = useAuth();
-  const [dados, setDados] = useState(null);
+  const usuario = getUsuarioLocal();
+  const [dados, setDados] = useState(usuario);
   const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState(usuario || {});
 
   useEffect(() => {
     setDados(usuario);
     setForm(usuario);
-  }, [usuario]);
+  }, []);
 
   if (!dados) return <div>Carregando...</div>;
 
-  const tipoFormatado = dados.tipo === 'usuario'
+  const tipoFormatado = dados.role === 'client'
     ? 'Usuário Comum'
-    : dados.tipo === 'prestador'
+    : dados.role === 'provider'
       ? 'Prestador de Serviço'
-      : dados.tipo;
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+      : dados.role;
 
   const handleSalvar = async (e) => {
     e.preventDefault();
-    // Atualiza no backend
-    const res = await fetch(`http://localhost:5000/usuarios/${dados.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
-    if (res.ok) {
-      setFeedback('Perfil atualizado com sucesso!');
-      setEditando(false);
-      // Atualiza localmente (opcional: recarregar usuário do backend)
-      window.location.reload();
-    } else {
-      setFeedback('Erro ao atualizar perfil.');
-    }
+    // Atualiza no backend (ajuste a rota e método conforme seu backend real)
+    // Exemplo:
+    // const res = await fetch(`http://localhost:3333/users/${dados.id}`, {
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(form)
+    // });
+    // if (res.ok) {
+    //   localStorage.setItem("usuario", JSON.stringify(form));
+    //   setEditando(false);
+    //   window.location.reload();
+    // }
+    setEditando(false);
+    setDados(form);
+    localStorage.setItem("usuario", JSON.stringify(form));
   };
 
   return (
@@ -62,50 +67,7 @@ const PerfilUsuario = () => {
         </div>
       ) : (
         <form className={styles['perfil-form']} onSubmit={handleSalvar}>
-          <label>
-            Nome:
-            <input name="nome" value={form.nome || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Email:
-            <input name="email" value={form.email || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Telefone:
-            <input name="telefone" value={form.telefone || ''} onChange={handleChange} />
-          </label>
-          <label>
-            CPF:
-            <input name="cpf" value={form.cpf || ''} onChange={handleChange} />
-          </label>
-          <label>
-            CNPJ:
-            <input name="cnpj" value={form.cnpj || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Rua:
-            <input name="rua" value={form.rua || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Número:
-            <input name="numero" value={form.numero || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Complemento:
-            <input name="complemento" value={form.complemento || ''} onChange={handleChange} />
-          </label>
-          <label>
-            CEP:
-            <input name="cep" value={form.cep || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Cidade:
-            <input name="cidade" value={form.cidade || ''} onChange={handleChange} />
-          </label>
-          <label>
-            Estado:
-            <input name="estado" value={form.estado || ''} onChange={handleChange} />
-          </label>
+          {/* ...campos iguais... */}
           <div className={styles['perfil-actions']}>
             <button type="submit" className={styles['btn-salvar']}>Salvar</button>
             <button type="button" className={styles['btn-cancelar']} onClick={() => setEditando(false)}>Cancelar</button>

@@ -1,19 +1,40 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserIcon, LogOut, Menu } from 'lucide-react';
-import { useAuth } from '../context/AutenticacaoLocal';
 import styles from './NavBarra.module.css';
 
+const getUsuarioLocal = () => {
+  try {
+    const usuario = localStorage.getItem("usuario");
+    return usuario ? JSON.parse(usuario) : null;
+  } catch {
+    return null;
+  }
+};
+
 const NavBarra = () => {
-  const { estaAutenticado, getUsuario, logout } = useAuth();
   const [menuAberto, setMenuAberto] = useState(false);
   const [dropdownAberto, setDropdownAberto] = useState(false);
+  const [usuario, setUsuario] = useState(getUsuarioLocal());
   const navigate = useNavigate();
-  const usuario = getUsuario();
   const dropdownRef = useRef(null);
 
+  // Atualiza usuário ao montar e quando o storage mudar
+  useEffect(() => {
+    const atualizarUsuario = () => setUsuario(getUsuarioLocal());
+    window.addEventListener("storage", atualizarUsuario);
+    return () => window.removeEventListener("storage", atualizarUsuario);
+  }, []);
+
+  // Atualiza usuário ao abrir a NavBarra (ex: após login)
+  useEffect(() => {
+    setUsuario(getUsuarioLocal());
+  }, []);
+
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+    setUsuario(null);
     navigate('/');
     setMenuAberto(false);
     setDropdownAberto(false);
@@ -63,20 +84,20 @@ const NavBarra = () => {
           </button>
 
           <div className={`${styles['navbar-right']} ${menuAberto ? styles.active : ''}`}>
-            {estaAutenticado() ? (
+            {usuario ? (
               <>
                 <div className={styles['nav-links']}>
-  {usuario?.tipo === 'usuario' && (
-    <Link to="/usuario/dashboard" className={styles['nav-link']}>
-      Buscar Serviços
-    </Link>
-  )}
-  {usuario?.tipo === 'prestador' && (
-    <Link to="/prestador/dashboard" className={styles['nav-link']}>
-      Prestar Serviços
-    </Link>
-  )}
-</div>
+                  {usuario.role === 'client' && (
+                    <Link to="/usuario/dashboard" className={styles['nav-link']}>
+                      Buscar Serviços
+                    </Link>
+                  )}
+                  {usuario.role === 'provider' && (
+                    <Link to="/prestador/dashboard" className={styles['nav-link']}>
+                      Prestar Serviços
+                    </Link>
+                  )}
+                </div>
 
                 <div className={styles['user-actions']}>
                   <div
@@ -89,20 +110,28 @@ const NavBarra = () => {
                       <UserIcon size={18} />
                     </div>
                     <span className={styles['user-name']}>
-                      {usuario?.nome && usuario.nome.trim() !== "" ? usuario.nome : 'Usuário'}
-                    </span>
+  {usuario.name && usuario.name.trim() !== ""
+    ? usuario.name
+    : usuario.nome && usuario.nome.trim() !== ""
+      ? usuario.nome
+      : 'Usuário'}
+</span>
 
                     {dropdownAberto && (
                       <div className={styles['dropdown-menu']}>
                         <button
-                          onClick={() => {
-                            setDropdownAberto(false);
-                            navigate('/usuario/perfil');
-                          }}
-                          className={styles['profile-button']}
-                        >
-                          <span>Perfil</span>
-                        </button>
+  onClick={() => {
+    setDropdownAberto(false);
+    if (usuario.role === "provider") {
+      navigate('/prestador/perfil');
+    } else {
+      navigate('/usuario/perfil');
+    }
+  }}
+  className={styles['profile-button']}
+>
+  <span>Perfil</span>
+</button>
                         <button
                           onClick={handleLogout}
                           className={styles['logout-button']}

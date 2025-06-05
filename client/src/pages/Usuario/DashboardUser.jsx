@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AutenticacaoLocal";
 import styles from './DashboardUser.module.css';
 
+const getUsuarioLocal = () => {
+  try {
+    const usuario = localStorage.getItem("usuario");
+    return usuario ? JSON.parse(usuario) : null;
+  } catch {
+    return null;
+  }
+};
+
 const DashboardUser = () => {
-  const { usuario } = useAuth();
+  const { usuario } = getUsuarioLocal();
   const [servicos, setServicos] = useState([]);
   const [ordens, setOrdens] = useState([]);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
