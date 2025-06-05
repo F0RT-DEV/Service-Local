@@ -11,7 +11,7 @@ const getUsuarioLocal = () => {
 };
 
 const DashboardUser = () => {
-  const { usuario } = getUsuarioLocal();
+  const usuario = getUsuarioLocal();
   const [servicos, setServicos] = useState([]);
   const [ordens, setOrdens] = useState([]);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
@@ -20,7 +20,7 @@ const DashboardUser = () => {
 
   // Carrega todos os serviços disponíveis
   useEffect(() => {
-    fetch("http://localhost:5000/servicos")
+    fetch("http://localhost:3333/servicos")
       .then(res => res.json())
       .then(setServicos)
       .catch(() => setServicos([]));
@@ -29,7 +29,7 @@ const DashboardUser = () => {
   // Carrega ordens do usuário
   useEffect(() => {
     if (usuario?.id) {
-      fetch(`http://localhost:5000/ordensServico?clienteId=${usuario.id}`)
+      fetch(`http://localhost:3333/ordensServico?clienteId=${usuario.id}`)
         .then(res => res.json())
         .then(setOrdens);
     }
@@ -46,7 +46,7 @@ const DashboardUser = () => {
       dataSolicitacao: new Date().toISOString(),
       mensagem: mensagem || "Solicitação automática"
     };
-    fetch("http://localhost:5000/ordensServico", {
+    fetch("http://localhost:3333/ordensServico", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novaOS)

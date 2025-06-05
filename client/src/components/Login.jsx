@@ -17,29 +17,33 @@ const Login = () => {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3333/login", {
-        email,
-        password: senha,
-      });
-      const { token, user } = res.data;
-      // Salva token e usuário no localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify(user));
-      
-      // Redireciona conforme o role do backend
-      if (user.role === "client") {
-        navigate("/usuario/dashboard");
-      } else if (user.role === "provider") {
-        navigate("/prestador/dashboard");
-      } else {
-        navigate("/");
-      }
-    } catch (error) {
-      setErro(
-        error.response?.data?.error ||
-        "Erro ao conectar ao servidor. Tente novamente."
-      );
-    }
+  const res = await axios.post("http://localhost:3333/login", {
+    email,
+    password: senha,
+  });
+  const { token, user } = res.data;
+  // Salva token e usuário no localStorage
+  localStorage.setItem("token", token);
+  localStorage.setItem("usuario", JSON.stringify(user));
+
+  // LOGS PARA DEPURAÇÃO
+  console.log("TOKEN SALVO:", token);
+  console.log("USER SALVO:", user);
+
+  // Redireciona conforme o role do backend
+  if (user.role === "client") {
+    navigate("/usuario/dashboard");
+  } else if (user.role === "provider") {
+    navigate("/prestador/dashboard");
+  } else {
+    navigate("/");
+  }
+} catch (error) {
+  setErro(
+    error.response?.data?.error ||
+    "Erro ao conectar ao servidor. Tente novamente."
+  );
+}
   };
 
   return (
