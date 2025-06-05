@@ -83,3 +83,30 @@ export async function getPrestadorById(req, res) {
     });
   }
 }
+export async function getAuthenticatedProfile(req, res) {
+  const { id, role } = req.user;
+
+  try {
+    if (role === "user") {
+      const user = await db("users").where({ id }).first();
+      if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+
+      return res.status(200).json({ role, user });
+    }
+
+    if (role === "provider") {
+      const user = await db("users").where({ id }).first();
+      if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+
+      const provider = await db("providers").where({ user_id: id }).first();
+      if (!provider) return res.status(404).json({ error: "Prestador não encontrado" });
+
+      return res.status(200).json({ role, user, provider });
+    }
+
+    return res.status(403).json({ error: "Perfil não autorizado" });
+  } catch (error) {
+    console.error("Erro ao buscar perfil:", error);
+    return res.status(500).json({ error: "Erro interno do servidor" });
+  }
+}
