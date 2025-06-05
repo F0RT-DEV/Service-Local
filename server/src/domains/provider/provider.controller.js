@@ -87,7 +87,7 @@ export async function getAuthenticatedProfile(req, res) {
   const { id, role } = req.user;
 
   try {
-    if (role === "user") {
+    if (role === "client" ) {
       const user = await db("users").where({ id }).first();
       if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 
