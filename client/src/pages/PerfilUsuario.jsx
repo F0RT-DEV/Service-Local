@@ -42,11 +42,11 @@ const PerfilUsuario = () => {
   if (loading) return <div>Carregando...</div>;
   if (!dados) return <div>Usuário não encontrado.</div>;
 
-  const tipoFormatado = dados.role === 'client'
-    ? 'Usuário Comum'
-    : dados.role === 'provider'
-      ? 'Prestador de Serviço'
-      : dados.role;
+const tipoFormatado = dados.role === 'client'
+  ? 'Usuário Comum'
+  : dados.role === 'provider'
+    ? 'Prestador de Serviço'
+    : dados.role;
 
   return (
     <div className={styles['perfil-container']}>

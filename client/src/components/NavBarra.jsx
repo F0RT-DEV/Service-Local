@@ -88,10 +88,10 @@ const NavBarra = () => {
               <>
                 <div className={styles['nav-links']}>
                   {usuario.role === 'client' && (
-                    <Link to="/usuario/dashboard" className={styles['nav-link']}>
-                      Buscar Serviços
-                    </Link>
-                  )}
+  <Link to="/usuario/dashboard" className={styles['nav-link']}>
+    Buscar Serviços
+  </Link>
+)}
                   {usuario.role === 'provider' && (
                     <Link to="/prestador/dashboard" className={styles['nav-link']}>
                       Prestar Serviços

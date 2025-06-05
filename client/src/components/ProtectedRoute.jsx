@@ -12,12 +12,12 @@ const getUsuarioLocal = () => {
 
 const ProtectedRoute = ({ children, tipoPermitido }) => {
   const usuario = getUsuarioLocal();
-
+ const role = usuario?.role === "user" ? "client" : usuario?.role;
   if (!usuario) {
     return <Navigate to="/" replace />;
   }
 
-  if (tipoPermitido && usuario.role !== tipoPermitido) {
+  if (tipoPermitido && role !== tipoPermitido) {
     return <Navigate to="/" replace />;
   }
 
