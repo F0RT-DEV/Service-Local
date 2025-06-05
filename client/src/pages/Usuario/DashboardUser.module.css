@@ -1,3 +1,4 @@
+/* DashboardUser.module.css */
 @import '../../styles/variables.css';
 @import '../../styles/common.css';
 
@@ -23,6 +24,33 @@
   height: 24px;
   background-color: var(--color-accent);
   border-radius: var(--radius-sm);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.tab, .tab-active {
+  padding: var(--space-3) var(--space-5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-neutral-600);
+  transition: all var(--transition-normal);
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: var(--color-neutral-800);
+}
+
+.tab-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
 }
 
 /* Summary Cards */
@@ -111,27 +139,27 @@
   text-transform: uppercase;
 }
 
-.ordens-tabela td b:contains("pendente") {
+.ordens-tabela td b[data-status="pendente"] {
   background-color: var(--color-warning-light);
   color: var(--color-warning-dark);
 }
 
-.ordens-tabela td b:contains("aceita") {
+.ordens-tabela td b[data-status="aceita"] {
   background-color: var(--color-primary-light);
   color: var(--color-primary-dark);
 }
 
-.ordens-tabela td b:contains("em andamento") {
+.ordens-tabela td b[data-status="em andamento"] {
   background-color: var(--color-accent-light);
   color: var(--color-accent-dark);
 }
 
-.ordens-tabela td b:contains("concluída") {
+.ordens-tabela td b[data-status="concluída"] {
   background-color: var(--color-success-light);
   color: var(--color-success-dark);
 }
 
-.ordens-tabela td b:contains("cancelada") {
+.ordens-tabela td b[data-status="cancelada"] {
   background-color: var(--color-danger-light);
   color: var(--color-danger-dark);
 }
@@ -389,11 +417,22 @@
   }
 }
 
-/* Card Animations */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
