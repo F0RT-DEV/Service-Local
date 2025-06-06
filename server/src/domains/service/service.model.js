@@ -1,18 +1,20 @@
 import db from "../../db.js";
-import { v4 as uuidv4 } from "uuid";
+import {v4 as uuidv4} from "uuid";
 
 export async function createService(data) {
   const id = uuidv4();
-  await db('services').insert({
+
+  await db("services").insert({
     id,
-    ...data
+    ...data,
   });
-  const newService = await db('services').where({ id }).first();
+
+  const newService = await db("services").where({ id }).first();
   return newService;
 }
 export async function getServiceById(id) {
-  return db('services').where({ id }).first();
+	return db("services").where({id}).first();
 }
 export async function getAllService(id) {
-  return db('services').where({  })
+	return db("services").where({});
 }

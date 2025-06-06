@@ -114,56 +114,56 @@ export async function getUserById(req, res) {
 	}
 }
 export async function loginUser(req, res) {
-	try {
-		const {email, password} = req.body;
+  try {
+    const { email, password } = req.body;
 
-		// Validação dos dados de entrada
-		const result = UserSchema.pick({email: true, password: true}).safeParse(
-			req.body
-		);
-		if (!result.success) {
-			return res.status(400).json({
-				error: "Dados inválidos",
-				details: result.error.format(),
-			});
-		}
+    const result = UserSchema.pick({ email: true, password: true }).safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: "Dados inválidos", details: result.error.format() });
+    }
 
-		// Busca o usuário pelo email
-		const user = await userModel.getByEmail(email);
-		if (!user) {
-			return res.status(401).json({error: "Credenciais inválidas"});
-		}
+    const user = await userModel.getByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: "Credenciais inválidas" });
+    }
 
-		// Verifica a senha
-		const validPassword = await bcrypt.compare(password, user.password_hash);
-		if (!validPassword) {
-			return res.status(401).json({error: "Credenciais inválidas"});
-		}
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: "Credenciais inválidas" });
+    }
 
-		// Gera o token JWT
-		const token = jwt.sign(
-			{id: user.id, role: user.role},
-			process.env.JWT_SECRET,
-			{expiresIn: "8h"}
-		);
+    let provider_id = null;
+    if (user.role === 'provider') {
+      // Buscar o provider_id relacionado ao user.id
+      const provider = await providerModel.getByUserId(user.id); // ou como você consulta o provider
+      if (provider) {
+        provider_id = provider.id;
+      }
+    }
 
-		res.json({
-			message: "Login realizado com sucesso!",
-			token,
-			user: {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				role: user.role,
-			},
-		});
-	} catch (error) {
-		console.error("Erro ao realizar login:", error);
-		res.status(500).json({
-			error: "Erro interno do servidor",
-			details: error.message,
-		});
-	}
+    // Gera o token com id, role e provider_id (se houver)
+    const tokenPayload = { id: user.id, role: user.role };
+    if (provider_id) {
+      tokenPayload.provider_id = provider_id;
+    }
+
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "8h" });
+
+    res.json({
+      message: "Login realizado com sucesso!",
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        provider_id, // opcional no retorno
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao realizar login:", error);
+    res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+  }
 }
 
  export async function resetPassword(req, res) {

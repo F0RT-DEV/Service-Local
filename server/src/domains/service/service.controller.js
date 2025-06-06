@@ -5,18 +5,24 @@ export async function createServiceHandler(req, res) {
   try {
     const serviceData = serviceSchema.parse(req.body);
 
+    const user_id = req.user?.id;
+    const provider_id = req.user?.provider_id || null;
+
+    if (!user_id) {
+      return res.status(401).json({ error: 'Usuário não autenticado' });
+    }
+
     const newService = await createService({
       ...serviceData,
+     
+      provider_id: req.user?.provider_id,
       created_at: new Date(),
-      updated_at: new Date()
+      updated_at: new Date(),
     });
 
     return res.status(201).json(newService);
   } catch (err) {
-    return res.status(400).json({
-      error: 'Erro ao criar serviço',
-      details: err.errors || err.message
-    });
+    return res.status(400).json({ error: 'Erro ao criar serviço', details: err.errors || err.message });
   }
 }
 export async function getServiceByIdHandler(req, res) {
