@@ -11,10 +11,9 @@ const getUsuarioLocal = () => {
 };
 
 const DashboardPrestador = () => {
-  // Estados
   const usuario = getUsuarioLocal();
   const [abaAtual, setAbaAtual] = useState("perfil");
-  const [provider, setProvider] = useState(undefined); // undefined = carregando, null = não existe
+  const [provider, setProvider] = useState(undefined);
   const [categorias, setCategorias] = useState([]);
   const [editando, setEditando] = useState(false);
   const [mensagem, setMensagem] = useState("");
@@ -50,7 +49,6 @@ const DashboardPrestador = () => {
         setCategorias([]);
       }
     };
-
     fetchCategorias();
   }, []);
 
@@ -112,7 +110,7 @@ const DashboardPrestador = () => {
 
   // Handlers
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+    const { name, value, checked } = e.target;
     if (name === "categorias") {
       const novasCategorias = checked
         ? [...form.categorias, value]
@@ -131,6 +129,7 @@ const DashboardPrestador = () => {
     }));
   };
 
+  // Salvar perfil do prestador
   const handleSalvar = async (e) => {
     e.preventDefault();
     setMensagem("");
@@ -162,7 +161,7 @@ const DashboardPrestador = () => {
     }
   };
 
-  // Cadastro de serviço: images como string
+  // Cadastro de serviço
   const handleCadastrarServico = async (e) => {
     e.preventDefault();
 
@@ -192,16 +191,17 @@ const DashboardPrestador = () => {
     }
 
     try {
-      // images como string
       const payload = {
-        category_id: novoServico.category_id,
-        title: novoServico.title,
-        description: novoServico.description,
-        price_min: priceMin,
-        price_max: priceMax,
-        images: novoServico.images || "",
-        is_active: isActive,
-      };
+  category_id: novoServico.category_id,
+  title: novoServico.title,
+  description: novoServico.description,
+  price_min: priceMin,
+  price_max: priceMax,
+  images: novoServico.images
+  ? novoServico.images.split(',').map(img => img.trim())
+  : [],
+  is_active: isActive,
+};
 
       const token = localStorage.getItem("token");
 
