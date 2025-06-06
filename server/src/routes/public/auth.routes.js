@@ -8,6 +8,6 @@ const router = Router();
 router.post("/register", createUser);
 router.post("/login", loginUser);
 router.get("/me",authenticateToken, getAuthenticatedProfile)
-router.put("/reset-password", resetPassword);
+router.put("/resetPassword", resetPassword);
 
 export default router;

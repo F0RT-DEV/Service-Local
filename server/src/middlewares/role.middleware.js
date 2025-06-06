@@ -12,7 +12,7 @@ export async function verifyProviderRole(request, reply, next) {
   next();
 }
 export async function verifyUserRole(request, reply, next) {
-  if (request.user?.role !== 'user') {
+  if (request.user?.role !== 'client') {
     return reply.status(403).send({ message: 'Acesso negado: apenas usuários.' });
   }
   next();
