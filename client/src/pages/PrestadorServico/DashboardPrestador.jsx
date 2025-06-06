@@ -14,10 +14,11 @@ const DashboardPrestador = () => {
   // Estados
   const usuario = getUsuarioLocal();
   const [abaAtual, setAbaAtual] = useState("perfil");
-  const [provider, setProvider] = useState(null);
+  const [provider, setProvider] = useState(undefined); // undefined = carregando, null = não existe
   const [categorias, setCategorias] = useState([]);
   const [editando, setEditando] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const [erroCarregamento, setErroCarregamento] = useState("");
 
   const [form, setForm] = useState({
     bio: "",
@@ -27,14 +28,18 @@ const DashboardPrestador = () => {
   });
 
   const [novoServico, setNovoServico] = useState({
-    titulo: "",
-    descricao: "",
-    preco: ""
+    title: "",
+    description: "",
+    category_id: "",
+    price_min: "",
+    price_max: "",
+    images: "",
+    is_active: true,
   });
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
 
-  // Efeitos
+  // Buscar categorias
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -49,35 +54,56 @@ const DashboardPrestador = () => {
     fetchCategorias();
   }, []);
 
+  // Buscar provider do usuário
   useEffect(() => {
+    if (!usuario?.id) {
+      setProvider(null);
+      return;
+    }
+    let cancelado = false;
     const fetchProviderData = async () => {
-      if (!usuario?.id) return;
-      
       try {
         const response = await fetch(`http://localhost:3333/providers?user_id=${usuario.id}`);
+        if (!response.ok) {
+          const erro = await response.text();
+          setErroCarregamento(`Erro HTTP: ${response.status} - ${erro}`);
+          if (!cancelado) setProvider(null);
+          return;
+        }
         const data = await response.json();
-        
         const prov = Array.isArray(data) ? data[0] : data;
-        setProvider(prov);
-        
-        setForm({
-          bio: prov?.bio || "",
-          cnpj: prov?.cnpj || "",
-          experiencia: prov?.experience || "",
-          categorias: prov?.categories ? prov.categories.map(c => c.id) : [],
-        });
+        if (!cancelado) {
+          if (prov) {
+            setProvider(prov);
+            setForm({
+              bio: prov?.bio || "",
+              cnpj: prov?.cnpj || "",
+              experiencia: prov?.experience || "",
+              categorias: prov?.categories ? prov.categories.map(c => c.id) : [],
+            });
+          } else {
+            setProvider(null);
+          }
+        }
       } catch (error) {
-        setProvider(null);
+        setErroCarregamento(error.message || "Erro desconhecido ao buscar provider.");
+        if (!cancelado) setProvider(null);
       }
     };
 
     fetchProviderData();
-  }, [usuario]);
+    return () => { cancelado = true; };
+  }, [usuario?.id]);
 
-  // Buscar serviços do prestador ao carregar a aba
+  // Buscar serviços do prestador
   useEffect(() => {
     if (abaAtual === "cadastrar-servico" && provider?.id) {
-      fetch(`http://localhost:3333/servicos?provider_id=${provider.id}`)
+      const token = localStorage.getItem("token");
+      fetch(`http://localhost:3333/services?provider_id=${provider.id}`, {
+        headers: {
+          "Authorization": token ? `Bearer ${token}` : undefined,
+        }
+      })
         .then(res => res.json())
         .then(setServicosPrestador)
         .catch(() => setServicosPrestador([]));
@@ -87,22 +113,27 @@ const DashboardPrestador = () => {
   // Handlers
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
-    
     if (name === "categorias") {
       const novasCategorias = checked
         ? [...form.categorias, value]
         : form.categorias.filter(cat => cat !== value);
-      
       setForm(prev => ({ ...prev, categorias: novasCategorias }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
     }
   };
 
+  const handleServicoChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNovoServico(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
   const handleSalvar = async (e) => {
     e.preventDefault();
     setMensagem("");
-    
     try {
       const payload = {
         bio: form.bio,
@@ -131,42 +162,93 @@ const DashboardPrestador = () => {
     }
   };
 
-  const handleServicoChange = (e) => {
-    const { name, value } = e.target;
-    setNovoServico(prev => ({ ...prev, [name]: value }));
-  };
-
+  // Cadastro de serviço: images como string
   const handleCadastrarServico = async (e) => {
     e.preventDefault();
-    
+
+    if (
+      !novoServico.title ||
+      !novoServico.description ||
+      !novoServico.category_id ||
+      novoServico.price_min === "" ||
+      novoServico.price_max === ""
+    ) {
+      setMensagem("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (novoServico.description.length < 10) {
+      setMensagem("A descrição deve ter pelo menos 10 caracteres.");
+      return;
+    }
+
+    const priceMin = parseFloat(novoServico.price_min);
+    const priceMax = parseFloat(novoServico.price_max);
+    const isActive = !!novoServico.is_active;
+
+    if (isNaN(priceMin) || isNaN(priceMax)) {
+      setMensagem("Preços devem ser números válidos.");
+      return;
+    }
+
     try {
+      // images como string
       const payload = {
-        ...novoServico,
-        provider_id: provider.id,
+        category_id: novoServico.category_id,
+        title: novoServico.title,
+        description: novoServico.description,
+        price_min: priceMin,
+        price_max: priceMax,
+        images: novoServico.images || "",
+        is_active: isActive,
       };
 
-      const response = await fetch("http://localhost:3333/servicos", {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch("http://localhost:3333/services", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? `Bearer ${token}` : undefined,
+        },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const erro = await response.json();
+        alert(
+          "Erro ao cadastrar serviço:\n" +
+          (erro.details
+            ? JSON.stringify(erro.details, null, 2)
+            : erro.error || "Erro desconhecido")
+        );
+        setMensagem(
+          (erro.details && JSON.stringify(erro.details)) ||
+          erro.error ||
+          "Erro ao cadastrar serviço."
+        );
         throw new Error(erro.error || "Erro ao cadastrar serviço.");
       }
 
       const novoServicoCadastrado = await response.json();
       setMensagem("Serviço cadastrado com sucesso!");
-      setNovoServico({ titulo: "", descricao: "", preco: "" });
+      setNovoServico({
+        title: "",
+        description: "",
+        category_id: "",
+        price_min: "",
+        price_max: "",
+        images: "",
+        is_active: true,
+      });
       setServicosPrestador(prev => [...prev, novoServicoCadastrado]);
-      // setAbaAtual("perfil"); // Remova se quiser permanecer na aba
     } catch (error) {
       setMensagem(error.message || "Erro ao cadastrar serviço.");
     }
   };
 
-  // Renderização condicional
+  // --- LÓGICA DE RENDERIZAÇÃO ---
+
   if (!usuario) {
     return (
       <div className={styles.dashboardPrestador}>
@@ -175,10 +257,26 @@ const DashboardPrestador = () => {
     );
   }
 
-  if (!provider) {
+  if (provider === undefined) {
     return (
       <div className={styles.dashboardPrestador}>
-        Carregando dados do prestador...
+        Carregando dados do prestador. Aguarde...
+        {erroCarregamento && (
+          <div style={{ color: 'red', marginTop: 16 }}>
+            Erro ao carregar provider: {erroCarregamento}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (provider === null) {
+    return (
+      <div className={styles.dashboardPrestador}>
+        <div style={{ color: 'red', marginTop: 16 }}>
+          Você ainda não possui perfil de prestador.<br />
+          Solicite ao administrador a criação do seu perfil de prestador.
+        </div>
       </div>
     );
   }
@@ -187,7 +285,6 @@ const DashboardPrestador = () => {
     <div className={styles.dashboardPrestador}>
       <header className={styles.header}>
         <h1 className={styles.titulo}>Bem-vindo, {usuario.nome}!</h1>
-        
         <nav className={styles.navegacao}>
           <button 
             onClick={() => setAbaAtual("perfil")} 
@@ -214,36 +311,30 @@ const DashboardPrestador = () => {
         {abaAtual === "perfil" && (
           <section className={styles.secaoPerfil}>
             <h2 className={styles.subtitulo}>Perfil do Prestador</h2>
-            
             {!editando ? (
               <div className={styles.perfilDados}>
                 <div className={styles.dadoItem}>
                   <span className={styles.dadoLabel}>Bio:</span>
                   <p className={styles.dadoValor}>{provider.bio || "-"}</p>
                 </div>
-                
                 <div className={styles.dadoItem}>
                   <span className={styles.dadoLabel}>CNPJ:</span>
                   <p className={styles.dadoValor}>{provider.cnpj || "-"}</p>
                 </div>
-                
                 <div className={styles.dadoItem}>
                   <span className={styles.dadoLabel}>Status:</span>
                   <p className={styles.dadoValor}>{provider.status || "-"}</p>
                 </div>
-                
                 <div className={styles.dadoItem}>
                   <span className={styles.dadoLabel}>Experiência:</span>
                   <p className={styles.dadoValor}>{provider.experience || "-"}</p>
                 </div>
-                
                 <div className={styles.dadoItem}>
                   <span className={styles.dadoLabel}>Categorias:</span>
                   <p className={styles.dadoValor}>
                     {provider.categories?.map(cat => cat.name).join(", ") || "-"}
                   </p>
                 </div>
-                
                 <button 
                   onClick={() => setEditando(true)} 
                   className={styles.botaoPrimario}
@@ -264,7 +355,6 @@ const DashboardPrestador = () => {
                     className={styles.entradaTexto}
                   />
                 </div>
-                
                 <div className={styles.grupoFormulario}>
                   <label htmlFor="cnpj" className={styles.rotulo}>CNPJ</label>
                   <input 
@@ -275,7 +365,6 @@ const DashboardPrestador = () => {
                     className={styles.entradaTexto}
                   />
                 </div>
-                
                 <div className={styles.grupoFormulario}>
                   <label htmlFor="experiencia" className={styles.rotulo}>Experiência</label>
                   <input 
@@ -286,7 +375,6 @@ const DashboardPrestador = () => {
                     className={styles.entradaTexto}
                   />
                 </div>
-                
                 <div className={styles.grupoFormulario}>
                   <label className={styles.rotulo}>Categorias</label>
                   <div className={styles.grupoCheckbox}>
@@ -308,7 +396,6 @@ const DashboardPrestador = () => {
                     ))}
                   </div>
                 </div>
-                
                 <div className={styles.acoesFormulario}>
                   <button type="submit" className={styles.botaoPrimario}>
                     Salvar
@@ -338,15 +425,27 @@ const DashboardPrestador = () => {
                     <tr>
                       <th>Título</th>
                       <th>Descrição</th>
-                      <th>Preço (R$)</th>
+                      <th>Categoria</th>
+                      <th>Preço Mínimo</th>
+                      <th>Preço Máximo</th>
+                      <th>Imagens</th>
+                      <th>Ativo?</th>
                     </tr>
                   </thead>
                   <tbody>
                     {servicosPrestador.map(servico => (
                       <tr key={servico.id}>
-                        <td>{servico.titulo || servico.nome}</td>
-                        <td>{servico.descricao}</td>
-                        <td>{servico.preco}</td>
+                        <td>{servico.title}</td>
+                        <td>{servico.description}</td>
+                        <td>{categorias.find(c => c.id === servico.category_id)?.name || servico.category_id}</td>
+                        <td>{servico.price_min}</td>
+                        <td>{servico.price_max}</td>
+                        <td>
+                          {Array.isArray(servico.images)
+                            ? servico.images.join(', ')
+                            : servico.images}
+                        </td>
+                        <td>{servico.is_active ? "Sim" : "Não"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -355,45 +454,96 @@ const DashboardPrestador = () => {
             </div>
             <form className={styles.formulario} onSubmit={handleCadastrarServico}>
               <h3 className={styles.subtitulo}>Cadastrar Novo Serviço</h3>
-              
               <div className={styles.grupoFormulario}>
-                <label htmlFor="titulo" className={styles.rotulo}>Título do Serviço</label>
+                <label htmlFor="title" className={styles.rotulo}>Título do Serviço</label>
                 <input 
-                  id="titulo" 
-                  name="titulo" 
-                  value={novoServico.titulo} 
+                  id="title" 
+                  name="title" 
+                  value={novoServico.title} 
                   onChange={handleServicoChange} 
                   required 
                   className={styles.entradaTexto}
                 />
               </div>
-              
               <div className={styles.grupoFormulario}>
-                <label htmlFor="descricao" className={styles.rotulo}>Descrição</label>
+                <label htmlFor="description" className={styles.rotulo}>Descrição</label>
                 <textarea 
-                  id="descricao" 
-                  name="descricao" 
-                  value={novoServico.descricao} 
+                  id="description" 
+                  name="description" 
+                  value={novoServico.description} 
                   onChange={handleServicoChange} 
                   required 
                   className={styles.entradaTexto}
                 />
               </div>
-              
               <div className={styles.grupoFormulario}>
-                <label htmlFor="preco" className={styles.rotulo}>Preço (R$)</label>
+                <label htmlFor="category_id" className={styles.rotulo}>Categoria</label>
+                <select
+                  id="category_id"
+                  name="category_id"
+                  value={novoServico.category_id}
+                  onChange={handleServicoChange}
+                  required
+                  className={styles.entradaTexto}
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {categorias.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.grupoFormulario}>
+                <label htmlFor="price_min" className={styles.rotulo}>Preço Mínimo (R$)</label>
                 <input 
-                  id="preco" 
-                  name="preco" 
+                  id="price_min" 
+                  name="price_min" 
                   type="number" 
-                  value={novoServico.preco} 
+                  min="0"
+                  value={novoServico.price_min} 
                   onChange={handleServicoChange} 
                   required 
                   className={styles.entradaTexto}
                 />
               </div>
-              
-              <button type="submit" className={styles.botaoPrimario}>
+              <div className={styles.grupoFormulario}>
+                <label htmlFor="price_max" className={styles.rotulo}>Preço Máximo (R$)</label>
+                <input 
+                  id="price_max" 
+                  name="price_max" 
+                  type="number" 
+                  min="0"
+                  value={novoServico.price_max} 
+                  onChange={handleServicoChange} 
+                  required 
+                  className={styles.entradaTexto}
+                />
+              </div>
+              <div className={styles.grupoFormulario}>
+                <label htmlFor="images" className={styles.rotulo}>Imagens (URL ou texto, separadas por vírgula)</label>
+                <input 
+                  id="images" 
+                  name="images" 
+                  value={novoServico.images} 
+                  onChange={handleServicoChange} 
+                  className={styles.entradaTexto}
+                  placeholder="URL da imagem ou deixe em branco"
+                />
+              </div>
+              <div className={styles.grupoFormulario}>
+                <label htmlFor="is_active" className={styles.rotulo}>Ativo?</label>
+                <input
+                  id="is_active"
+                  name="is_active"
+                  type="checkbox"
+                  checked={novoServico.is_active}
+                  onChange={handleServicoChange}
+                  className={styles.checkbox}
+                />
+              </div>
+              <button 
+                type="submit" 
+                className={styles.botaoPrimario}
+              >
                 Cadastrar
               </button>
             </form>
