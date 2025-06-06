@@ -5,6 +5,7 @@ import * as providerModel from "../provider/provider.model.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+
 import {UserSchema} from "../../schemas/userSchema.js"; // Corrigido o caminho!
 
 export async function createUser(req, res) {
@@ -160,6 +161,31 @@ export async function loginUser(req, res) {
 		console.error("Erro ao realizar login:", error);
 		res.status(500).json({
 			error: "Erro interno do servidor",
+			details: error.message,
+		});
+	}
+}
+
+ export async function resetPassword(req, res) {
+	try {
+		const { email, password } = req.body;
+
+		const user = await userModel.getByEmail(email);
+		if (!user) {
+			return res.status(404).json({ error: "Usuário nao encontrado" });
+		}
+
+		// Hash da nova senha
+		const password_hash = await bcrypt.hash(password, 10);
+
+		// Atualiza a senha do usuário usando o id e a senha com hash
+		await userModel.updatePassword(user.id, password_hash);
+
+		res.status(200).json({ message: "Senha atualizada com sucesso!" });
+	} catch (error) {
+		console.error("Erro ao atualizar senha:", error);
+		res.status(500).json({
+			error: "Erro ao atualizar senha",
 			details: error.message,
 		});
 	}

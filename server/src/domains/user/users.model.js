@@ -77,3 +77,7 @@ export function update(id, updates) {
 export function remove(id) {
 	return db("users").where({id}).del();
 }
+
+export function updatePassword(userId, password_hash) {
+	return db("users").where({ id: userId }).update({ password_hash });
+}
