@@ -4,6 +4,7 @@ import providerRoutes from "./routes/provider/provider.routes.js";
 import catalogoRoutes from "./routes/public/catalogo.routes.js";
 import adminRoutes from "./routes/admin/admin.routes.js";
 import publicRoutes from "./routes/public/auth.routes.js";
+import serviceRoutes from "./routes/provider/services.routes.js";
 dotenv.config();
 
 const app = express();
@@ -14,7 +15,7 @@ app.use("/", providerRoutes);
 app.use("/", adminRoutes);
 app.use("/", catalogoRoutes);
 app.use("/", publicRoutes);
-
+app.use("/", serviceRoutes);
 
 
 const PORT = process.env.PORT || 3333;

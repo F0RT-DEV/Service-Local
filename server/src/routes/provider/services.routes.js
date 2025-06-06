@@ -1,18 +1,20 @@
-import {Router} from "express";
 import {
-	updateProvider,
-	getAuthenticatedProfile,
-} from "../../domains/provider/provider.controller.js";
+	createServiceHandler,
+	getServiceByIdHandler,
+} from "../../domains/service/service.controller.js";
 import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
 
+import {Router} from "express";
+
 const router = Router();
 
-router.put(
-	"/register/provider/:id",
+router.post(
+	"/services",
 	authenticateToken,
 	verifyProviderRole,
-	updateProvider
+	createServiceHandler
 );
+
 
 export default router;
