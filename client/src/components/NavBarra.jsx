@@ -87,11 +87,18 @@ const NavBarra = () => {
             {usuario ? (
               <>
                 <div className={styles['nav-links']}>
-                  {usuario.role === 'client' && (
-  <Link to="/usuario/dashboard" className={styles['nav-link']}>
-    Buscar Serviços
-  </Link>
-)}
+                  {/* "Buscar Serviços" aparece para ambos */}
+                  <Link
+                    to={
+                      usuario.role === 'provider'
+                        ? '/usuario/dashboard'
+                        : '/usuario/dashboard'
+                    }
+                    className={styles['nav-link']}
+                  >
+                    Buscar Serviços
+                  </Link>
+                  {/* "Prestar Serviços" só para prestador */}
                   {usuario.role === 'provider' && (
                     <Link to="/prestador/dashboard" className={styles['nav-link']}>
                       Prestar Serviços
@@ -110,28 +117,28 @@ const NavBarra = () => {
                       <UserIcon size={18} />
                     </div>
                     <span className={styles['user-name']}>
-  {usuario.name && usuario.name.trim() !== ""
-    ? usuario.name
-    : usuario.nome && usuario.nome.trim() !== ""
-      ? usuario.nome
-      : 'Usuário'}
-</span>
+                      {usuario.name && usuario.name.trim() !== ""
+                        ? usuario.name
+                        : usuario.nome && usuario.nome.trim() !== ""
+                        ? usuario.nome
+                        : 'Usuário'}
+                    </span>
 
                     {dropdownAberto && (
                       <div className={styles['dropdown-menu']}>
                         <button
-  onClick={() => {
-    setDropdownAberto(false);
-    if (usuario.role === "provider") {
-      navigate('/prestador/perfil');
-    } else {
-      navigate('/usuario/perfil');
-    }
-  }}
-  className={styles['profile-button']}
->
-  <span>Perfil</span>
-</button>
+                          onClick={() => {
+                            setDropdownAberto(false);
+                            if (usuario.role === "provider") {
+                              navigate('/prestador/perfil');
+                            } else {
+                              navigate('/usuario/perfil');
+                            }
+                          }}
+                          className={styles['profile-button']}
+                        >
+                          <span>Perfil</span>
+                        </button>
                         <button
                           onClick={handleLogout}
                           className={styles['logout-button']}
