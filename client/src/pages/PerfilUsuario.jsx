@@ -5,48 +5,77 @@ import styles from './PerfilUsuario.module.css';
 const PerfilUsuario = () => {
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [ordens, setOrdens] = useState([]);
+  const [servicos, setServicos] = useState([]);
 
   // Busca dados completos do usuário autenticado no backend ao montar
   useEffect(() => {
-  async function fetchDados() {
-    const token = localStorage.getItem("token");
-    console.log("TOKEN ENCONTRADO NO PERFIL:", token); // LOG PARA DEPURAÇÃO
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await axios.get("http://localhost:3333/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 200) {
-        setDados({
-          ...res.data.user,
-          ...(res.data.provider ? { provider: res.data.provider } : {})
+    async function fetchDados() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await axios.get("http://localhost:3333/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+        if (res.status === 200) {
+          setDados({
+            ...res.data.user,
+            ...(res.data.provider ? { provider: res.data.provider } : {})
+          });
+        }
+      } catch (err) {
+        if (err.response && err.response.status === 403) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+        }
       }
-    } catch (err) {
-      if (err.response && err.response.status === 403) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("usuario");
-       
-      }
+      setLoading(false);
     }
-    setLoading(false);
-  }
-  fetchDados();
-}, []);
+    fetchDados();
+  }, []);
+
+  // Busca ordens do usuário
+  useEffect(() => {
+    if (dados?.id) {
+      fetch(`http://localhost:3333/ordensServico?clienteId=${dados.id}`)
+        .then(res => res.json())
+        .then(setOrdens)
+        .catch(() => setOrdens([]));
+    }
+  }, [dados?.id]);
+
+  // Busca todos os serviços para mostrar o nome na tabela de OS
+  useEffect(() => {
+    fetch("http://localhost:3333/servicos")
+      .then(res => res.json())
+      .then(setServicos)
+      .catch(() => setServicos([]));
+  }, []);
 
   if (loading) return <div>Carregando...</div>;
   if (!dados) return <div>Usuário não encontrado.</div>;
 
-const tipoFormatado = dados.role === 'client'
-  ? 'Usuário Comum'
-  : dados.role === 'provider'
-    ? 'Prestador de Serviço'
-    : dados.role;
+  const tipoFormatado = dados.role === 'client'
+    ? 'Usuário Comum'
+    : dados.role === 'provider'
+      ? 'Prestador de Serviço'
+      : dados.role;
+
+  // Função para mostrar o nome do serviço na tabela de OS
+  const getNomeServico = (servicoId) => {
+    const servico = servicos.find(s => s.id === servicoId);
+    return servico ? servico.nome : servicoId;
+  };
+
+  // Resumo de ordens
+  const totalOrdens = ordens.length;
+  const ordensPendentes = ordens.filter(os => os.status === "pendente").length;
+  const ordensConcluidas = ordens.filter(os => os.status === "concluída").length;
 
   return (
     <div className={styles['perfil-container']}>
@@ -70,8 +99,42 @@ const tipoFormatado = dados.role === 'client'
           </>
         )}
       </div>
-      {/* Botão de editar pode ser habilitado quando a rota de update existir */}
-      {/* <button className={styles['btn-editar']} disabled>Editar Perfil</button> */}
+
+      {/* Minhas Ordens de Serviço - igual ao DashboardUser */}
+      <div className={styles['resumo-ordens']}>
+        <div>Total de Ordens: <b>{totalOrdens}</b></div>
+        <div>Pendentes: <b>{ordensPendentes}</b></div>
+        <div>Concluídas: <b>{ordensConcluidas}</b></div>
+      </div>
+      <h2>Minhas Ordens de Serviço</h2>
+      <div className={styles['ordens-container']}>
+        {ordens.length === 0 ? (
+          <p>Nenhuma ordem de serviço encontrada.</p>
+        ) : (
+          <table className={styles['ordens-tabela']}>
+            <thead>
+              <tr>
+                <th>Serviço</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Mensagem</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ordens.map(os => (
+                <tr key={os.id}>
+                  <td>{getNomeServico(os.servicoId)}</td>
+                  <td>
+                    <b data-status={os.status}>{os.status}</b>
+                  </td>
+                  <td>{new Date(os.dataSolicitacao).toLocaleString()}</td>
+                  <td>{os.mensagem}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };
