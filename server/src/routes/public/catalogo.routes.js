@@ -7,7 +7,7 @@ import {
 	getPrestadores,
 	getPrestadorById,
 } from "../../domains/provider/provider.controller.js";
-import {getServiceByIdHandler,getAllServicesHandler} from "../../domains/service/service.controller.js";
+import {getServiceByIdHandler,getAllServicesHandler,getAllServicesByProviderIdHandler,getAllServicesByCategoryHandler} from "../../domains/service/service.controller.js";
 
 const router = express.Router();
 
@@ -17,5 +17,7 @@ router.get("/providers", getPrestadores);
 router.get("/providers/:id", getPrestadorById);
 router.get("/services/:id", getServiceByIdHandler);
 router.get("/services", getAllServicesHandler)
+router.get("/services/category/:categoryId", getAllServicesByCategoryHandler);
+router.get("/providers/:providerId/services", getAllServicesByProviderIdHandler);
 
 export default router;
