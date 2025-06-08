@@ -1,3 +1,19 @@
-// Stub for service.routes.js
+import {
+	createServiceHandler,
+} from "./service.controller.js";
+import {verifyProviderRole} from "../../middlewares/role.middleware.js";
+import {authenticateToken} from "../../middlewares/authMiddleware.js";
 
-module.exports = {};
+import {Router} from "express";
+
+const router = Router();
+
+router.post(
+	"/services",
+	authenticateToken,
+	verifyProviderRole,
+	createServiceHandler
+);
+
+
+export default router;

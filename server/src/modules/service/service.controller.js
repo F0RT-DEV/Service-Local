@@ -1,5 +1,5 @@
 import {createService, getServiceById, getAllService,getAllServicesByProviderId,getAllServicesByCategory} from "./service.model.js";
-import {serviceSchema} from "../../schemas/serviceSchema.js";
+import {serviceSchema} from "./service.schema.js";
 
 export async function createServiceHandler(req, res) {
 	try {

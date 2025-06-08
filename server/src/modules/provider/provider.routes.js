@@ -1,3 +1,18 @@
-// Stub for provider.routes.js
+import {Router} from "express";
+import {
+	updateProvider,
+	getAuthenticatedProfile,
+} from "./provider.controller.js";
+import {verifyProviderRole} from "../../middlewares/role.middleware.js";
+import {authenticateToken} from "../../middlewares/authMiddleware.js";
 
-module.exports = {};
+const router = Router();
+
+router.put(
+	"/register/provider/:id",
+	authenticateToken,
+	verifyProviderRole,
+	updateProvider
+);
+
+export default router;
