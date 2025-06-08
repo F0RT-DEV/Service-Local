@@ -1,37 +1,59 @@
-import db from "../../db.js";
+import ProviderModel from './admin.model.js';
 
-export const ProviderModel = {
-  
-  async findById(id) {
-    return await db('providers').where({ id }).first();
-  },
+export async function approveProvider(req, res) {
+  try {
+    const { id } = req.params;
 
-  async updateStatus(id, status) {
-    return await db('providers')
-      .where({ id })
-      .update({ status});
-  },
+    const provider = await ProviderModel.findById(id);
+    if (!provider) return res.status(404).json({ message: 'Prestador não encontrado' });
 
-  async findPending() {
-    return await db('providers').where({ status: 'pending' });
-  },
+    await ProviderModel.updateStatus(id, 'approved');
 
-  async rejectedById(id) {
-    return await db('providers')
-      .where({ id })
-      .update({ status: 'rejected'});
-  },
-  async findApproved() {
-    return await db('providers').where({ status: 'approved' });
-  },
-  async findAllByPending() {
-    return await db('providers').where({ status: 'pending' });
-  },
-  async getAllUsers() {
-    return await db('users');
-  
+    return res.status(200).json({ message: 'Prestador aprovado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
+}
+export async function rejectProvider(req, res) {
+ try {
+    const { id } = req.params;
 
-};
+    const provider = await ProviderModel.findById(id);
+    if (!provider) return res.status(404).json({ message: 'Prestador não encontrado' });
 
-export default ProviderModel;
+    await ProviderModel.updateStatus(id, 'rejected');
+
+    return res.status(200).json({ message: 'Prestador rejeitado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+}
+export async function getPendingProviders(req, res) {
+  try {
+    const pendingProviders = await ProviderModel.findPending();
+    return res.status(200).json(pendingProviders);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+}
+export async function getApprovedProviders(req, res) {
+  try {
+    const approvedProviders = await ProviderModel.findApproved();
+    return res.status(200).json(approvedProviders);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+}
+export async function readUsers(req, res) {
+  try {
+    const users = await ProviderModel.getAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+}
