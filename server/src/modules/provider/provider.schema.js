@@ -11,3 +11,8 @@ export const ProviderSchema = z.object({
 
 export const CreateProviderSchema = ProviderSchema.omit({ id: true });
 export const UpdateProviderSchema = CreateProviderSchema.partial();
+
+export const ProviderCategorySchema = z.object({
+  provider_id: z.string().uuid(),
+  category_id: z.string().uuid(),
+});

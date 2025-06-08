@@ -1,7 +1,6 @@
 import {
 	createServiceHandler,
-	getServiceByIdHandler,
-} from "../../domains/service/service.controller.js";
+} from "./service.controller.js";
 import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
 

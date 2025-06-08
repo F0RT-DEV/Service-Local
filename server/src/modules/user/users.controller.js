@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 
-import {UserSchema} from "../../schemas/userSchema.js"; // Corrigido o caminho!
+import {UserSchema} from "./users.schema.js"; // Corrigido o caminho!
 
 export async function createUser(req, res) {
 	try {

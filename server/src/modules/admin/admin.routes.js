@@ -5,7 +5,7 @@ import {
 	getPendingProviders,
 	getApprovedProviders,
 	readUsers,
-} from "../../domains/admin/admin.controller.js";
+} from "./admin.controller.js";
 
 import {verifyAdminRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";

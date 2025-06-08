@@ -18,3 +18,11 @@ export async function getServiceById(id) {
 export async function getAllService(id) {
 	return db("services").where({});
 }
+
+export async function getAllServicesByProviderId(providerId) {
+  return db("services").where({ provider_id: providerId });
+}
+export async function getAllServicesByCategory(id) {
+  return db("services").where({ category_id: id })
+}
+
