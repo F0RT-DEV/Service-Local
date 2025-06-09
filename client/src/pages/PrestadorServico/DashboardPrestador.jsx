@@ -197,9 +197,7 @@ const DashboardPrestador = () => {
   description: novoServico.description,
   price_min: priceMin,
   price_max: priceMax,
-  images: novoServico.images
-  ? novoServico.images.split(',').map(img => img.trim())
-  : [],
+  images: novoServico.images, // <-- envie como string
   is_active: isActive,
 };
 
