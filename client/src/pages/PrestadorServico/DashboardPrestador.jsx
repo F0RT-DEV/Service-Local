@@ -38,6 +38,10 @@ const DashboardPrestador = () => {
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
 
+  // Novos estados para ordens e avaliações
+  const [ordens, setOrdens] = useState([]);
+  const [avaliacoes, setAvaliacoes] = useState([]);
+
   // Buscar categorias
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -107,6 +111,28 @@ const DashboardPrestador = () => {
         .catch(() => setServicosPrestador([]));
     }
   }, [abaAtual, provider?.id]);
+
+  // Buscar ordens de serviço do prestador
+  useEffect(() => {
+    if (abaAtual === "os" || abaAtual === "historico") {
+      if (!usuario?.id) return;
+      fetch(`http://localhost:3333/orders?provider_id=${usuario.id}`)
+        .then(res => res.json())
+        .then(setOrdens)
+        .catch(() => setOrdens([]));
+    }
+  }, [abaAtual, usuario?.id]);
+
+  // Buscar avaliações recebidas
+  useEffect(() => {
+    if (abaAtual === "historico") {
+      if (!usuario?.id) return;
+      fetch(`http://localhost:3333/reviews?provider_id=${usuario.id}`)
+        .then(res => res.json())
+        .then(setAvaliacoes)
+        .catch(() => setAvaliacoes([]));
+    }
+  }, [abaAtual, usuario?.id]);
 
   // Handlers
   const handleChange = (e) => {
@@ -192,14 +218,14 @@ const DashboardPrestador = () => {
 
     try {
       const payload = {
-  category_id: novoServico.category_id,
-  title: novoServico.title,
-  description: novoServico.description,
-  price_min: priceMin,
-  price_max: priceMax,
-  images: novoServico.images, // <-- envie como string
-  is_active: isActive,
-};
+        category_id: novoServico.category_id,
+        title: novoServico.title,
+        description: novoServico.description,
+        price_min: priceMin,
+        price_max: priceMax,
+        images: novoServico.images,
+        is_active: isActive,
+      };
 
       const token = localStorage.getItem("token");
 
@@ -284,17 +310,29 @@ const DashboardPrestador = () => {
       <header className={styles.header}>
         <h1 className={styles.titulo}>Bem-vindo, {usuario.nome}!</h1>
         <nav className={styles.navegacao}>
-          <button 
-            onClick={() => setAbaAtual("perfil")} 
+          <button
+            onClick={() => setAbaAtual("perfil")}
             className={`${styles.botaoNavegacao} ${abaAtual === "perfil" ? styles.ativo : ''}`}
           >
             Perfil
           </button>
-          <button 
-            onClick={() => setAbaAtual("cadastrar-servico")} 
+          <button
+            onClick={() => setAbaAtual("cadastrar-servico")}
             className={`${styles.botaoNavegacao} ${abaAtual === "cadastrar-servico" ? styles.ativo : ''}`}
           >
             Cadastrar Serviço
+          </button>
+          <button
+            onClick={() => setAbaAtual("os")}
+            className={`${styles.botaoNavegacao} ${abaAtual === "os" ? styles.ativo : ''}`}
+          >
+            Ordens de Serviço
+          </button>
+          <button
+            onClick={() => setAbaAtual("historico")}
+            className={`${styles.botaoNavegacao} ${abaAtual === "historico" ? styles.ativo : ''}`}
+          >
+            Histórico & Avaliações
           </button>
         </nav>
       </header>
@@ -333,8 +371,8 @@ const DashboardPrestador = () => {
                     {provider.categories?.map(cat => cat.name).join(", ") || "-"}
                   </p>
                 </div>
-                <button 
-                  onClick={() => setEditando(true)} 
+                <button
+                  onClick={() => setEditando(true)}
                   className={styles.botaoPrimario}
                 >
                   Editar Perfil
@@ -344,32 +382,32 @@ const DashboardPrestador = () => {
               <form className={styles.formulario} onSubmit={handleSalvar}>
                 <div className={styles.grupoFormulario}>
                   <label htmlFor="bio" className={styles.rotulo}>Bio</label>
-                  <textarea 
-                    id="bio" 
-                    name="bio" 
-                    value={form.bio} 
-                    onChange={handleChange} 
-                    rows={3} 
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={form.bio}
+                    onChange={handleChange}
+                    rows={3}
                     className={styles.entradaTexto}
                   />
                 </div>
                 <div className={styles.grupoFormulario}>
                   <label htmlFor="cnpj" className={styles.rotulo}>CNPJ</label>
-                  <input 
-                    id="cnpj" 
-                    name="cnpj" 
-                    value={form.cnpj} 
-                    onChange={handleChange} 
+                  <input
+                    id="cnpj"
+                    name="cnpj"
+                    value={form.cnpj}
+                    onChange={handleChange}
                     className={styles.entradaTexto}
                   />
                 </div>
                 <div className={styles.grupoFormulario}>
                   <label htmlFor="experiencia" className={styles.rotulo}>Experiência</label>
-                  <input 
-                    id="experiencia" 
-                    name="experiencia" 
-                    value={form.experiencia} 
-                    onChange={handleChange} 
+                  <input
+                    id="experiencia"
+                    name="experiencia"
+                    value={form.experiencia}
+                    onChange={handleChange}
                     className={styles.entradaTexto}
                   />
                 </div>
@@ -398,9 +436,9 @@ const DashboardPrestador = () => {
                   <button type="submit" className={styles.botaoPrimario}>
                     Salvar
                   </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setEditando(false)} 
+                  <button
+                    type="button"
+                    onClick={() => setEditando(false)}
                     className={styles.botaoSecundario}
                   >
                     Cancelar
@@ -454,23 +492,23 @@ const DashboardPrestador = () => {
               <h3 className={styles.subtitulo}>Cadastrar Novo Serviço</h3>
               <div className={styles.grupoFormulario}>
                 <label htmlFor="title" className={styles.rotulo}>Título do Serviço</label>
-                <input 
-                  id="title" 
-                  name="title" 
-                  value={novoServico.title} 
-                  onChange={handleServicoChange} 
-                  required 
+                <input
+                  id="title"
+                  name="title"
+                  value={novoServico.title}
+                  onChange={handleServicoChange}
+                  required
                   className={styles.entradaTexto}
                 />
               </div>
               <div className={styles.grupoFormulario}>
                 <label htmlFor="description" className={styles.rotulo}>Descrição</label>
-                <textarea 
-                  id="description" 
-                  name="description" 
-                  value={novoServico.description} 
-                  onChange={handleServicoChange} 
-                  required 
+                <textarea
+                  id="description"
+                  name="description"
+                  value={novoServico.description}
+                  onChange={handleServicoChange}
+                  required
                   className={styles.entradaTexto}
                 />
               </div>
@@ -492,37 +530,37 @@ const DashboardPrestador = () => {
               </div>
               <div className={styles.grupoFormulario}>
                 <label htmlFor="price_min" className={styles.rotulo}>Preço Mínimo (R$)</label>
-                <input 
-                  id="price_min" 
-                  name="price_min" 
-                  type="number" 
+                <input
+                  id="price_min"
+                  name="price_min"
+                  type="number"
                   min="0"
-                  value={novoServico.price_min} 
-                  onChange={handleServicoChange} 
-                  required 
+                  value={novoServico.price_min}
+                  onChange={handleServicoChange}
+                  required
                   className={styles.entradaTexto}
                 />
               </div>
               <div className={styles.grupoFormulario}>
                 <label htmlFor="price_max" className={styles.rotulo}>Preço Máximo (R$)</label>
-                <input 
-                  id="price_max" 
-                  name="price_max" 
-                  type="number" 
+                <input
+                  id="price_max"
+                  name="price_max"
+                  type="number"
                   min="0"
-                  value={novoServico.price_max} 
-                  onChange={handleServicoChange} 
-                  required 
+                  value={novoServico.price_max}
+                  onChange={handleServicoChange}
+                  required
                   className={styles.entradaTexto}
                 />
               </div>
               <div className={styles.grupoFormulario}>
                 <label htmlFor="images" className={styles.rotulo}>Imagens (URL ou texto, separadas por vírgula)</label>
-                <input 
-                  id="images" 
-                  name="images" 
-                  value={novoServico.images} 
-                  onChange={handleServicoChange} 
+                <input
+                  id="images"
+                  name="images"
+                  value={novoServico.images}
+                  onChange={handleServicoChange}
                   className={styles.entradaTexto}
                   placeholder="URL da imagem ou deixe em branco"
                 />
@@ -538,13 +576,61 @@ const DashboardPrestador = () => {
                   className={styles.checkbox}
                 />
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className={styles.botaoPrimario}
               >
                 Cadastrar
               </button>
             </form>
+          </section>
+        )}
+
+        {abaAtual === "os" && (
+          <section>
+            <h2 className={styles.subtitulo}>Ordens de Serviço em andamento</h2>
+            <div className={styles['ordens-lista']}>
+              {ordens.filter(o => o.status !== "finalizada").length === 0 ? (
+                <p>Nenhuma OS em andamento.</p>
+              ) : (
+                ordens.filter(o => o.status !== "finalizada").map(ordem => (
+                  <div key={ordem.id} className={styles['ordem-card']}>
+                    <p><strong>Serviço:</strong> {ordem.servicoTitulo}</p>
+                    <p><strong>Status:</strong> {ordem.status}</p>
+                    <p><strong>Cliente:</strong> {ordem.clienteNome}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+        )}
+
+        {abaAtual === "historico" && (
+          <section>
+            <h2 className={styles.subtitulo}>Histórico de Atendimentos & Avaliações Recebidas</h2>
+            <div className={styles['ordens-lista']}>
+              {ordens.filter(o => o.status === "finalizada").length === 0 ? (
+                <p>Nenhuma OS finalizada ainda.</p>
+              ) : (
+                ordens.filter(o => o.status === "finalizada").map(ordem => (
+                  <div key={ordem.id} className={styles['ordem-card']}>
+                    <p><strong>Serviço:</strong> {ordem.servicoTitulo}</p>
+                    <p><strong>Cliente:</strong> {ordem.clienteNome}</p>
+                    <p><strong>Data:</strong> {new Date(ordem.dataSolicitacao).toLocaleDateString()}</p>
+                    {avaliacoes.filter(av => av.order_id === ordem.id).length > 0 ? (
+                      avaliacoes.filter(av => av.order_id === ordem.id).map(av => (
+                        <div key={av.id} className={styles['avaliacao']}>
+                          <strong>Avaliação:</strong> {av.rating} ⭐<br />
+                          <strong>Comentário:</strong> {av.comment}
+                        </div>
+                      ))
+                    ) : (
+                      <span>Sem avaliação</span>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </section>
         )}
       </main>
