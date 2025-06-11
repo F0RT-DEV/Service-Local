@@ -17,6 +17,7 @@ import {
   deleteOrder,
 } from "./order/order.controller.js";
 
+
 const router = express.Router();
 
 router.get("/categories", getAllCategories);
@@ -30,8 +31,4 @@ router.get(
 	getAllServicesByProviderIdHandler
 );
 
-router.post("/orders", createOrder);
-router.get("/orders/:id", getOrderById);
-router.put("/orders/:id", updateOrder);
-router.delete("/orders/:id", deleteOrder);
 export default router;

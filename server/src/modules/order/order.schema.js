@@ -4,11 +4,9 @@ export const OrderSchema = z.object({
   id: z.string().uuid(),
   client_id: z.string().uuid(),
   provider_id: z.string().uuid(),
-  category_id: z.string().uuid().optional(),
+  service_id: z.string().uuid(),
   status: z.enum(['pending', 'accepted', 'in_progress', 'completed', 'cancelled']).default('pending'),
-  description: z.string().optional(),
-  price: z.number().positive().optional(),
-  scheduled_date: z.date().optional(),
+  scheduled_date: z.coerce.date().optional(), // usa z.coerce.date para converter string para Date automaticamente
   created_at: z.date().default(() => new Date()),
 });
 
