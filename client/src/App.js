@@ -8,6 +8,7 @@ import DashboardPrestador from './pages/PrestadorServico/DashboardPrestador';
 import Login from './components/Login';
 import PerfilUsuario from './pages/PerfilUsuario';
 import ProtectedRoute from './components/ProtectedRoute';
+import DashboardADM from './pages/Admin/DashboardADM';
 import './App.css';
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
               </ProtectedRoute>
             } />
             
+            <Route path="/admin/dashboard" element={
+  <ProtectedRoute tipoPermitido="admin">
+    <DashboardADM />
+  </ProtectedRoute>
+} />
             <Route path="/usuario/dashboard" element={
               <ProtectedRoute tipoPermitido="client">
                 <DashboardUser />

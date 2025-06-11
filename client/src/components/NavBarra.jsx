@@ -87,24 +87,32 @@ const NavBarra = () => {
             {usuario ? (
               <>
                 <div className={styles['nav-links']}>
-                  {/* "Buscar Serviços" aparece para ambos, mas para provider vai para a aba correta */}
-                  <Link
-                    to={
-                      usuario.role === 'provider'
-                        ? '/prestador/dashboard?aba=buscar-servicos'
-                        : '/usuario/dashboard'
-                    }
-                    className={styles['nav-link']}
-                  >
-                    Buscar Serviços
-                  </Link>
-                  {/* "Prestar Serviços" só para prestador */}
-                  {usuario.role === 'provider' && (
-                    <Link to="/prestador/dashboard" className={styles['nav-link']}>
-                      Prestar Serviços
-                    </Link>
-                  )}
-                </div>
+  {/* "Buscar Serviços" aparece para client/provider */}
+  {(usuario.role === 'provider' || usuario.role === 'client') && (
+    <Link
+      to={
+        usuario.role === 'provider'
+          ? '/prestador/dashboard?aba=buscar-servicos'
+          : '/usuario/dashboard'
+      }
+      className={styles['nav-link']}
+    >
+      Buscar Serviços
+    </Link>
+  )}
+  {/* "Painel Admin" só para admin */}
+  {usuario.role === 'admin' && (
+    <Link to="/admin/dashboard" className={styles['nav-link']}>
+      Painel Admin
+    </Link>
+  )}
+  {/* "Prestar Serviços" só para prestador */}
+  {usuario.role === 'provider' && (
+    <Link to="/prestador/dashboard" className={styles['nav-link']}>
+      Prestar Serviços
+    </Link>
+  )}
+</div>
 
                 <div className={styles['user-actions']}>
                   <div

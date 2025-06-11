@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserIcon, WrenchIcon } from 'lucide-react';
+import { UserIcon, WrenchIcon, ShieldIcon } from 'lucide-react';
 import styles from './Passo1TipoUsuario.module.css';
 
 const Passo1TipoUsuario = ({ tipoSelecionado, onSelecionar, erro }) => {
@@ -31,6 +31,19 @@ const Passo1TipoUsuario = ({ tipoSelecionado, onSelecionar, erro }) => {
           <h3 className={`${styles['subtitulo']} ${styles['mt-3']}`}>Prestador de Serviço</h3>
           <p className={`${styles['descricao']} ${styles['mt-2']}`}>
             Ofereço serviços técnicos e busco novos clientes
+          </p>
+        </div>
+
+        <div 
+          className={`${styles['tipo-card']} ${tipoSelecionado === 'admin' ? styles['selecionado'] : ''}`}
+          onClick={() => onSelecionar('admin')}
+        >
+          <div className={`${styles['icone-container']} ${styles['admin']}`}>
+            <ShieldIcon size={40} />
+          </div>
+          <h3 className={`${styles['subtitulo']} ${styles['mt-3']}`}>Administrador</h3>
+          <p className={`${styles['descricao']} ${styles['mt-2']}`}>
+            Gerencie profissionais, ordens de serviço e usuários
           </p>
         </div>
       </div>

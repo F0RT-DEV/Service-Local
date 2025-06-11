@@ -10,6 +10,12 @@ import {
 	getAllServicesByProviderIdHandler,
 	getAllServicesByCategoryHandler,
 } from "../modules/service/service.controller.js";
+import {
+  createOrder,
+  getOrderById,
+  updateOrder,
+  deleteOrder,
+} from "./order/order.controller.js";
 
 const router = express.Router();
 
@@ -24,4 +30,8 @@ router.get(
 	getAllServicesByProviderIdHandler
 );
 
+router.post("/orders", createOrder);
+router.get("/orders/:id", getOrderById);
+router.put("/orders/:id", updateOrder);
+router.delete("/orders/:id", deleteOrder);
 export default router;

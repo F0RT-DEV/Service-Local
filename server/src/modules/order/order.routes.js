@@ -1,3 +1,14 @@
-// Stub for order.routes.js
+import express from "express";
+import * as orderController from "./order.controller.js";
 
-module.exports = {};
+const router = express.Router();
+
+router.post("/orders", orderController.createOrder);
+router.get("/orders", orderController.getAllOrders);
+router.get("/orders/:id", orderController.getOrderById);
+router.put("/orders/:id", orderController.updateOrder);
+// SADAD
+router.delete("/orders/:id", orderController.deleteOrder);
+
+
+export default router;

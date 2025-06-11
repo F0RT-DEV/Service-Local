@@ -76,7 +76,7 @@ const handleSelecionarTipo = (tipo) => {
         email: formData.email,
         password: formData.senha,
         phone: formData.telefone,
-        role: "client",
+        role: formData.tipo === "admin" ? "admin" : "client",
         cpf: formData.cpf,
         cep: formData.cep,
         logradouro: formData.rua,
@@ -156,12 +156,12 @@ const handleSelecionarTipo = (tipo) => {
 
   // Decide qual finalizar chamar
   const finalizarCadastro = async () => {
-    if (formData.tipo === "usuario") {
-      await finalizarCadastroUsuario();
-    } else {
-      await finalizarCadastroPrestador();
-    }
-  };
+  if (formData.tipo === "usuario" || formData.tipo === "admin") {
+    await finalizarCadastroUsuario();
+  } else {
+    await finalizarCadastroPrestador();
+  }
+};
 
   return (
     <div className={styles["container"]}>
