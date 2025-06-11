@@ -35,9 +35,9 @@ const NavBarra = () => {
     localStorage.removeItem("usuario");
     localStorage.removeItem("token");
     setUsuario(null);
-    navigate('/');
     setMenuAberto(false);
     setDropdownAberto(false);
+    window.location.href = '/'; // Força recarregamento da página
   };
 
   const toggleMenu = () => {
@@ -87,11 +87,11 @@ const NavBarra = () => {
             {usuario ? (
               <>
                 <div className={styles['nav-links']}>
-                  {/* "Buscar Serviços" aparece para ambos */}
+                  {/* "Buscar Serviços" aparece para ambos, mas para provider vai para a aba correta */}
                   <Link
                     to={
                       usuario.role === 'provider'
-                        ? '/usuario/dashboard'
+                        ? '/prestador/dashboard?aba=buscar-servicos'
                         : '/usuario/dashboard'
                     }
                     className={styles['nav-link']}

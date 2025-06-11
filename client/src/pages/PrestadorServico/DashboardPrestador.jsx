@@ -37,6 +37,7 @@ const DashboardPrestador = () => {
   });
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
+  const [servicosCadastrados, setServicosCadastrados] = useState([]);
 
   // Novos estados para ordens e avaliações
   const [ordens, setOrdens] = useState([]);
@@ -112,6 +113,16 @@ const DashboardPrestador = () => {
     }
   }, [abaAtual, provider?.id]);
 
+  // Buscar todos os serviços cadastrados (para "Buscar Serviços")
+  useEffect(() => {
+    if (abaAtual === "buscar-servicos") {
+      fetch('http://localhost:3333/services')
+        .then(res => res.json())
+        .then(setServicosCadastrados)
+        .catch(() => setServicosCadastrados([]));
+    }
+  }, [abaAtual]);
+
   // Buscar ordens de serviço do prestador
   useEffect(() => {
     if (abaAtual === "os" || abaAtual === "historico") {
@@ -182,6 +193,7 @@ const DashboardPrestador = () => {
       setMensagem("Perfil atualizado com sucesso!");
       setEditando(false);
       setProvider(prev => ({ ...prev, ...payload }));
+      window.location.reload(); // Força recarregamento após salvar perfil
     } catch (error) {
       setMensagem(error.message || "Erro ao atualizar perfil.");
     }
@@ -266,12 +278,40 @@ const DashboardPrestador = () => {
         is_active: true,
       });
       setServicosPrestador(prev => [...prev, novoServicoCadastrado]);
+      window.location.reload(); // Força recarregamento após cadastrar serviço
     } catch (error) {
       setMensagem(error.message || "Erro ao cadastrar serviço.");
     }
   };
 
   // --- LÓGICA DE RENDERIZAÇÃO ---
+
+  // Função utilitária para renderizar imagens
+  const renderImagens = (images) => {
+    if (Array.isArray(images)) {
+      return (
+        <div className={styles.tdImagens}>
+          {images.map((img, idx) =>
+            img && img.trim() ? (
+              <img key={idx} src={img.trim()} alt="Serviço" />
+            ) : null
+          )}
+        </div>
+      );
+    }
+    if (typeof images === "string" && images.trim() !== "") {
+      return (
+        <div className={styles.tdImagens}>
+          {images.split(',').map((img, idx) =>
+            img.trim() ? (
+              <img key={idx} src={img.trim()} alt="Serviço" />
+            ) : null
+          )}
+        </div>
+      );
+    }
+    return <span>-</span>;
+  };
 
   if (!usuario) {
     return (
@@ -321,6 +361,12 @@ const DashboardPrestador = () => {
             className={`${styles.botaoNavegacao} ${abaAtual === "cadastrar-servico" ? styles.ativo : ''}`}
           >
             Cadastrar Serviço
+          </button>
+          <button
+            onClick={() => setAbaAtual("buscar-servicos")}
+            className={`${styles.botaoNavegacao} ${abaAtual === "buscar-servicos" ? styles.ativo : ''}`}
+          >
+            Buscar Serviços
           </button>
           <button
             onClick={() => setAbaAtual("os")}
@@ -477,9 +523,7 @@ const DashboardPrestador = () => {
                         <td>{servico.price_min}</td>
                         <td>{servico.price_max}</td>
                         <td>
-                          {Array.isArray(servico.images)
-                            ? servico.images.join(', ')
-                            : servico.images}
+                          {renderImagens(servico.images)}
                         </td>
                         <td>{servico.is_active ? "Sim" : "Não"}</td>
                       </tr>
@@ -583,6 +627,44 @@ const DashboardPrestador = () => {
                 Cadastrar
               </button>
             </form>
+          </section>
+        )}
+
+        {abaAtual === "buscar-servicos" && (
+          <section className={styles.secaoServico}>
+            <h2 className={styles.subtitulo}>Serviços Cadastrados</h2>
+            {servicosCadastrados.length === 0 ? (
+              <p>Nenhum serviço encontrado.</p>
+            ) : (
+              <table className={styles.ordensTabela}>
+                <thead>
+                  <tr>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Preço Mínimo</th>
+                    <th>Preço Máximo</th>
+                    <th>Imagens</th>
+                    <th>Ativo?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {servicosCadastrados.map(servico => (
+                    <tr key={servico.id}>
+                      <td>{servico.title}</td>
+                      <td>{servico.description}</td>
+                      <td>{categorias.find(c => c.id === servico.category_id)?.name || servico.category_id}</td>
+                      <td>{servico.price_min}</td>
+                      <td>{servico.price_max}</td>
+                      <td>
+                        {renderImagens(servico.images)}
+                      </td>
+                      <td>{servico.is_active ? "Sim" : "Não"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </section>
         )}
 

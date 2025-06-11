@@ -1,3 +1,5 @@
+/* ...existing code... */
+
 .dashboardPrestador {
   max-width: 1200px;
   margin: 0 auto;
@@ -202,21 +204,121 @@ textarea.entradaTexto {
   background-color: #d6dbdf;
 }
 
+/* Tabela de serviços com imagens */
+.ordensTabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  background: #fafbfc;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+}
+
+.ordensTabela th,
+.ordensTabela td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+  vertical-align: middle;
+}
+
+.ordensTabela th {
+  background: #f1f6fa;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.ordensTabela tr:last-child td {
+  border-bottom: none;
+}
+
+.ordensTabela img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e1e1e1;
+  background: #f8f8f8;
+  margin-right: 0.5rem;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.08);
+}
+
+/* Mostra as imagens em linha na célula */
+.tdImagens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Cards de ordens */
+.ordens-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.ordem-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.08);
+  padding: 1.5rem;
+  border-left: 4px solid #3498db;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.avaliacao {
+  background: #eaf6ff;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  color: #21618c;
+  font-size: 1rem;
+}
+
 /* Responsividade */
+@media (max-width: 900px) {
+  .conteudoPrincipal {
+    padding: 1rem;
+  }
+  .ordensTabela th,
+  .ordensTabela td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboardPrestador {
     padding: 1rem;
   }
-  
   .navegacao {
     flex-direction: column;
   }
-  
   .conteudoPrincipal {
     padding: 1rem;
   }
-  
   .grupoCheckbox {
     grid-template-columns: 1fr;
+  }
+  .ordensTabela img {
+    width: 60px;
+    height: 45px;
+  }
+}
+
+@media (max-width: 500px) {
+  .ordensTabela th,
+  .ordensTabela td {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.2rem;
+  }
+  .ordensTabela img {
+    width: 40px;
+    height: 30px;
   }
 }
