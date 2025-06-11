@@ -84,7 +84,7 @@ p.subtitle {
   max-width: 600px;
   margin: 0 auto 3rem;
   font-size: 1.1rem;
-  color: var(--accent-extra-light);
+  color: black;
 }
 
 .section-title:after {
