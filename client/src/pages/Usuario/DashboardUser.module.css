@@ -1,0 +1,311 @@
+/* DashboardUser.module.css */
+.dashboard-user {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-user h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.tab, .tab-active {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tab:hover {
+  color: #3498db;
+}
+
+.tab-active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+}
+
+/* Services List */
+.servicos-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.servico-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.servico-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.servico-imagem {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.servico-info {
+  padding: 1.25rem;
+}
+
+.servico-info h3 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.servico-info p {
+  margin: 0.5rem 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.servico-info p strong {
+  color: #2c3e50;
+}
+
+.servico-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8f9fa;
+}
+
+/* Buttons */
+.btn-detalhes {
+  flex: 1;
+  background: #ecf0f1;
+  color: #2c3e50;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-detalhes:hover {
+  background: #dfe6e9;
+}
+
+.btn-solicitar {
+  flex: 1;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-solicitar:hover {
+  background: #2980b9;
+}
+
+.btn-cancelar {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background: #c0392b;
+}
+
+/* Orders List */
+.ordens-lista {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.ordem-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ordem-card p {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+}
+
+.ordem-card p strong {
+  color: #7f8c8d;
+}
+button{
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  background: #ecf0f1;
+
+}
+.ordem-card button {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.ordem-card button:hover {
+  background: #2980b9;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  animation: modalFadeIn 0.3s ease;
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.modal label {
+  display: block;
+  margin: 1rem 0 0.5rem 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-user {
+    padding: 1rem;
+  }
+  
+  .servicos-lista {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs {
+    justify-content: center;
+  }
+  
+  .tab, .tab-active {
+    flex-grow: 1;
+    text-align: center;
+    padding: 0.5rem;
+  }
+  
+  .servico-actions {
+    flex-direction: column;
+  }
+  
+  .servico-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 1.5rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+  }
+}
