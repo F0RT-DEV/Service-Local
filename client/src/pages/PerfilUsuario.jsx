@@ -66,17 +66,6 @@ const PerfilUsuario = () => {
       ? 'Prestador de Serviço'
       : dados.role;
 
-  // Função para mostrar o nome do serviço na tabela de OS
-  const getNomeServico = (servicoId) => {
-    const servico = servicos.find(s => s.id === servicoId);
-    return servico ? servico.nome : servicoId;
-  };
-
-  // Resumo de ordens
-  const totalOrdens = ordens.length;
-  const ordensPendentes = ordens.filter(os => os.status === "pendente").length;
-  const ordensConcluidas = ordens.filter(os => os.status === "concluída").length;
-
   return (
     <div className={styles['perfil-container']}>
       <h2>Meu Perfil</h2>
@@ -97,42 +86,6 @@ const PerfilUsuario = () => {
             <p><strong>Status do Prestador:</strong> {dados.provider.status}</p>
             <p><strong>Bio:</strong> {dados.provider.bio || '-'}</p>
           </>
-        )}
-      </div>
-
-      {/* Minhas Ordens de Serviço - igual ao DashboardUser */}
-      <div className={styles['resumo-ordens']}>
-        <div>Total de Ordens: <b>{totalOrdens}</b></div>
-        <div>Pendentes: <b>{ordensPendentes}</b></div>
-        <div>Concluídas: <b>{ordensConcluidas}</b></div>
-      </div>
-      <h2>Minhas Ordens de Serviço</h2>
-      <div className={styles['ordens-container']}>
-        {ordens.length === 0 ? (
-          <p>Nenhuma ordem de serviço encontrada.</p>
-        ) : (
-          <table className={styles['ordens-tabela']}>
-            <thead>
-              <tr>
-                <th>Serviço</th>
-                <th>Status</th>
-                <th>Data</th>
-                <th>Mensagem</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ordens.map(os => (
-                <tr key={os.id}>
-                  <td>{getNomeServico(os.servicoId)}</td>
-                  <td>
-                    <b data-status={os.status}>{os.status}</b>
-                  </td>
-                  <td>{new Date(os.dataSolicitacao).toLocaleString()}</td>
-                  <td>{os.mensagem}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
       </div>
     </div>
