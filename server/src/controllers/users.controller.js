@@ -1,9 +1,32 @@
 import bcrypt from "bcrypt";
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import * as userModel from "../models/User/users.model.js";
 import * as providerModel from "../models/Providers/provider.model.js";
 import { UserSchema } from "../../src/schema/schema.js"; // corrigir import
 
+// 🔐 Login de usuário
+export async function loginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    }
+
+    const result = await userModel.login(email, password);
+
+    if (result.error) {
+      return res.status(401).json({ error: result.error });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Erro ao fazer login:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+}
+
+// 👤 Criar novo usuário
 export async function createUser(req, res) {
   try {
     const result = UserSchema.safeParse(req.body);
@@ -43,7 +66,7 @@ export async function createUser(req, res) {
       id: userId,
       name,
       email,
-      password_hash: passwordHash,
+      password: passwordHash, // Corrigido para 'password'
       phone,
       role,
       cep,
@@ -78,32 +101,35 @@ export async function createUser(req, res) {
     });
   }
 }
+
+// 📥 Listar usuários
 export async function getUsers(req, res) {
-	try {
-		const users = await userModel.getAll();
-		res.status(200).json(users);
-	} catch (error) {
-		console.error("Erro ao buscar usuários:", error);
-		res.status(500).json({
-			error: "Erro ao buscar usuários",
-			details: error.message,
-		});
-	}
+  try {
+    const users = await userModel.getAll();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Erro ao buscar usuários:", error);
+    res.status(500).json({
+      error: "Erro ao buscar usuários",
+      details: error.message,
+    });
+  }
 }
 
+// 🔍 Buscar usuário por ID
 export async function getUserById(req, res) {
-	const {id} = req.params;
-	try {
-		const user = await userModel.getById(id);
-		if (!user) {
-			return res.status(404).json({error: "Usuário não encontrado"});
-		}
-		res.status(200).json(user);
-	} catch (error) {
-		console.error("Erro ao buscar usuário:", error);
-		res.status(500).json({
-			error: "Erro ao buscar usuário",
-			details: error.message,
-		});
-	}
+  const { id } = req.params;
+  try {
+    const user = await userModel.getById(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Erro ao buscar usuário:", error);
+    res.status(500).json({
+      error: "Erro ao buscar usuário",
+      details: error.message,
+    });
+  }
 }
