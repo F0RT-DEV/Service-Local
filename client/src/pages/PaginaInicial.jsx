@@ -58,7 +58,7 @@ const PaginaInicial = () => {
         className={`${styles["benefits-section"]} ${styles.container}`}
       >
         <h2 className={styles["section-title"]}>
-          Por que escolher a <span className={styles.highlight}>AuxTech</span>?
+          Por que escolher a <span className={styles.highlight}>Employment Assistance</span>?
         </h2>
         <p className={styles["section-subtitle"]}>
           Oferecemos a melhor experiência para clientes e profissionais

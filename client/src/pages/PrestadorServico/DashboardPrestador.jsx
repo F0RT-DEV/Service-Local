@@ -18,6 +18,7 @@ const DashboardPrestador = () => {
   const [editando, setEditando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [erroCarregamento, setErroCarregamento] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const [form, setForm] = useState({
     bio: "",
@@ -37,9 +38,6 @@ const DashboardPrestador = () => {
   });
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
-  // Removido servicosCadastrados
-
-  // Novos estados para ordens e avaliações
   const [ordens, setOrdens] = useState([]);
   const [avaliacoes, setAvaliacoes] = useState([]);
 
@@ -268,7 +266,9 @@ const DashboardPrestador = () => {
         is_active: true,
       });
       setServicosPrestador(prev => [...prev, novoServicoCadastrado]);
-      window.location.reload(); // Força recarregamento após cadastrar serviço
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 2500);
+      // window.location.reload(); // Removido para mostrar o popup
     } catch (error) {
       setMensagem(error.message || "Erro ao cadastrar serviço.");
     }
@@ -337,6 +337,28 @@ const DashboardPrestador = () => {
 
   return (
     <div className={styles.dashboardPrestador}>
+      {/* Popup de sucesso */}
+      {showSuccessPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "30px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#22c55e",
+            color: "#fff",
+            padding: "18px 32px",
+            borderRadius: "10px",
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            zIndex: 9999,
+            boxShadow: "0 2px 16px rgba(0,0,0,0.15)"
+          }}
+        >
+          O serviço foi cadastrado com sucesso!
+        </div>
+      )}
+
       <header className={styles.header}>
         <h1 className={styles.titulo}>Bem-vindo, {usuario.nome}!</h1>
         <nav className={styles.navegacao}>

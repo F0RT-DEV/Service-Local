@@ -74,7 +74,7 @@ const NavBarra = () => {
         <div className={styles['navbar-content']}>
           <div className={styles['navbar-brand']}>
             <Link to="/" className={styles['navbar-logo']}>
-              TechServices
+              Employment Assistance
             </Link>
           </div>
 
