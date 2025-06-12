@@ -37,7 +37,7 @@ const DashboardPrestador = () => {
   });
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
-  const [servicosCadastrados, setServicosCadastrados] = useState([]);
+  // Removido servicosCadastrados
 
   // Novos estados para ordens e avaliações
   const [ordens, setOrdens] = useState([]);
@@ -98,11 +98,11 @@ const DashboardPrestador = () => {
     return () => { cancelado = true; };
   }, [usuario?.id]);
 
-  // Buscar serviços do prestador
+  // Buscar serviços do próprio prestador para ambas as abas
   useEffect(() => {
-    if (abaAtual === "cadastrar-servico" && provider?.id) {
+    if ((abaAtual === "cadastrar-servico" || abaAtual === "buscar-servicos") && provider?.id) {
       const token = localStorage.getItem("token");
-      fetch(`http://localhost:3333/services?provider_id=${provider.id}`, {
+      fetch(`http://localhost:3333/providers/${provider.id}/services`, {
         headers: {
           "Authorization": token ? `Bearer ${token}` : undefined,
         }
@@ -112,16 +112,6 @@ const DashboardPrestador = () => {
         .catch(() => setServicosPrestador([]));
     }
   }, [abaAtual, provider?.id]);
-
-  // Buscar todos os serviços cadastrados (para "Buscar Serviços")
-  useEffect(() => {
-    if (abaAtual === "buscar-servicos") {
-      fetch('http://localhost:3333/services')
-        .then(res => res.json())
-        .then(setServicosCadastrados)
-        .catch(() => setServicosCadastrados([]));
-    }
-  }, [abaAtual]);
 
   // Buscar ordens de serviço do prestador
   useEffect(() => {
@@ -366,7 +356,7 @@ const DashboardPrestador = () => {
             onClick={() => setAbaAtual("buscar-servicos")}
             className={`${styles.botaoNavegacao} ${abaAtual === "buscar-servicos" ? styles.ativo : ''}`}
           >
-            Buscar Serviços
+            Meus Serviços
           </button>
           <button
             onClick={() => setAbaAtual("os")}
@@ -632,9 +622,9 @@ const DashboardPrestador = () => {
 
         {abaAtual === "buscar-servicos" && (
           <section className={styles.secaoServico}>
-            <h2 className={styles.subtitulo}>Serviços Cadastrados</h2>
-            {servicosCadastrados.length === 0 ? (
-              <p>Nenhum serviço encontrado.</p>
+            <h2 className={styles.subtitulo}>Meus Serviços</h2>
+            {servicosPrestador.length === 0 ? (
+              <p>Nenhum serviço cadastrado.</p>
             ) : (
               <table className={styles.ordensTabela}>
                 <thead>
@@ -649,7 +639,7 @@ const DashboardPrestador = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {servicosCadastrados.map(servico => (
+                  {servicosPrestador.map(servico => (
                     <tr key={servico.id}>
                       <td>{servico.title}</td>
                       <td>{servico.description}</td>
