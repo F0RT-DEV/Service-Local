@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styles from "./DashboardADM.module.css";
 
 const getToken = () => localStorage.getItem("token");
 
@@ -54,7 +55,7 @@ const DashboardADM = () => {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       const data = await res.json();
-      setMensagem(data.message || "Prestador aprovado!");
+      setMensagem(data.message || "Prestador aprovado com sucesso!");
     } catch {
       setMensagem("Erro ao aprovar prestador.");
     }
@@ -69,43 +70,58 @@ const DashboardADM = () => {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
       const data = await res.json();
-      setMensagem(data.message || "Prestador rejeitado!");
+      setMensagem(data.message || "Prestador rejeitado com sucesso!");
     } catch {
       setMensagem("Erro ao rejeitar prestador.");
     }
   };
 
   return (
-    <div style={{ padding: 32 }}>
-      <h1>Painel do Administrador</h1>
-      <div style={{ marginBottom: 24 }}>
-        <button onClick={() => setAba("pendentes")} style={{ marginRight: 8 }}>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Painel do Administrador</h1>
+      
+      <div className={styles.tabContainer}>
+        <button 
+          onClick={() => setAba("pendentes")} 
+          className={`${styles.tabButton} ${aba === "pendentes" ? styles.active : ""}`}
+        >
           Prestadores Pendentes
         </button>
-        <button onClick={() => setAba("aprovados")} style={{ marginRight: 8 }}>
+        <button 
+          onClick={() => setAba("aprovados")} 
+          className={`${styles.tabButton} ${aba === "aprovados" ? styles.active : ""}`}
+        >
           Prestadores Aprovados
         </button>
-        <button onClick={() => setAba("usuarios")} style={{ marginRight: 8 }}>
+        <button 
+          onClick={() => setAba("usuarios")} 
+          className={`${styles.tabButton} ${aba === "usuarios" ? styles.active : ""}`}
+        >
           Usuários
         </button>
-        <button onClick={() => setAba("relatorios")}>
+        <button 
+          onClick={() => setAba("relatorios")} 
+          className={`${styles.tabButton} ${aba === "relatorios" ? styles.active : ""}`}
+        >
           Relatórios (em breve)
         </button>
       </div>
 
       {mensagem && (
-        <div style={{ marginBottom: 16, color: mensagem.includes("sucesso") ? "green" : "red" }}>
+        <div className={`${styles.message} ${
+          mensagem.includes("sucesso") ? styles.success : styles.error
+        }`}>
           {mensagem}
         </div>
       )}
 
       {aba === "pendentes" && (
         <div>
-          <h2>Prestadores Pendentes</h2>
+          <h2 className={styles.sectionTitle}>Prestadores Pendentes</h2>
           {pendentes.length === 0 ? (
-            <p>Nenhum prestador pendente.</p>
+            <p className={styles.emptyMessage}>Nenhum prestador pendente.</p>
           ) : (
-            <table border={1} cellPadding={8}>
+            <table className={styles.table}>
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -121,10 +137,16 @@ const DashboardADM = () => {
                     <td>{p.cnpj || "-"}</td>
                     <td>{p.status}</td>
                     <td>
-                      <button onClick={() => aprovarPrestador(p.id)} style={{ marginRight: 8 }}>
+                      <button 
+                        onClick={() => aprovarPrestador(p.id)} 
+                        className={`${styles.actionButton} ${styles.approveButton}`}
+                      >
                         Aprovar
                       </button>
-                      <button onClick={() => rejeitarPrestador(p.id)}>
+                      <button 
+                        onClick={() => rejeitarPrestador(p.id)}
+                        className={`${styles.actionButton} ${styles.rejectButton}`}
+                      >
                         Rejeitar
                       </button>
                     </td>
@@ -138,11 +160,11 @@ const DashboardADM = () => {
 
       {aba === "aprovados" && (
         <div>
-          <h2>Prestadores Aprovados</h2>
+          <h2 className={styles.sectionTitle}>Prestadores Aprovados</h2>
           {aprovados.length === 0 ? (
-            <p>Nenhum prestador aprovado.</p>
+            <p className={styles.emptyMessage}>Nenhum prestador aprovado.</p>
           ) : (
-            <table border={1} cellPadding={8}>
+            <table className={styles.table}>
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -166,11 +188,11 @@ const DashboardADM = () => {
 
       {aba === "usuarios" && (
         <div>
-          <h2>Todos os Usuários</h2>
+          <h2 className={styles.sectionTitle}>Todos os Usuários</h2>
           {usuarios.length === 0 ? (
-            <p>Nenhum usuário encontrado.</p>
+            <p className={styles.emptyMessage}>Nenhum usuário encontrado.</p>
           ) : (
-            <table border={1} cellPadding={8}>
+            <table className={styles.table}>
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -196,9 +218,8 @@ const DashboardADM = () => {
 
       {aba === "relatorios" && (
         <div>
-          <h2>Relatórios e Moderação</h2>
-          <p>Funcionalidade em desenvolvimento.</p>
-          {/* Aqui você pode implementar gráficos, relatórios, moderação de avaliações, etc */}
+          <h2 className={styles.sectionTitle}>Relatórios e Moderação</h2>
+          <p className={styles.emptyMessage}>Funcionalidade em desenvolvimento.</p>
         </div>
       )}
     </div>
