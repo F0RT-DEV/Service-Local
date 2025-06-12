@@ -80,3 +80,21 @@ export async function getAllServicesByCategoryHandler(req, res) {
     });
   }
 }
+export async function getMyServicesHandler(req, res) {
+	try {
+		const providerId = req.user?.provider_id;
+
+
+		if (!providerId) {
+			return res.status(401).json({ error: "Prestador não autenticado" });
+		}
+
+		const services = await getAllServicesByProviderId(providerId);
+		return res.status(200).json(services);
+	} catch (err) {
+		return res.status(500).json({
+			error: "Erro ao buscar serviços do prestador",
+			details: err.message,
+		});
+	}
+}
