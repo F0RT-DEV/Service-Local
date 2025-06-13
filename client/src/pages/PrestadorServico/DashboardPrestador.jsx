@@ -393,7 +393,7 @@ useEffect(() => {
       )}
 
       <header className={styles.header}>
-        <h1 className={styles.titulo}>Bem-vindo, {usuario.nome}!</h1>
+        <h1 className={styles.titulo}>Bem-vindo!</h1>
         <nav className={styles.navegacao}>
           <button
             onClick={() => setAbaAtual("perfil")}
@@ -568,42 +568,6 @@ useEffect(() => {
 
         {abaAtual === "cadastrar-servico" && (
           <section className={styles.secaoServico}>
-            <h2 className={styles.subtitulo}>Seus Serviços</h2>
-            <div>
-              {servicosPrestador.length === 0 ? (
-                <p>Nenhum serviço cadastrado.</p>
-              ) : (
-                <table className={styles.ordensTabela}>
-                  <thead>
-                    <tr>
-                      <th>Título</th>
-                      <th>Descrição</th>
-                      <th>Categoria</th>
-                      <th>Preço Mínimo</th>
-                      <th>Preço Máximo</th>
-                      <th>Imagens</th>
-                      <th>Ativo?</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {servicosPrestador.map((servico) => (
-                      <tr key={servico.id}>
-                        <td>{servico.title}</td>
-                        <td>{servico.description}</td>
-                        <td>
-                          {categorias.find((c) => c.id === servico.category_id)
-                            ?.name || servico.category_id}
-                        </td>
-                        <td>{servico.price_min}</td>
-                        <td>{servico.price_max}</td>
-                        <td>{renderImagens(servico.images)}</td>
-                        <td>{servico.is_active ? "Sim" : "Não"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
             <form
               className={styles.formulario}
               onSubmit={handleCadastrarServico}
