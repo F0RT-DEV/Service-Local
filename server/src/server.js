@@ -22,8 +22,8 @@ app.use("/", adminRoutes);
 app.use("/", authRoutes);
 app.use("/", categoryRoutes);
 app.use("/", providerRoutes);
-app.use("/", publicRouter);
 app.use("/", serviceRoutes);
+app.use("/", publicRouter);
 app.use("/", orderRoutes);
 
 // app.use("/", orderRoutes);

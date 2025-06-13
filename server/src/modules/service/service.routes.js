@@ -1,5 +1,5 @@
 import {
-	createServiceHandler,
+	createServiceHandler,getMyServicesHandler
 } from "./service.controller.js";
 import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
@@ -14,6 +14,7 @@ router.post(
 	verifyProviderRole,
 	createServiceHandler
 );
+router.get('/services/me', authenticateToken, getMyServicesHandler);
 
 
 export default router;

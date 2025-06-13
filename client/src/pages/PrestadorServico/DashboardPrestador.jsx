@@ -96,20 +96,20 @@ const DashboardPrestador = () => {
     return () => { cancelado = true; };
   }, [usuario?.id]);
 
-  // Buscar serviços do próprio prestador para ambas as abas
-  useEffect(() => {
-    if ((abaAtual === "cadastrar-servico" || abaAtual === "buscar-servicos") && provider?.id) {
-      const token = localStorage.getItem("token");
-      fetch(`http://localhost:3333/providers/${provider.id}/services`, {
-        headers: {
-          "Authorization": token ? `Bearer ${token}` : undefined,
-        }
-      })
-        .then(res => res.json())
-        .then(setServicosPrestador)
-        .catch(() => setServicosPrestador([]));
-    }
-  }, [abaAtual, provider?.id]);
+  // Buscar serviços do próprio prestador usando /services/me
+useEffect(() => {
+  if (abaAtual === "cadastrar-servico" || abaAtual === "buscar-servicos") {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:3333/services/me", {
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : undefined,
+      }
+    })
+      .then(res => res.json())
+      .then(data => setServicosPrestador(Array.isArray(data) ? data : []))
+      .catch(() => setServicosPrestador([]));
+  }
+}, [abaAtual]);
 
   // Buscar ordens de serviço do prestador
   useEffect(() => {
