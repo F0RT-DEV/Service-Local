@@ -14,7 +14,7 @@ router.post(
 	verifyProviderRole,
 	createServiceHandler
 );
-router.get('/services/me', authenticateToken, getMyServicesHandler);
+router.get('/services/me', authenticateToken, verifyProviderRole, getMyServicesHandler);
 
 
 export default router;

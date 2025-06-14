@@ -2,52 +2,47 @@ import db from "../../db.js";
 import * as providerModel from "./provider.model.js";
 
 export async function updateProvider(req, res) {
-  const { id } = req.params; // user_id
-  const { bio, status, categories, cnpj, areas_of_expertise, availability } = req.body;
+  const userId = req.user.id;
+  const { bio, categories, cnpj, areas_of_expertise, availability } = req.body;
 
   try {
-    // Validação básica
     if (!bio && !cnpj && !categories && !availability) {
       return res.status(400).json({ error: "Nenhum dado válido para atualização" });
     }
 
-    // Atualiza dados do provider
-    await providerModel.updateByUserId(id, { 
-      bio, 
-      status, 
+    // Atualiza os dados básicos do provider
+    await providerModel.updateByUserId(userId, {
+      bio,
       cnpj,
       areas_of_expertise,
       availability
     });
 
-    // Recupera provider.id com base no user_id
-    const provider = await providerModel.getByUserId(id);
+    const provider = await providerModel.getByUserId(userId);
     if (!provider) {
       return res.status(404).json({ error: "Prestador não encontrado" });
     }
 
-    // Remove categorias antigas (se necessário)
+    // Atualiza categorias
     if (Array.isArray(categories)) {
       await db("providers_categories").where({ provider_id: provider.id }).del();
-
-      // Insere novas categorias
       if (categories.length > 0) {
         await providerModel.addCategories(provider.id, categories);
       }
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Prestador atualizado com sucesso!",
       provider_id: provider.id
     });
   } catch (error) {
     console.error("Erro ao atualizar prestador:", error);
-    
+
     if (error.code === 'ER_NO_REFERENCED_ROW_2') {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       error: "Erro interno do servidor",
       details: error.message
     });
@@ -110,3 +105,4 @@ export async function getAuthenticatedProfile(req, res) {
     return res.status(500).json({ error: "Erro interno do servidor" });
   }
 }
+
