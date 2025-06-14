@@ -9,7 +9,7 @@ import {authenticateToken} from "../../middlewares/authMiddleware.js";
 const router = Router();
 
 router.put(
-    "/provider/:id",
+    "/provider",
     authenticateToken,
     verifyProviderRole,
     updateProvider
