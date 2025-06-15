@@ -20,13 +20,8 @@ export function create(data) {
 }
 
 export function updateByUserId(user_id, updates) {
-	const allowedFields = [
-		"bio",
-		"status",
-		"cnpj",
-		"areas_of_expertise",
-		"availability",
-	];
+	const allowedFields = ["bio", "cnpj", "areas_of_expertise", "availability"];
+
 	const filteredUpdates = Object.keys(updates)
 		.filter((key) => allowedFields.includes(key) && updates[key] !== undefined)
 		.reduce((obj, key) => {
@@ -122,3 +117,16 @@ export function getInformactionsMe(id) {
 	return db("providers").where({id}).first();
 }
 
+export function getByProviderByCategory(categoryId) {
+	return db("providers_categories as pc")
+		.join("providers as p", "pc.provider_id", "p.id")
+		.where("pc.category_id", categoryId)
+		.select(
+			"p.id as provider_id",
+			"p.user_id",
+			"p.bio",
+			"p.cnpj",
+			"p.status",
+			"p.availability"
+		);
+}

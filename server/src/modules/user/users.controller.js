@@ -5,7 +5,6 @@ import * as providerModel from "../provider/provider.model.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-
 import {UserSchema} from "./users.schema.js"; // Corrigido o caminho!
 
 export async function createUser(req, res) {
@@ -114,65 +113,67 @@ export async function getUserById(req, res) {
 	}
 }
 export async function loginUser(req, res) {
-  try {
-    const { email, password } = req.body;
-
-    const result = UserSchema.pick({ email: true, password: true }).safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: "Dados inválidos", details: result.error.format() });
-    }
-
-    const user = await userModel.getByEmail(email);
-    if (!user) {
-      return res.status(401).json({ error: "Credenciais inválidas" });
-    }
-
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword) {
-      return res.status(401).json({ error: "Credenciais inválidas" });
-    }
-
-    let provider_id = null;
-    if (user.role === 'provider') {
-      // Buscar o provider_id relacionado ao user.id
-      const provider = await providerModel.getByUserId(user.id); // ou como você consulta o provider
-      if (provider) {
-        provider_id = provider.id;
-      }
-    }
-
-    // Gera o token com id, role e provider_id (se houver)
-    const tokenPayload = { id: user.id, role: user.role };
-    if (provider_id) {
-      tokenPayload.provider_id = provider_id;
-    }
-
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "8h" });
-
-    res.json({
-      message: "Login realizado com sucesso!",
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        provider_id, // opcional no retorno
-      },
-    });
-  } catch (error) {
-    console.error("Erro ao realizar login:", error);
-    res.status(500).json({ error: "Erro interno do servidor", details: error.message });
-  }
-}
-
- export async function resetPassword(req, res) {
 	try {
-		const { email, password } = req.body;
+		const {email, password} = req.body;
+
+		const result = UserSchema.pick({email: true, password: true}).safeParse(
+			req.body
+		);
+		if (!result.success) {
+			return res
+				.status(400)
+				.json({error: "Dados inválidos", details: result.error.format()});
+		}
 
 		const user = await userModel.getByEmail(email);
 		if (!user) {
-			return res.status(404).json({ error: "Usuário nao encontrado" });
+			return res.status(401).json({error: "Credenciais inválidas"});
+		}
+
+		const validPassword = await bcrypt.compare(password, user.password_hash);
+		if (!validPassword) {
+			return res.status(401).json({error: "Credenciais inválidas"});
+		}
+
+		let provider_id = null;
+		if (user.role === "provider") {
+			// Buscar o provider_id relacionado ao user.id
+			const provider = await providerModel.getByUserId(user.id); // ou como você consulta o provider
+			if (provider) {
+				provider_id = provider.id;
+			}
+		}
+
+		// Gera o token com id, role e provider_id (se houver)
+		const tokenPayload = {id: user.id, role: user.role};
+		if (provider_id) {
+			tokenPayload.provider_id = provider_id;
+		}
+
+		const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+			expiresIn: "8h",
+		});
+
+		res.json({
+			message: "Login realizado com sucesso!",
+			token,
+			
+		});
+	} catch (error) {
+		console.error("Erro ao realizar login:", error);
+		res
+			.status(500)
+			.json({error: "Erro interno do servidor", details: error.message});
+	}
+}
+
+export async function resetPassword(req, res) {
+	try {
+		const {email, password} = req.body;
+
+		const user = await userModel.getByEmail(email);
+		if (!user) {
+			return res.status(404).json({error: "Usuário nao encontrado"});
 		}
 
 		// Hash da nova senha
@@ -181,7 +182,7 @@ export async function loginUser(req, res) {
 		// Atualiza a senha do usuário usando o id e a senha com hash
 		await userModel.updatePassword(user.id, password_hash);
 
-		res.status(200).json({ message: "Senha atualizada com sucesso!" });
+		res.status(200).json({message: "Senha atualizada com sucesso!"});
 	} catch (error) {
 		console.error("Erro ao atualizar senha:", error);
 		res.status(500).json({

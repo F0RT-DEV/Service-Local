@@ -1,8 +1,7 @@
 import {Router} from "express";
-import {createUser, loginUser} from "../user/users.controller.js";
-import {getAuthenticatedProfile} from "../provider/provider.controller.js";
+import {getAuthenticatedProfile} from "../../modules/provider/provider.controller.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
-import {resetPassword} from "../user/users.controller.js";
+import {resetPassword,createUser, loginUser} from "../../modules/user/users.controller.js";
 const router = Router();
 
 router.post("/register", createUser);
