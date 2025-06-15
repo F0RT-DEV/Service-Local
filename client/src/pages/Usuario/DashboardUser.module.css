@@ -1,0 +1,397 @@
+/* DashboardUser.module.css */
+.dashboard-user {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-user h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+/* Tabs - Compact Version */
+.tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.tab, .tab-active {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #3498db;
+}
+
+.tab-active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+}
+
+/* Services List */
+.servicos-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.servico-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.servico-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.servico-imagem {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.servico-info {
+  padding: 1.25rem;
+}
+
+.servico-info h3 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.servico-info p {
+  margin: 0.5rem 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.servico-info p strong {
+  color: #2c3e50;
+}
+
+.servico-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8f9fa;
+}
+
+/* Buttons */
+.btn-detalhes {
+  flex: 1;
+  background: #ecf0f1;
+  color: #2c3e50;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-detalhes:hover {
+  background: #dfe6e9;
+}
+
+.btn-solicitar {
+  flex: 1;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-solicitar:hover {
+  background: #2980b9;
+}
+
+.btn-cancelar {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background: #c0392b;
+}
+
+/* Orders List */
+.ordens-lista {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.ordem-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ordem-card p {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+}
+
+.ordem-card p strong {
+  color: #7f8c8d;
+}
+
+button {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  background: #ecf0f1;
+}
+
+.ordem-card button {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.ordem-card button:hover {
+  background: #2980b9;
+}
+
+/* New Components */
+.cabecalhoServicos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filtros label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.selectFiltro {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
+/* Pagination */
+.paginacaoContainer {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.botaoPagina {
+  min-width: 36px;
+  padding: 0.5rem;
+  border: 1px solid #3498db;
+  background: white;
+  color: #3498db;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.botaoPagina:hover {
+  background: #f0f7fc;
+}
+
+.botaoPagina:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginaAtiva {
+  background: #3498db;
+  color: white;
+}
+
+.pontos {
+  display: flex;
+  align-items: center;
+  color: #7f8c8d;
+}
+
+.infoPaginacao {
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.semResultados {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 2rem;
+  grid-column: 1 / -1;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  padding: 2rem;
+  position: relative;
+}
+
+.btn-fechar-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #7f8c8d;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+}
+
+.btn-fechar-modal:hover {
+  color: #e74c3c;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-imagem-container {
+  height: 200px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.modal-imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-top: 1rem;
+}
+
+.modal-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Rating */
+.avaliacao-estrelas {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.estrela, .estrelaAtiva {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #ddd;
+}
+
+.estrelaAtiva {
+  color: #f1c40f;
+}
+
+.avaliacao-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  min-height: 100px;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cabecalhoServicos {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .servicos-lista {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal {
+    padding: 1.5rem;
+  }
+}
