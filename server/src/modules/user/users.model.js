@@ -79,5 +79,5 @@ export function remove(id) {
 }
 
 export function updatePassword(userId, password_hash) {
-	return db("users").where({ id: userId }).update({ password_hash });
+	return db("users").where({id: userId}).update({password_hash});
 }

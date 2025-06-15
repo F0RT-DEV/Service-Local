@@ -3,11 +3,7 @@ import {
 	getPrestadores,
 	getPrestadorById,
 } from "../../modules/provider/provider.controller.js";
-import {
-
-	getAllServicesByProviderIdHandler,
-	
-} from "../../modules/service/service.controller.js";
+import {getAllServicesByProviderIdHandler} from "../../modules/service/service.controller.js";
 
 const router = express.Router();
 

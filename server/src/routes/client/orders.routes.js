@@ -9,5 +9,4 @@ router.get("/orders/:id", orderController.getOrderById);
 router.put("/orders/:id", orderController.updateOrder);
 router.delete("/orders/:id", orderController.deleteOrder);
 
-
 export default router;

@@ -8,10 +8,9 @@ export async function approveProvider(req, res) {
 		if (!provider)
 			return res.status(404).json({message: "Prestador não encontrado"});
 
-    if (provider.status === "approved")
-      return res.status(400).json({message: "Prestador já aprovado"});
-    await ProviderModel.updateStatus(id, "approved");
-		
+		if (provider.status === "approved")
+			return res.status(400).json({message: "Prestador já aprovado"});
+		await ProviderModel.updateStatus(id, "approved");
 
 		return res.status(200).json({message: "Prestador aprovado com sucesso"});
 	} catch (error) {
@@ -27,9 +26,9 @@ export async function rejectProvider(req, res) {
 		if (!provider)
 			return res.status(404).json({message: "Prestador não encontrado"});
 
-    if (provider.status === "rejected")
-      return res.status(400).json({message: "Prestador já rejeitado"});
-    await ProviderModel.updateStatus(id, "rejected");
+		if (provider.status === "rejected")
+			return res.status(400).json({message: "Prestador já rejeitado"});
+		await ProviderModel.updateStatus(id, "rejected");
 
 		return res.status(200).json({message: "Prestador rejeitado com sucesso"});
 	} catch (error) {
