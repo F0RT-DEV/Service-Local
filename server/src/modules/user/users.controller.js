@@ -157,6 +157,7 @@ export async function loginUser(req, res) {
 		res.json({
 			message: "Login realizado com sucesso!",
 			token,
+			user
 			
 		});
 	} catch (error) {
@@ -164,6 +165,7 @@ export async function loginUser(req, res) {
 		res
 			.status(500)
 			.json({error: "Erro interno do servidor", details: error.message});
+
 	}
 }
 
