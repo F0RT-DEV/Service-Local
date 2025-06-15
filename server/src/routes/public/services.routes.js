@@ -12,7 +12,8 @@ const router = express.Router();
 
 router.get("/services/:id", getServiceByIdHandler);
 router.get("/services", getAllServicesHandler);
-router.get("/services/category/:categoryId", getAllServicesByCategoryHandler);
+router.get("/services/category/:categoryName", getAllServicesByCategoryHandler);
+
 
 
 export default router;
