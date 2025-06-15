@@ -16,7 +16,7 @@ router.post(
 	createServiceHandler
 );
 router.get(
-	"/services/me",
+	"/services1/me",
 	authenticateToken,
 	verifyProviderRole,
 	getMyServicesHandler
