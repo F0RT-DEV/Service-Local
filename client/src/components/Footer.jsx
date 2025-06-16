@@ -8,7 +8,7 @@ const Footer = () => {
       <div className={styles['footer-container']}>
         <div className={styles['footer-content']}>
           <div className={styles['footer-brand']}>
-            <p className={styles['footer-title']}>Employment Assistance</p>
+            <p className={styles['footer-title']}>AuxTech</p>
             <p className={styles['footer-subtitle']}>Conectando profissionais técnicos e clientes</p>
           </div>
           
@@ -29,7 +29,7 @@ const Footer = () => {
         </div>
         
         <div className={styles['footer-bottom']}>
-          &copy; {new Date().getFullYear()} Employment Assistance. Todos os direitos reservados.
+          &copy; {new Date().getFullYear()} AuxTech. Todos os direitos reservados.
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { UserIcon, LogOut, Menu } from 'lucide-react';
-import styles from './NavBarra.module.css';
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserIcon, LogOut, Menu } from "lucide-react";
+import styles from "./NavBarra.module.css";
 
 const getUsuarioLocal = () => {
   try {
@@ -37,7 +37,7 @@ const NavBarra = () => {
     setUsuario(null);
     setMenuAberto(false);
     setDropdownAberto(false);
-    window.location.href = '/'; // Força recarregamento da página
+    window.location.href = "/"; // Força recarregamento da página
   };
 
   const toggleMenu = () => {
@@ -51,105 +51,110 @@ const NavBarra = () => {
   // Fecha o dropdown ao clicar fora
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownAberto(false);
       }
     }
     if (dropdownAberto) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownAberto]);
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles['navbar-container']}>
-        <div className={styles['navbar-content']}>
-          <div className={styles['navbar-brand']}>
-            <Link to="/" className={styles['navbar-logo']}>
-              Employment Assistance
+      <div className={styles["navbar-container"]}>
+        <div className={styles["navbar-content"]}>
+          <div className={styles["navbar-brand"]}>
+            <Link to="/" className={styles["navbar-logo"]}>
+              AuxTech
             </Link>
           </div>
 
           {/* Botão de menu para mobile */}
-          <button className={styles['menu-button']} onClick={toggleMenu}>
+          <button className={styles["menu-button"]} onClick={toggleMenu}>
             <Menu size={24} />
           </button>
 
-          <div className={`${styles['navbar-right']} ${menuAberto ? styles.active : ''}`}>
+          <div
+            className={`${styles["navbar-right"]} ${
+              menuAberto ? styles.active : ""
+            }`}
+          >
             {usuario ? (
               <>
-                <div className={styles['nav-links']}>
-  {/* "Buscar Serviços" aparece para client/provider */}
-  {(usuario.role === 'provider' || usuario.role === 'client') && (
-    <Link
-      to={
-        usuario.role === 'provider'
-          ? '/prestador/dashboard?aba=buscar-servicos'
-          : '/usuario/dashboard'
-      }
-      className={styles['nav-link']}
-    >
-      Buscar Serviços
-    </Link>
-  )}
-  {/* "Painel Admin" só para admin */}
-  {usuario.role === 'admin' && (
-    <Link to="/admin/dashboard" className={styles['nav-link']}>
-      Painel Admin
-    </Link>
-  )}
-  {/* "Prestar Serviços" só para prestador */}
-  {usuario.role === 'provider' && (
-    <Link to="/prestador/dashboard" className={styles['nav-link']}>
-      Prestar Serviços
-    </Link>
-  )}
-</div>
+                <div className={styles["nav-links"]}>
+                  {/* "Buscar Serviços" aparece para client/provider */}
+                  {(usuario.role === "provider" ||
+                    usuario.role === "client") && (
+                    <Link
+                      to={
+                        usuario.role === "provider"
+                          ? "/prestador/dashboard?aba=buscar-servicos"
+                          : "/usuario/dashboard"
+                      }
+                      className={styles["nav-link"]}
+                    >
+                      Buscar Serviços
+                    </Link>
+                  )}
+                  {/* "Painel Admin" só para admin */}
+                  {usuario.role === "admin" && (
+                    <Link to="/admin/dashboard" className={styles["nav-link"]}>
+                      Painel Admin
+                    </Link>
+                  )}
+                  {/* "Prestar Serviços" só para prestador */}
+                  {usuario.role === "provider" && (
+                    <Link
+                      to="/prestador/dashboard"
+                      className={styles["nav-link"]}
+                    >
+                      Prestar Serviços
+                    </Link>
+                  )}
+                </div>
 
-                <div className={styles['user-actions']}>
+                <div className={styles["user-actions"]}>
                   <div
-                    className={styles['user-info']}
+                    className={styles["user-info"]}
                     onClick={toggleDropdown}
                     tabIndex={0}
                     ref={dropdownRef}
                   >
-                    <div className={styles['user-avatar']}>
+                    <div className={styles["user-avatar"]}>
                       <UserIcon size={18} />
                     </div>
-                    <span className={styles['user-name']}>
+                    <span className={styles["user-name"]}>
                       {usuario.name && usuario.name.trim() !== ""
                         ? usuario.name
                         : usuario.nome && usuario.nome.trim() !== ""
                         ? usuario.nome
-                        : 'Usuário'}
+                        : "Usuário"}
                     </span>
 
                     {dropdownAberto && (
-                      <div className={styles['dropdown-menu']}>
+                      <div className={styles["dropdown-menu"]}>
                         <button
                           onClick={() => {
                             setDropdownAberto(false);
                             if (usuario.role === "provider") {
-                              navigate('/prestador/perfil');
+                              navigate("/prestador/perfil");
                             } else {
-                              navigate('/usuario/perfil');
+                              navigate("/usuario/perfil");
                             }
                           }}
-                          className={styles['profile-button']}
+                          className={styles["profile-button"]}
                         >
                           <span>Perfil</span>
                         </button>
                         <button
                           onClick={handleLogout}
-                          className={styles['logout-button']}
+                          className={styles["logout-button"]}
                         >
                           <LogOut size={16} />
                           <span>Sair</span>
@@ -160,11 +165,11 @@ const NavBarra = () => {
                 </div>
               </>
             ) : (
-              <div className={styles['auth-buttons']}>
-                <Link to="/login" className={styles['login-button']}>
+              <div className={styles["auth-buttons"]}>
+                <Link to="/login" className={styles["login-button"]}>
                   Entrar
                 </Link>
-                <Link to="/cadastro" className={styles['register-button']}>
+                <Link to="/cadastro" className={styles["register-button"]}>
                   Cadastrar
                 </Link>
               </div>
