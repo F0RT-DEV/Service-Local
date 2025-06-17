@@ -1,21 +1,39 @@
-import { authenticateToken } from "../../middlewares/authMiddleware";
+  import { authenticateToken } from "../../middlewares/authMiddleware";
 import { verifyProviderRole } from "../../middlewares/role.middleware";
-import { getAllOrders, getOrderById } from "../../modules/order/order.controller";
+import {
+    getAllOrders,
+    getOrderById,
+    acceptOrder,
+    rejectOrder,
+} from "../../modules/order/order.controller";
 import router from "./services.routes";
 
 router.get(
-  "proverder/orders",
-  authenticateToken,
-  verifyProviderRole,
-  getAllOrders
+    "/provider/orders",
+    authenticateToken,
+    verifyProviderRole,
+    getAllOrders
 );
 
 router.get(
-  "/provider/orders/:id",
-  authenticateToken,
-  verifyProviderRole,
-  getOrderById
+    "/provider/orders/:id",
+    authenticateToken,
+    verifyProviderRole,
+    getOrderById
 );
 
+router.patch(
+    "/provider/orders/:id/accept",
+    authenticateToken,
+    verifyProviderRole,
+    acceptOrder
+);
+
+router.patch(
+    "/provider/orders/:id/reject",
+    authenticateToken,
+    verifyProviderRole,
+    rejectOrder
+);
 
 export default router;
