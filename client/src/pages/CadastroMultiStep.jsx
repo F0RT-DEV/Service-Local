@@ -97,10 +97,9 @@ const handleSelecionarTipo = (tipo) => {
     }
   };
 
-  // Cadastro de prestador (usuário + provider)
-  const finalizarCadastroPrestador = async () => {
+const finalizarCadastroPrestador = async () => {
   try {
-    // 1. Cria o usuário (role: provider)
+    // 1. Cadastro do usuário (role: provider)
     const userPayload = {
       name: formData.nome,
       email: formData.email,
@@ -117,26 +116,23 @@ const handleSelecionarTipo = (tipo) => {
       numero: formData.numero,
     };
 
-    const res = await axios.post("http://localhost:3333/register", userPayload);
-    const { user_id } = res.data;
+    await axios.post("http://localhost:3333/register", userPayload);
 
-    // 2. Faz login para obter o token JWT
+    // 2. Login para obter token
     const loginRes = await axios.post("http://localhost:3333/login", {
       email: formData.email,
       password: formData.senha,
     });
-    const { token } = loginRes.data;
+    const token = loginRes.data.token;
 
-    // 3. Atualiza/cria o provider (campos específicos)
-    const providerPayload = {
-      bio: formData.descricao,
-      cnpj: formData.cnpj,
-      categories: formData.categorias, // array de IDs
-    };
-
+    // 3. Atualiza dados específicos do provider
     await axios.put(
-      `http://localhost:3333/register/provider/${user_id}`,
-      providerPayload,
+      "http://localhost:3333/provider",
+      {
+        bio: formData.descricao,
+        cnpj: formData.cnpj,
+        categories: formData.categorias, // array de IDs
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -149,7 +145,6 @@ const handleSelecionarTipo = (tipo) => {
       navigate("/login");
     }, 1000);
   } catch (err) {
-    console.log("ERRO NO CATCH", err);
     setErros({ geral: err.response?.data?.error || "Erro ao cadastrar. Tente novamente." });
   }
 };

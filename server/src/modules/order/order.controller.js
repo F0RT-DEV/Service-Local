@@ -57,3 +57,27 @@ export async function deleteOrder(req, res) {
 		res.status(500).json({error: error.message});
 	}
 }
+
+export async function acceptOrder(req, res) {
+    try {
+        const { id } = req.params;
+        const updated = await orderModel.update(id, { status: "accepted" });
+        if (!updated || updated.length === 0)
+            return res.status(404).json({ error: "Order not found" });
+        res.json(updated[0]);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+export async function rejectOrder(req, res) {
+    try {
+        const { id } = req.params;
+        const updated = await orderModel.update(id, { status: "rejected" });
+        if (!updated || updated.length === 0)
+            return res.status(404).json({ error: "Order not found" });
+        res.json(updated[0]);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}

@@ -31,6 +31,11 @@ function App() {
                 <PerfilUsuario />
               </ProtectedRoute>
             } />
+            <Route path="/admin/perfil" element={
+  <ProtectedRoute tipoPermitido="admin">
+    <PerfilUsuario />
+  </ProtectedRoute>
+} />
             
             <Route path="/admin/dashboard" element={
   <ProtectedRoute tipoPermitido="admin">
