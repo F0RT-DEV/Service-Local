@@ -51,36 +51,61 @@ const DashboardUser = () => {
   // Carrega ordens de serviço do usuário
   useEffect(() => {
     if (!usuario?.id) return;
-    fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
+    fetch(`http://localhost:3333/clients/orders`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then(res => res.json())
       .then(setOrdens)
       .catch(() => setOrdens([]));
   }, [usuario?.id]);
 
   const handleSolicitarServico = (servico) => {
-    if (!usuario?.id) return;
+    if (!usuario?.id) {
+      alert("Usuário não autenticado.");
+      return;
+    }
+
     const novaOS = {
-      client_id: usuario.id,
-      provider_id: servico.provider_id,
       service_id: servico.id,
-      status: "pending",
       scheduled_date: new Date().toISOString(),
-      mensagem: mensagem || "Solicitação automática"
+      mensagem: mensagem || "Solicitação automática",
     };
-    fetch("http://localhost:3333/orders", {
+
+    console.log("Dados enviados:", novaOS);
+
+    fetch("http://localhost:3333/clients/orders", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novaOS)
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(novaOS),
     })
-      .then(res => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((error) => {
+            throw new Error(error.message || "Erro ao criar ordem de serviço");
+          });
+        }
+        return res.json();
+      })
       .then(() => {
         setMensagem("");
         alert("Ordem de serviço criada!");
         setServicoSelecionado(null);
-        // Atualiza ordens
-        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
-          .then(res => res.json())
+        fetch(`http://localhost:3333/clients/orders`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
           .then(setOrdens);
+      })
+      .catch((error) => {
+        console.error("Erro:", error.message);
+        alert(`Erro: ${error.message}`);
       });
   };
 
@@ -102,7 +127,11 @@ const DashboardUser = () => {
         setAvaliarOS(null);
         setNota(5);
         setComentario("");
-        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
+        fetch(`http://localhost:3333/clients/orders`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        })
           .then(res => res.json())
           .then(setOrdens);
       });
@@ -114,31 +143,35 @@ const DashboardUser = () => {
 
   const fecharDetalhes = () => setServicoSelecionado(null);
 
-  // Pagamento simulado
   const handlePagamento = (ordem) => {
-    fetch(`http://localhost:3333/orders/${ordem.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
+    fetch(`http://localhost:3333/clients/orders/${ordem.id}`, {
+      method: "PATCH",
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ status: "in_progress" })
     })
       .then(res => res.json())
       .then(() => {
         alert("Pagamento realizado! Serviço em andamento.");
-        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
+        fetch(`http://localhost:3333/clients/orders`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        })
           .then(res => res.json())
           .then(setOrdens);
       });
   };
 
-  // Renderização da paginação melhorada
   const renderPaginacao = () => {
     if (totalPaginas <= 1) return null;
     
-    const paginasVisiveis = 5; // Número máximo de páginas visíveis
+    const paginasVisiveis = 5;
     let inicio = Math.max(1, paginaAtual - Math.floor(paginasVisiveis / 2));
     let fim = Math.min(totalPaginas, inicio + paginasVisiveis - 1);
     
-    // Ajusta se estiver no início ou fim
     if (fim - inicio + 1 < paginasVisiveis) {
       inicio = Math.max(1, fim - paginasVisiveis + 1);
     }
@@ -305,7 +338,6 @@ const DashboardUser = () => {
                     </div>
                   </div>
                   <div className={styles['ordem-actions']}>
-                    {/* Se aceito e não pago, mostra botão de pagamento */}
                     {ordem.status === "accepted" && (
                       <button
                         className={styles.btnPagamento}
@@ -314,7 +346,6 @@ const DashboardUser = () => {
                         Realizar Pagamento
                       </button>
                     )}
-                    {/* Se em andamento e não avaliado, mostra botão de avaliação */}
                     {ordem.status === "in_progress" && !ordem.avaliada && (
                       <button
                         onClick={() => setAvaliarOS(ordem)}

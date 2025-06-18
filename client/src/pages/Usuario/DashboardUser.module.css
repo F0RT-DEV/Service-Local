@@ -51,17 +51,24 @@
 }
 
 .servico-card {
-  background: white;
-  border-radius: 8px;
+  background-color: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  /* Melhoria visual ao passar o mouse */
+  cursor: pointer;
 }
 
 .servico-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: #d1d1d1;
 }
+
 
 .servico-imagem {
   width: 100%;
@@ -99,8 +106,8 @@
 /* Buttons */
 .btn-detalhes {
   flex: 1;
-  background: #ecf0f1;
-  color: #2c3e50;
+  background: #2980b9;
+  color: white;
   border: none;
   border-radius: 6px;
   padding: 0.5rem;
@@ -110,7 +117,7 @@
 }
 
 .btn-detalhes:hover {
-  background: #dfe6e9;
+  background: #1a689c;
 }
 
 .btn-solicitar {
@@ -123,6 +130,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
+  margin-bottom: 5px;
 }
 
 .btn-solicitar:hover {
@@ -138,6 +146,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
+  margin-bottom: 5px;
 }
 
 .btn-cancelar:hover {
@@ -349,7 +358,8 @@ button {
   border: 1px solid #ddd;
   border-radius: 6px;
   min-height: 100px;
-  resize: vertical;
+  resize: none;
+  outline: none;
 }
 
 /* Rating */
