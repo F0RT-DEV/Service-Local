@@ -125,10 +125,10 @@ export async function rateOrder(req, res) {
 export async function getProviderOrders(req, res) {
 	try {
 		const providerId = req.user?.provider_id;
-		const orders = await orderModel.getByProvider(providerId);
+		const orders = await orderModel.getByProviderId(providerId);
 		res.json(orders);
 	} catch (error) {
-		res.status(500).json({error: "Erro ao listar ordens"});
+		res.status(500).json({error: {message: error.message}});
 	}
 }
 
