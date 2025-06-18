@@ -10,31 +10,40 @@ import router from "./services.routes.js";
 //const router = express.Router();
 
 router.get(
-    "/provider/orders",
-    authenticateToken,
-    verifyProviderRole,
-    getAllOrders
+	"/providers/orders",
+	authenticateToken,
+	verifyProviderRole,
+	getProviderOrders
 );
-
 router.get(
-    "/provider/orders/:id",
-    authenticateToken,
-    verifyProviderRole,
-    getOrderById
+	"/providers/orders/:id",
+	authenticateToken,
+	verifyProviderRole,
+	getProviderOrderById
 );
-
 router.patch(
-    "/provider/orders/:id/accept",
-    authenticateToken,
-    verifyProviderRole,
-    acceptOrder
+	"/providers/orders/:id/accept",
+	authenticateToken,
+	verifyProviderRole,
+	acceptOrder
 );
-
 router.patch(
-    "/provider/orders/:id/reject",
-    authenticateToken,
-    verifyProviderRole,
-    rejectOrder
+	"/providers/orders/:id/reject",
+	authenticateToken,
+	verifyProviderRole,
+	rejectOrder
+);
+router.patch(
+	"/providers/orders/:id/progress",
+	authenticateToken,
+	verifyProviderRole,
+	startOrderProgress
+);
+router.patch(
+	"/providers/orders/:id/complete",
+	authenticateToken,
+	verifyProviderRole,
+	completeOrder
 );
 
 export default router;
