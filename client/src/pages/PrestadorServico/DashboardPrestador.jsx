@@ -12,20 +12,11 @@ const getUsuarioLocal = () => {
 
 const DashboardPrestador = () => {
   const usuario = getUsuarioLocal();
-  const [abaAtual, setAbaAtual] = useState("perfil");
+  const [abaAtual, setAbaAtual] = useState("cadastrar-servico");
   const [provider, setProvider] = useState(undefined);
   const [categorias, setCategorias] = useState([]);
-  const [editando, setEditando] = useState(false);
   const [mensagem, setMensagem] = useState("");
-  const [erroCarregamento, setErroCarregamento] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-
-  const [form, setForm] = useState({
-    bio: "",
-    cnpj: "",
-    experiencia: "",
-    categorias: [],
-  });
 
   const [novoServico, setNovoServico] = useState({
     title: "",
@@ -39,20 +30,13 @@ const DashboardPrestador = () => {
 
   const [servicosPrestador, setServicosPrestador] = useState([]);
   const [ordens, setOrdens] = useState([]);
-  const [avaliacoes, setAvaliacoes] = useState([]);
 
   // Buscar categorias
   useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const response = await fetch("http://localhost:3333/categories");
-        const data = await response.json();
-        setCategorias(data);
-      } catch (error) {
-        setCategorias([]);
-      }
-    };
-    fetchCategorias();
+    fetch("http://localhost:3333/categories")
+      .then((res) => res.json())
+      .then(setCategorias)
+      .catch(() => setCategorias([]));
   }, []);
 
   // Buscar provider do usuário
@@ -62,63 +46,34 @@ const DashboardPrestador = () => {
       return;
     }
     let cancelado = false;
-    const fetchProviderData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3333/providers?user_id=${usuario.id}`
-        );
-        if (!response.ok) {
-          const erro = await response.text();
-          setErroCarregamento(`Erro HTTP: ${response.status} - ${erro}`);
-          if (!cancelado) setProvider(null);
-          return;
-        }
-        const data = await response.json();
+    fetch(`http://localhost:3333/providers?user_id=${usuario.id}`)
+      .then((res) => res.json())
+      .then((data) => {
         const prov = Array.isArray(data) ? data[0] : data;
-        if (!cancelado) {
-          if (prov) {
-            setProvider(prov);
-            setForm({
-              bio: prov?.bio || "",
-              cnpj: prov?.cnpj || "",
-              experiencia: prov?.experience || "",
-              categorias: prov?.categories
-                ? prov.categories.map((c) => c.id)
-                : [],
-            });
-          } else {
-            setProvider(null);
-          }
-        }
-      } catch (error) {
-        setErroCarregamento(
-          error.message || "Erro desconhecido ao buscar provider."
-        );
+        if (!cancelado) setProvider(prov || null);
+      })
+      .catch(() => {
         if (!cancelado) setProvider(null);
-      }
-    };
-
-    fetchProviderData();
+      });
     return () => {
       cancelado = true;
     };
   }, [usuario?.id]);
 
-
   // Buscar serviços do próprio prestador usando /services/me
-useEffect(() => {
-  if (abaAtual === "cadastrar-servico" || abaAtual === "buscar-servicos") {
-    const token = localStorage.getItem("token");
-    fetch("http://localhost:3333/services/me", {
-      headers: {
-        "Authorization": token ? `Bearer ${token}` : undefined,
-      }
-    })
-      .then(res => res.json())
-      .then(data => setServicosPrestador(Array.isArray(data) ? data : []))
-      .catch(() => setServicosPrestador([]));
-  }
-}, [abaAtual]);
+  useEffect(() => {
+    if (abaAtual === "cadastrar-servico" || abaAtual === "buscar-servicos") {
+      const token = localStorage.getItem("token");
+      fetch("http://localhost:3333/services/me", {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => setServicosPrestador(Array.isArray(data) ? data : []))
+        .catch(() => setServicosPrestador([]));
+    }
+  }, [abaAtual]);
 
   // Buscar serviços do próprio prestador para ambas as abas
   useEffect(() => {
@@ -139,83 +94,45 @@ useEffect(() => {
   }, [abaAtual, provider?.id]);
 
   // Buscar ordens de serviço do prestador
-  useEffect(() => {
-    if (abaAtual === "os" || abaAtual === "historico") {
-      if (!usuario?.id) return;
-      fetch(`http://localhost:3333/orders?provider_id=${usuario.id}`)
-        .then((res) => res.json())
-        .then(setOrdens)
-        .catch(() => setOrdens([]));
-    }
-  }, [abaAtual, usuario?.id]);
+// ...dentro do useEffect de buscar ordens...
+useEffect(() => {
+  async function fetchOrdensCompletas() {
+    if (abaAtual === "os" && provider?.id) {
+      const res = await fetch(`http://localhost:3333/orders?provider_id=${provider.id}`);
+      const ordens = await res.json();
 
-  // Buscar avaliações recebidas
-  useEffect(() => {
-    if (abaAtual === "historico") {
-      if (!usuario?.id) return;
-      fetch(`http://localhost:3333/reviews?provider_id=${usuario.id}`)
-        .then((res) => res.json())
-        .then(setAvaliacoes)
-        .catch(() => setAvaliacoes([]));
-    }
-  }, [abaAtual, usuario?.id]);
+      // Para cada ordem, buscar serviço e cliente
+      const ordensCompletas = await Promise.all(
+        ordens.map(async (ordem) => {
+          // Busca serviço
+          let servicoTitulo = "";
+          try {
+            const resServico = await fetch(`http://localhost:3333/services/${ordem.service_id}`);
+            const servico = await resServico.json();
+            servicoTitulo = servico.title || "";
+          } catch {}
 
-  // Handlers
-  const handleChange = (e) => {
-    const { name, value, checked } = e.target;
-    if (name === "categorias") {
-      const novasCategorias = checked
-        ? [...form.categorias, value]
-        : form.categorias.filter((cat) => cat !== value);
-      setForm((prev) => ({ ...prev, categorias: novasCategorias }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+          // Busca cliente
+          let clienteNome = "";
+          try {
+            const resCliente = await fetch(`http://localhost:3333/providers/${ordem.provider_id}`);
+            const cliente = await resCliente.json();
+            clienteNome = cliente?.user?.name || cliente.name || "";
+          } catch {}
 
-  const handleServicoChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNovoServico((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  // Salvar perfil do prestador
-  const handleSalvar = async (e) => {
-    e.preventDefault();
-    setMensagem("");
-    try {
-      const payload = {
-        bio: form.bio,
-        cnpj: form.cnpj,
-        experience: form.experiencia,
-        areas_of_expertise: form.categorias,
-        status: provider?.status || "pending",
-      };
-
-      const response = await fetch(
-        `http://localhost:3333/providers/${usuario.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
+          return {
+            ...ordem,
+            servicoTitulo,
+            clienteNome,
+          };
+        })
       );
 
-      if (!response.ok) {
-        const erro = await response.json();
-        throw new Error(erro.error || "Erro ao atualizar perfil.");
-      }
-
-      setMensagem("Perfil atualizado com sucesso!");
-      setEditando(false);
-      setProvider((prev) => ({ ...prev, ...payload }));
-      window.location.reload(); // Força recarregamento após salvar perfil
-    } catch (error) {
-      setMensagem(error.message || "Erro ao atualizar perfil.");
+      setOrdens(ordensCompletas);
     }
-  };
+  }
+  fetchOrdensCompletas();
+}, [abaAtual, provider?.id]);
 
   // Cadastro de serviço
   const handleCadastrarServico = async (e) => {
@@ -298,13 +215,10 @@ useEffect(() => {
       setServicosPrestador((prev) => [...prev, novoServicoCadastrado]);
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 2500);
-      // window.location.reload(); // Removido para mostrar o popup
     } catch (error) {
       setMensagem(error.message || "Erro ao cadastrar serviço.");
     }
   };
-
-  // --- LÓGICA DE RENDERIZAÇÃO ---
 
   // Função utilitária para renderizar imagens
   const renderImagens = (images) => {
@@ -335,6 +249,41 @@ useEffect(() => {
     return <span>-</span>;
   };
 
+  // Aceitar ordem
+  const handleAceitarOrdem = (orderId) => {
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:3333/provider/orders/${orderId}/accept`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(() => {
+        setMensagem("Ordem aceita!");
+        // Atualiza ordens
+        fetch(`http://localhost:3333/orders?provider_id=${usuario.id}`)
+          .then(res => res.json())
+          .then(setOrdens);
+      });
+  };
+
+  // Rejeitar ordem
+  const handleRejeitarOrdem = (orderId) => {
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:3333/provider/orders/${orderId}/reject`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(() => {
+        setMensagem("Ordem rejeitada!");
+        // Atualiza ordens
+        // Supondo que provider.id é o id do provider
+fetch(`http://localhost:3333/orders?provider_id=${provider.id}`)
+          .then(res => res.json())
+          .then(setOrdens);
+      });
+  };
+
   if (!usuario) {
     return (
       <div className={styles.dashboardPrestador}>
@@ -347,11 +296,6 @@ useEffect(() => {
     return (
       <div className={styles.dashboardPrestador}>
         Carregando dados do prestador. Aguarde...
-        {erroCarregamento && (
-          <div style={{ color: "red", marginTop: 16 }}>
-            Erro ao carregar provider: {erroCarregamento}
-          </div>
-        )}
       </div>
     );
   }
@@ -396,14 +340,6 @@ useEffect(() => {
         <h1 className={styles.titulo}>Bem-vindo!</h1>
         <nav className={styles.navegacao}>
           <button
-            onClick={() => setAbaAtual("perfil")}
-            className={`${styles.botaoNavegacao} ${
-              abaAtual === "perfil" ? styles.ativo : ""
-            }`}
-          >
-            Perfil
-          </button>
-          <button
             onClick={() => setAbaAtual("cadastrar-servico")}
             className={`${styles.botaoNavegacao} ${
               abaAtual === "cadastrar-servico" ? styles.ativo : ""
@@ -427,14 +363,6 @@ useEffect(() => {
           >
             Ordens de Serviço
           </button>
-          <button
-            onClick={() => setAbaAtual("historico")}
-            className={`${styles.botaoNavegacao} ${
-              abaAtual === "historico" ? styles.ativo : ""
-            }`}
-          >
-            Histórico & Avaliações
-          </button>
         </nav>
       </header>
 
@@ -449,123 +377,6 @@ useEffect(() => {
       )}
 
       <main className={styles.conteudoPrincipal}>
-        {abaAtual === "perfil" && (
-          <section className={styles.secaoPerfil}>
-            <h2 className={styles.subtitulo}>Perfil do Prestador</h2>
-            {!editando ? (
-              <div className={styles.perfilDados}>
-                <div className={styles.dadoItem}>
-                  <span className={styles.dadoLabel}>Bio:</span>
-                  <p className={styles.dadoValor}>{provider.bio || "-"}</p>
-                </div>
-                <div className={styles.dadoItem}>
-                  <span className={styles.dadoLabel}>CNPJ:</span>
-                  <p className={styles.dadoValor}>{provider.cnpj || "-"}</p>
-                </div>
-                <div className={styles.dadoItem}>
-                  <span className={styles.dadoLabel}>Status:</span>
-                  <p className={styles.dadoValor}>{provider.status || "-"}</p>
-                </div>
-                <div className={styles.dadoItem}>
-                  <span className={styles.dadoLabel}>Experiência:</span>
-                  <p className={styles.dadoValor}>
-                    {provider.experience || "-"}
-                  </p>
-                </div>
-                <div className={styles.dadoItem}>
-                  <span className={styles.dadoLabel}>Categorias:</span>
-                  <p className={styles.dadoValor}>
-                    {provider.categories?.map((cat) => cat.name).join(", ") ||
-                      "-"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setEditando(true)}
-                  className={styles.botaoPrimario}
-                >
-                  Editar Perfil
-                </button>
-              </div>
-            ) : (
-              <form className={styles.formulario} onSubmit={handleSalvar}>
-                <div className={styles.grupoFormulario}>
-                  <label htmlFor="bio" className={styles.rotulo}>
-                    Bio
-                  </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={form.bio}
-                    onChange={handleChange}
-                    rows={3}
-                    className={styles.entradaTexto}
-                  />
-                </div>
-                <div className={styles.grupoFormulario}>
-                  <label htmlFor="cnpj" className={styles.rotulo}>
-                    CNPJ
-                  </label>
-                  <input
-                    id="cnpj"
-                    name="cnpj"
-                    value={form.cnpj}
-                    onChange={handleChange}
-                    className={styles.entradaTexto}
-                  />
-                </div>
-                <div className={styles.grupoFormulario}>
-                  <label htmlFor="experiencia" className={styles.rotulo}>
-                    Experiência
-                  </label>
-                  <input
-                    id="experiencia"
-                    name="experiencia"
-                    value={form.experiencia}
-                    onChange={handleChange}
-                    className={styles.entradaTexto}
-                  />
-                </div>
-                <div className={styles.grupoFormulario}>
-                  <label className={styles.rotulo}>Categorias</label>
-                  <div className={styles.grupoCheckbox}>
-                    {categorias.map((cat) => (
-                      <div key={cat.id} className={styles.opcaoCheckbox}>
-                        <input
-                          type="checkbox"
-                          id={`cat-${cat.id}`}
-                          name="categorias"
-                          value={cat.id}
-                          checked={form.categorias.includes(cat.id)}
-                          onChange={handleChange}
-                          className={styles.checkbox}
-                        />
-                        <label
-                          htmlFor={`cat-${cat.id}`}
-                          className={styles.rotuloCheckbox}
-                        >
-                          {cat.name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className={styles.acoesFormulario}>
-                  <button type="submit" className={styles.botaoPrimario}>
-                    Salvar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditando(false)}
-                    className={styles.botaoSecundario}
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </form>
-            )}
-          </section>
-        )}
-
         {abaAtual === "cadastrar-servico" && (
           <section className={styles.secaoServico}>
             <form
@@ -581,7 +392,12 @@ useEffect(() => {
                   id="title"
                   name="title"
                   value={novoServico.title}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
                   required
                   className={styles.entradaTexto}
                 />
@@ -594,7 +410,12 @@ useEffect(() => {
                   id="description"
                   name="description"
                   value={novoServico.description}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   required
                   className={styles.entradaTexto}
                 />
@@ -607,7 +428,12 @@ useEffect(() => {
                   id="category_id"
                   name="category_id"
                   value={novoServico.category_id}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      category_id: e.target.value,
+                    }))
+                  }
                   required
                   className={styles.entradaTexto}
                 >
@@ -629,7 +455,12 @@ useEffect(() => {
                   type="number"
                   min="0"
                   value={novoServico.price_min}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      price_min: e.target.value,
+                    }))
+                  }
                   required
                   className={styles.entradaTexto}
                 />
@@ -644,7 +475,12 @@ useEffect(() => {
                   type="number"
                   min="0"
                   value={novoServico.price_max}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      price_max: e.target.value,
+                    }))
+                  }
                   required
                   className={styles.entradaTexto}
                 />
@@ -657,7 +493,12 @@ useEffect(() => {
                   id="images"
                   name="images"
                   value={novoServico.images}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      images: e.target.value,
+                    }))
+                  }
                   className={styles.entradaTexto}
                   placeholder="URL da imagem ou deixe em branco"
                 />
@@ -671,7 +512,12 @@ useEffect(() => {
                   name="is_active"
                   type="checkbox"
                   checked={novoServico.is_active}
-                  onChange={handleServicoChange}
+                  onChange={(e) =>
+                    setNovoServico((prev) => ({
+                      ...prev,
+                      is_active: e.target.checked,
+                    }))
+                  }
                   className={styles.checkbox}
                 />
               </div>
@@ -723,69 +569,46 @@ useEffect(() => {
 
         {abaAtual === "os" && (
           <section>
-            <h2 className={styles.subtitulo}>Ordens de Serviço em andamento</h2>
+            <h2 className={styles.subtitulo}>Ordens de Serviço</h2>
             <div className={styles["ordens-lista"]}>
-              {ordens.filter((o) => o.status !== "finalizada").length === 0 ? (
-                <p>Nenhuma OS em andamento.</p>
+              {ordens.length === 0 ? (
+                <p>Nenhuma ordem encontrada.</p>
               ) : (
-                ordens
-                  .filter((o) => o.status !== "finalizada")
-                  .map((ordem) => (
-                    <div key={ordem.id} className={styles["ordem-card"]}>
-                      <p>
-                        <strong>Serviço:</strong> {ordem.servicoTitulo}
-                      </p>
-                      <p>
-                        <strong>Status:</strong> {ordem.status}
-                      </p>
-                      <p>
-                        <strong>Cliente:</strong> {ordem.clienteNome}
-                      </p>
-                    </div>
-                  ))
-              )}
-            </div>
-          </section>
-        )}
-
-        {abaAtual === "historico" && (
-          <section>
-            <h2 className={styles.subtitulo}>
-              Histórico de Atendimentos & Avaliações Recebidas
-            </h2>
-            <div className={styles["ordens-lista"]}>
-              {ordens.filter((o) => o.status === "finalizada").length === 0 ? (
-                <p>Nenhuma OS finalizada ainda.</p>
-              ) : (
-                ordens
-                  .filter((o) => o.status === "finalizada")
-                  .map((ordem) => (
-                    <div key={ordem.id} className={styles["ordem-card"]}>
-                      <p>
-                        <strong>Serviço:</strong> {ordem.servicoTitulo}
-                      </p>
-                      <p>
-                        <strong>Cliente:</strong> {ordem.clienteNome}
-                      </p>
-                      <p>
-                        <strong>Data:</strong>{" "}
-                        {new Date(ordem.dataSolicitacao).toLocaleDateString()}
-                      </p>
-                      {avaliacoes.filter((av) => av.order_id === ordem.id)
-                        .length > 0 ? (
-                        avaliacoes
-                          .filter((av) => av.order_id === ordem.id)
-                          .map((av) => (
-                            <div key={av.id} className={styles["avaliacao"]}>
-                              <strong>Avaliação:</strong> {av.rating} ⭐<br />
-                              <strong>Comentário:</strong> {av.comment}
-                            </div>
-                          ))
-                      ) : (
-                        <span>Sem avaliação</span>
-                      )}
-                    </div>
-                  ))
+                ordens.map((ordem) => (
+                  <div key={ordem.id} className={styles["ordem-card"]}>
+                    <p>
+                      <strong>Serviço:</strong> {ordem.servicoTitulo}
+                    </p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      {ordem.status === "pending" && "Aguardando sua aprovação"}
+                      {ordem.status === "accepted" && "Aprovada"}
+                      {ordem.status === "rejected" && "Rejeitada"}
+                      {ordem.status === "in_progress" && "Em andamento"}
+                      {ordem.status === "completed" && "Finalizada"}
+                    </p>
+                    <p>
+                      <strong>Cliente:</strong> {ordem.clienteNome}
+                    </p>
+                    {/* Só mostra botões se estiver pendente */}
+                    {ordem.status === "pending" && (
+                      <div className={styles.ordemActions}>
+                        <button
+                          className={styles.btnAceitar}
+                          onClick={() => handleAceitarOrdem(ordem.id)}
+                        >
+                          Aceitar
+                        </button>
+                        <button
+                          className={styles.btnRejeitar}
+                          onClick={() => handleRejeitarOrdem(ordem.id)}
+                        >
+                          Rejeitar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
               )}
             </div>
           </section>

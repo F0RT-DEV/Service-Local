@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Passo1TipoUsuario from "../components/cadastro/Passo1TipoUsuario";
 import Passo2DadosBasicos from "../components/cadastro/Passo2DadosBasicos";
-import Passo3DadosEspecificos from "../components/cadastro/Passo3DadosEspecificos";
 import styles from "./CadastroMultiStep.module.css";
 
 function CadastroMultiStep() {
@@ -17,7 +16,6 @@ function CadastroMultiStep() {
     senha: "",
     telefone: "",
     cpf: "",
-    cnpj: "",
     rua: "",
     numero: "",
     complemento: "",
@@ -25,25 +23,17 @@ function CadastroMultiStep() {
     cep: "",
     estado: "",
     cidade: "",
-    categorias: [],
-    experiencia: "",
-    descricao: "",
-    bio: "",
   });
 
   const navigate = useNavigate();
 
-const proximaEtapa = () => {
-  setEtapaAtual((prev) => {
-    return prev + 1;
-  });
-};
+  const proximaEtapa = () => setEtapaAtual((prev) => prev + 1);
   const etapaAnterior = () => setEtapaAtual((prev) => prev - 1);
 
-const handleSelecionarTipo = (tipo) => {
-  setFormData((prev) => ({ ...prev, tipo }));
-  setEtapaAtual(2); // Corrigido: vai direto para o passo 2
-};
+  const handleSelecionarTipo = (tipo) => {
+    setFormData((prev) => ({ ...prev, tipo }));
+    setEtapaAtual(2);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +58,7 @@ const handleSelecionarTipo = (tipo) => {
     return Object.keys(novosErros).length === 0;
   };
 
-  // Cadastro de usuário comum
+  // Cadastro de usuário comum ou admin
   const finalizarCadastroUsuario = async () => {
     try {
       const payload = {
@@ -97,66 +87,44 @@ const handleSelecionarTipo = (tipo) => {
     }
   };
 
-const finalizarCadastroPrestador = async () => {
-  try {
-    // 1. Cadastro do usuário (role: provider)
-    const userPayload = {
-      name: formData.nome,
-      email: formData.email,
-      password: formData.senha,
-      phone: formData.telefone,
-      role: "provider",
-      cpf: formData.cpf,
-      cep: formData.cep,
-      logradouro: formData.rua,
-      complemento: formData.complemento,
-      bairro: formData.bairro,
-      localidade: formData.cidade,
-      uf: formData.estado,
-      numero: formData.numero,
-    };
+  // Cadastro de prestador (apenas dados básicos)
+  const finalizarCadastroPrestador = async () => {
+    try {
+      const userPayload = {
+        name: formData.nome,
+        email: formData.email,
+        password: formData.senha,
+        phone: formData.telefone,
+        role: "provider",
+        cpf: formData.cpf,
+        cep: formData.cep,
+        logradouro: formData.rua,
+        complemento: formData.complemento,
+        bairro: formData.bairro,
+        localidade: formData.cidade,
+        uf: formData.estado,
+        numero: formData.numero,
+      };
 
-    await axios.post("http://localhost:3333/register", userPayload);
+      await axios.post("http://localhost:3333/register", userPayload);
 
-    // 2. Login para obter token
-    const loginRes = await axios.post("http://localhost:3333/login", {
-      email: formData.email,
-      password: formData.senha,
-    });
-    const token = loginRes.data.token;
-
-    // 3. Atualiza dados específicos do provider
-    await axios.put(
-      "http://localhost:3333/provider",
-      {
-        bio: formData.descricao,
-        cnpj: formData.cnpj,
-        categories: formData.categorias, // array de IDs
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    setCadastroSucesso(true);
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-  } catch (err) {
-    setErros({ geral: err.response?.data?.error || "Erro ao cadastrar. Tente novamente." });
-  }
-};
+      setCadastroSucesso(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (err) {
+      setErros({ geral: err.response?.data?.error || "Erro ao cadastrar. Tente novamente." });
+    }
+  };
 
   // Decide qual finalizar chamar
   const finalizarCadastro = async () => {
-  if (formData.tipo === "usuario" || formData.tipo === "admin") {
-    await finalizarCadastroUsuario();
-  } else {
-    await finalizarCadastroPrestador();
-  }
-};
+    if (formData.tipo === "usuario" || formData.tipo === "admin") {
+      await finalizarCadastroUsuario();
+    } else {
+      await finalizarCadastroPrestador();
+    }
+  };
 
   return (
     <div className={styles["container"]}>
@@ -172,25 +140,15 @@ const finalizarCadastroPrestador = async () => {
       )}
       {etapaAtual === 2 && (
         <Passo2DadosBasicos
-  dados={formData}
-  onChange={handleChange}
-  erros={erros}
-  validarPasso2={validarPasso2}
-  proximaEtapa={proximaEtapa}
-  etapaAnterior={etapaAnterior}
-  finalizarCadastro={finalizarCadastro}
-/>
+          dados={formData}
+          onChange={handleChange}
+          erros={erros}
+          validarPasso2={validarPasso2}
+          proximaEtapa={proximaEtapa}
+          etapaAnterior={etapaAnterior}
+          finalizarCadastro={finalizarCadastro}
+        />
       )}
-      {etapaAtual === 3 && (
-  <Passo3DadosEspecificos
-    tipo={formData.tipo}
-    dados={formData}
-    onChange={handleChange}
-    erros={erros}
-    finalizarCadastro={finalizarCadastro}
-    etapaAnterior={etapaAnterior}
-  />
-)}
       {erros.geral && <div className={styles["mensagem-erro"]}>{erros.geral}</div>}
     </div>
   );

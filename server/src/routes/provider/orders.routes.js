@@ -1,12 +1,13 @@
-  import { authenticateToken } from "../../middlewares/authMiddleware";
-import { verifyProviderRole } from "../../middlewares/role.middleware";
+  import { authenticateToken } from "../../middlewares/authMiddleware.js";
+import { verifyProviderRole } from "../../middlewares/role.middleware.js";
 import {
     getAllOrders,
     getOrderById,
     acceptOrder,
     rejectOrder,
-} from "../../modules/order/order.controller";
-import router from "./services.routes";
+} from "../../modules/order/order.controller.js";
+import router from "./services.routes.js";
+//const router = express.Router();
 
 router.get(
     "/provider/orders",

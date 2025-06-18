@@ -10,6 +10,8 @@ import PerfilUsuario from './pages/PerfilUsuario';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardADM from './pages/Admin/DashboardADM';
 import './App.css';
+import PerfilUsuarioComum from './components/PerfilUsuarioComum';
+import PerfilPrestador from './components/PerfilPrestador';
 
 function App() {
   return (
@@ -22,15 +24,15 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<CadastroMultiStep />} />
             <Route path="/usuario/perfil" element={
-              <ProtectedRoute tipoPermitido="client">
-                <PerfilUsuario />
-              </ProtectedRoute>
-            } />
-            <Route path="/prestador/perfil" element={
-              <ProtectedRoute tipoPermitido="provider">
-                <PerfilUsuario />
-              </ProtectedRoute>
-            } />
+  <ProtectedRoute tipoPermitido="client">
+    <PerfilUsuarioComum />
+  </ProtectedRoute>
+} />
+<Route path="/prestador/perfil" element={
+  <ProtectedRoute tipoPermitido="provider">
+    <PerfilPrestador />
+  </ProtectedRoute>
+} />
             <Route path="/admin/perfil" element={
   <ProtectedRoute tipoPermitido="admin">
     <PerfilUsuario />

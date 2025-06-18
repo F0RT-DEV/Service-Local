@@ -16,11 +16,21 @@ export async function createOrder(req, res) {
 
 export async function getAllOrders(req, res) {
 	try {
-		const orders = await orderModel.getAll();
-		res.status(200).json(orders);
-	} catch (error) {
-		res.status(500).json({error: "Erro ao listar ordens"});
-	}
+        const { provider_id, client_id } = req.query;
+        let orders;
+
+        if (provider_id) {
+            orders = await orderModel.getByProviderId(provider_id);
+        } else if (client_id) {
+            orders = await orderModel.getByClientId(client_id);
+        } else {
+            orders = await orderModel.getAll();
+        }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 }
 
 export async function getOrderById(req, res) {

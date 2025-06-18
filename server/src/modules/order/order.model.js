@@ -19,3 +19,11 @@ export function update(id, order) {
 export function remove(id) {
 	return db("orders").where({id}).del();
 }
+
+export function getByProviderId(provider_id) {
+    return db("orders").where({ provider_id });
+}
+
+export function getByClientId(client_id) {
+    return db("orders").where({ client_id });
+}

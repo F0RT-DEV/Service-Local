@@ -51,7 +51,7 @@ const DashboardUser = () => {
   // Carrega ordens de serviço do usuário
   useEffect(() => {
     if (!usuario?.id) return;
-    fetch(`http://localhost:3333/ordensServico?clienteId=${usuario.id}`)
+    fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
       .then(res => res.json())
       .then(setOrdens)
       .catch(() => setOrdens([]));
@@ -60,14 +60,14 @@ const DashboardUser = () => {
   const handleSolicitarServico = (servico) => {
     if (!usuario?.id) return;
     const novaOS = {
-      clienteId: usuario.id,
-      prestadorId: servico.prestadorId,
-      servicoId: servico.id,
-      status: "pendente",
-      dataSolicitacao: new Date().toISOString(),
+      client_id: usuario.id,
+      provider_id: servico.provider_id,
+      service_id: servico.id,
+      status: "pending",
+      scheduled_date: new Date().toISOString(),
       mensagem: mensagem || "Solicitação automática"
     };
-    fetch("http://localhost:3333/ordensServico", {
+    fetch("http://localhost:3333/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novaOS)
@@ -77,6 +77,10 @@ const DashboardUser = () => {
         setMensagem("");
         alert("Ordem de serviço criada!");
         setServicoSelecionado(null);
+        // Atualiza ordens
+        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
+          .then(res => res.json())
+          .then(setOrdens);
       });
   };
 
@@ -87,7 +91,7 @@ const DashboardUser = () => {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
         order_id: avaliarOS.id,
-        provider_id: avaliarOS.prestadorId,
+        provider_id: avaliarOS.provider_id,
         rating: nota,
         comment: comentario,
       }),
@@ -98,7 +102,7 @@ const DashboardUser = () => {
         setAvaliarOS(null);
         setNota(5);
         setComentario("");
-        fetch(`http://localhost:3333/ordensServico?clienteId=${usuario.id}`)
+        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
           .then(res => res.json())
           .then(setOrdens);
       });
@@ -109,6 +113,22 @@ const DashboardUser = () => {
   };
 
   const fecharDetalhes = () => setServicoSelecionado(null);
+
+  // Pagamento simulado
+  const handlePagamento = (ordem) => {
+    fetch(`http://localhost:3333/orders/${ordem.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "in_progress" })
+    })
+      .then(res => res.json())
+      .then(() => {
+        alert("Pagamento realizado! Serviço em andamento.");
+        fetch(`http://localhost:3333/orders?client_id=${usuario.id}`)
+          .then(res => res.json())
+          .then(setOrdens);
+      });
+  };
 
   // Renderização da paginação melhorada
   const renderPaginacao = () => {
@@ -214,8 +234,6 @@ const DashboardUser = () => {
             </div>
           </div>
           
-          
-          
           <div className={styles['servicos-lista']}>
             {servicosPagina.length === 0 ? (
               <p className={styles.semResultados}>Nenhum serviço encontrado com os filtros selecionados.</p>
@@ -248,12 +266,6 @@ const DashboardUser = () => {
                     >
                       Ver detalhes
                     </button>
-                    <button
-                      className={styles['btn-solicitar']}
-                      onClick={() => handleSolicitarServico(servico)}
-                    >
-                      Solicitar
-                    </button>
                   </div>
                 </div>
               ))
@@ -282,22 +294,36 @@ const DashboardUser = () => {
                     <h3>{ordem.servicoTitulo}</h3>
                     <div className={styles['ordem-metadados']}>
                       <span className={`${styles.status} ${styles[`status-${ordem.status}`]}`}>
-                        {ordem.status}
+                        {ordem.status === "pending" && "Aguardando aprovação"}
+                        {ordem.status === "accepted" && "Solicitação aprovada"}
+                        {ordem.status === "rejected" && "Solicitação rejeitada"}
+                        {ordem.status === "in_progress" && "Em andamento"}
+                        {ordem.status === "completed" && "Finalizada"}
                       </span>
                       <span>Prestador: {ordem.prestadorNome}</span>
-                      <span>Data: {new Date(ordem.dataSolicitacao).toLocaleDateString()}</span>
+                      <span>Data: {new Date(ordem.scheduled_date).toLocaleDateString()}</span>
                     </div>
                   </div>
                   <div className={styles['ordem-actions']}>
-                    {ordem.status === "finalizada" && !ordem.avaliada && (
-                      <button 
+                    {/* Se aceito e não pago, mostra botão de pagamento */}
+                    {ordem.status === "accepted" && (
+                      <button
+                        className={styles.btnPagamento}
+                        onClick={() => handlePagamento(ordem)}
+                      >
+                        Realizar Pagamento
+                      </button>
+                    )}
+                    {/* Se em andamento e não avaliado, mostra botão de avaliação */}
+                    {ordem.status === "in_progress" && !ordem.avaliada && (
+                      <button
                         onClick={() => setAvaliarOS(ordem)}
                         className={styles.btnAvaliar}
                       >
                         Avaliar Atendimento
                       </button>
                     )}
-                    {ordem.status === "finalizada" && ordem.avaliada && (
+                    {ordem.status === "completed" && ordem.avaliada && (
                       <span className={styles.avaliacaoEnviada}>✅ Avaliação enviada</span>
                     )}
                   </div>
