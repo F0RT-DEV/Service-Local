@@ -89,8 +89,7 @@ const NavBarra = () => {
               <>
                 <div className={styles["nav-links"]}>
                   {/* "Buscar Serviços" aparece para client/provider */}
-                  {(usuario.role === "provider" ||
-                    usuario.role === "client") && (
+                  {usuario.role === "client" && (
                     <Link
                       to={
                         usuario.role === "provider"
@@ -140,20 +139,20 @@ const NavBarra = () => {
                     {dropdownAberto && (
                       <div className={styles["dropdown-menu"]}>
                         <button
-  onClick={() => {
-    setDropdownAberto(false);
-    if (usuario.role === "provider") {
-      navigate("/prestador/perfil");
-    } else if (usuario.role === "admin") {
-      navigate("/admin/perfil");
-    } else {
-      navigate("/usuario/perfil");
-    }
-  }}
-  className={styles["profile-button"]}
->
-  <span>Perfil</span>
-</button>
+                          onClick={() => {
+                            setDropdownAberto(false);
+                            if (usuario.role === "provider") {
+                              navigate("/prestador/perfil");
+                            } else if (usuario.role === "admin") {
+                              navigate("/admin/perfil");
+                            } else {
+                              navigate("/usuario/perfil");
+                            }
+                          }}
+                          className={styles["profile-button"]}
+                        >
+                          <span>Perfil</span>
+                        </button>
                         <button
                           onClick={handleLogout}
                           className={styles["logout-button"]}
