@@ -10,11 +10,11 @@ const Passo2DadosBasicos = ({
   etapaAnterior = () => {},
   finalizarCadastro = () => {}
 }) => {
-const handleContinuar = () => {
-  if (validarPasso2()) {
-    finalizarCadastro();
-  }
-};
+  const handleContinuar = () => {
+    if (validarPasso2()) {
+      finalizarCadastro();
+    }
+  };
 
   return (
     <div className={styles['passo-container2']}>
@@ -30,6 +30,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite seu nome completo"
           className={erros.nome ? styles['input-erro'] : ''}
+          maxLength={100}
         />
         {erros.nome && <p className={styles['mensagem-erro']}>{erros.nome}</p>}
       </div>
@@ -44,9 +45,11 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite seu email"
           className={erros.email ? styles['input-erro'] : ''}
+          maxLength={100}
         />
         {erros.email && <p className={styles['mensagem-erro']}>{erros.email}</p>}
       </div>
+
       <div className={styles['form-group']}>
         <label htmlFor="senha">Senha</label>
         <input
@@ -57,6 +60,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite sua senha"
           className={erros.senha ? styles['input-erro'] : ''}
+          maxLength={50}
         />
         {erros.senha && <p className={styles['mensagem-erro']}>{erros.senha}</p>}
       </div>
@@ -71,6 +75,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="(XX) XXXXX-XXXX"
           className={erros.telefone ? styles['input-erro'] : ''}
+          maxLength={11}
         />
         {erros.telefone && <p className={styles['mensagem-erro']}>{erros.telefone}</p>}
       </div>
@@ -85,6 +90,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite seu CPF"
           className={erros.cpf ? styles['input-erro'] : ''}
+          maxLength={11}
         />
         {erros.cpf && <p className={styles['mensagem-erro']}>{erros.cpf}</p>}
       </div>
@@ -101,6 +107,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite o nome da rua"
           className={erros.rua ? styles['input-erro'] : ''}
+          maxLength={100}
         />
         {erros.rua && <p className={styles['mensagem-erro']}>{erros.rua}</p>}
       </div>
@@ -115,6 +122,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite o número"
           className={erros.numero ? styles['input-erro'] : ''}
+          maxLength={10}
         />
         {erros.numero && <p className={styles['mensagem-erro']}>{erros.numero}</p>}
       </div>
@@ -129,6 +137,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite o complemento"
           className={erros.complemento ? styles['input-erro'] : ''}
+          maxLength={50}
         />
         {erros.complemento && <p className={styles['mensagem-erro']}>{erros.complemento}</p>}
       </div>
@@ -143,6 +152,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite o bairro"
           className={erros.bairro ? styles['input-erro'] : ''}
+          maxLength={50}
         />
         {erros.bairro && <p className={styles['mensagem-erro']}>{erros.bairro}</p>}
       </div>
@@ -157,48 +167,49 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite o CEP"
           className={erros.cep ? styles['input-erro'] : ''}
+          maxLength={9}
         />
         {erros.cep && <p className={styles['mensagem-erro']}>{erros.cep}</p>}
       </div>
       
       <div className={styles['form-group']}>
         <label htmlFor="estado">Estado</label>
-       <select
-  id="estado"
-  name="estado"
-  value={dados.estado}
-  onChange={onChange}
-  className={erros.estado ? styles['input-erro'] : ''}
->
-  <option value="">Selecione o estado</option>
-  <option value="AC">AC</option>
-  <option value="AL">AL</option>
-  <option value="AP">AP</option>
-  <option value="AM">AM</option>
-  <option value="BA">BA</option>
-  <option value="CE">CE</option>
-  <option value="DF">DF</option>
-  <option value="ES">ES</option>
-  <option value="GO">GO</option>
-  <option value="MA">MA</option>
-  <option value="MT">MT</option>
-  <option value="MS">MS</option>
-  <option value="MG">MG</option>
-  <option value="PA">PA</option>
-  <option value="PB">PB</option>
-  <option value="PR">PR</option>
-  <option value="PE">PE</option>
-  <option value="PI">PI</option>
-  <option value="RJ">RJ</option>
-  <option value="RN">RN</option>
-  <option value="RS">RS</option>
-  <option value="RO">RO</option>
-  <option value="RR">RR</option>
-  <option value="SC">SC</option>
-  <option value="SP">SP</option>
-  <option value="SE">SE</option>
-  <option value="TO">TO</option>
-</select>
+        <select
+          id="estado"
+          name="estado"
+          value={dados.estado}
+          onChange={onChange}
+          className={erros.estado ? styles['input-erro'] : ''}
+        >
+          <option value="">Selecione o estado</option>
+          <option value="AC">AC</option>
+          <option value="AL">AL</option>
+          <option value="AP">AP</option>
+          <option value="AM">AM</option>
+          <option value="BA">BA</option>
+          <option value="CE">CE</option>
+          <option value="DF">DF</option>
+          <option value="ES">ES</option>
+          <option value="GO">GO</option>
+          <option value="MA">MA</option>
+          <option value="MT">MT</option>
+          <option value="MS">MS</option>
+          <option value="MG">MG</option>
+          <option value="PA">PA</option>
+          <option value="PB">PB</option>
+          <option value="PR">PR</option>
+          <option value="PE">PE</option>
+          <option value="PI">PI</option>
+          <option value="RJ">RJ</option>
+          <option value="RN">RN</option>
+          <option value="RS">RS</option>
+          <option value="RO">RO</option>
+          <option value="RR">RR</option>
+          <option value="SC">SC</option>
+          <option value="SP">SP</option>
+          <option value="SE">SE</option>
+          <option value="TO">TO</option>
+        </select>
         {erros.estado && <p className={styles['mensagem-erro']}>{erros.estado}</p>}
       </div>
       
@@ -212,6 +223,7 @@ const handleContinuar = () => {
           onChange={onChange}
           placeholder="Digite a cidade"
           className={erros.cidade ? styles['input-erro'] : ''}
+          maxLength={50}
         />
         {erros.cidade && <p className={styles['mensagem-erro']}>{erros.cidade}</p>}
       </div>
@@ -224,13 +236,13 @@ const handleContinuar = () => {
         >
           Voltar
         </button>
-<button 
-  type="button" 
-  onClick={handleContinuar}
-  className={styles['botao-continuar']}
->
-  Finalizar Cadastro
-</button>
+        <button 
+          type="button" 
+          onClick={handleContinuar}
+          className={styles['botao-continuar']}
+        >
+          Finalizar Cadastro
+        </button>
       </div>
     </div>
   );
