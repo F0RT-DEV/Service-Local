@@ -12,15 +12,19 @@ const PerfilUsuarioComum = () => {
       .get("http://localhost:3333/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setDados(res.data.user));
+      .then((res) => setDados(res.data.user))
+      .catch((err) => console.error("Erro ao buscar dados do usuário:", err));
   }, []);
 
   useEffect(() => {
-    if (!dados?.id) return;
+    const token = localStorage.getItem("token");
     axios
-      .get(`http://localhost:3333/ordensServico?clienteId=${dados.id}`)
-      .then((res) => setOrdens(res.data));
-  }, [dados?.id]);
+      .get("http://localhost:3333/clients/orders", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setOrdens(res.data))
+      .catch((err) => console.error("Erro ao buscar ordens de serviço:", err));
+  }, []);
 
   if (!dados) return <div>Carregando...</div>;
 
