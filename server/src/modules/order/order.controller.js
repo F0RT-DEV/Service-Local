@@ -3,6 +3,16 @@ import * as orderModel from "./order.model.js";
 import * as serviceModel from "../service/service.model.js";
 import {CreateOrderSchema} from "./order.schema.js";
 
+
+export async function getAllOrders(req, res) {
+	try {
+		const orders = await orderModel.getAll();
+		res.status(200).json(orders);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 // CLIENTES
 
 export async function createOrder(req, res) {
@@ -103,7 +113,7 @@ export async function rateOrder(req, res) {
 		if (order.client_id !== req.user.id)
 			return res.status(403).json({error: "Acesso negado"});
 
-		if (order.status !== "completed")
+		if (order.status !== "done")
 			return res
 				.status(400)
 				.json({error: "Só é possível avaliar após a conclusão"});
@@ -126,7 +136,11 @@ export async function getProviderOrders(req, res) {
 	try {
 		const providerId = req.user?.provider_id;
 		const orders = await orderModel.getByProviderId(providerId);
+		if(!orders || orders.length === 0) {
+			return res.status(404).json({error: "Nenhuma ordem encontrada para este prestador"});
+		}
 		res.json(orders);
+		
 	} catch (error) {
 		res.status(500).json({error: {message: error.message}});
 	}
@@ -148,25 +162,27 @@ export async function getProviderOrderById(req, res) {
 
 export async function acceptOrder(req, res) {
 	try {
-		const {id} = req.params;
+		const { id } = req.params;
 		const order = await orderModel.getById(id);
-		if (!order || order.provider_id !== req.user.id)
-			return res
-				.status(403)
-				.json({error: "Acesso negado ou ordem não encontrada"});
 
-		const updated = await orderModel.update(id, {status: "accepted"});
+		// Verifica se a ordem existe e se pertence ao provider autenticado
+		if (!order || order.provider_id !== req.user.provider_id) {
+			return res.status(403).json({ error: "Acesso negado ou ordem não encontrada" });
+		}
+
+		const updated = await orderModel.update(id, { status: "accepted", updated_at: new Date() });
 		res.json(updated[0]);
 	} catch (error) {
-		res.status(400).json({error: error.message});
+		res.status(400).json({ error: error.message });
 	}
 }
+
 
 export async function rejectOrder(req, res) {
 	try {
 		const {id} = req.params;
 		const order = await orderModel.getById(id);
-		if (!order || order.provider_id !== req.user.id)
+		if (!order || order.provider_id !== req.user.provider_id)
 			return res
 				.status(403)
 				.json({error: "Acesso negado ou ordem não encontrada"});
@@ -182,7 +198,7 @@ export async function startOrderProgress(req, res) {
 	try {
 		const {id} = req.params;
 		const order = await orderModel.getById(id);
-		if (!order || order.provider_id !== req.user.id)
+		if (!order || order.provider_id !== req.user.provider_id)
 			return res
 				.status(403)
 				.json({error: "Acesso negado ou ordem não encontrada"});
@@ -198,13 +214,13 @@ export async function completeOrder(req, res) {
 	try {
 		const {id} = req.params;
 		const order = await orderModel.getById(id);
-		if (!order || order.provider_id !== req.user.id)
+		if (!order || order.provider_id !== req.user.provider_id)
 			return res
 				.status(403)
 				.json({error: "Acesso negado ou ordem não encontrada"});
 
 		const updated = await orderModel.update(id, {
-			status: "completed",
+			status: "done",
 			completed_at: new Date(),
 		});
 		res.json(updated[0]);
