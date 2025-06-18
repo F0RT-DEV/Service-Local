@@ -165,6 +165,11 @@ button{
   gap: 6px;
 }
 
+textarea{
+  padding: 10px 22px;
+  outline: none;
+  resize: none;
+}
 .rotulo {
   font-weight: 500;
   color: #22223b;

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./Login.module.css";
 
@@ -7,7 +6,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,33 +15,33 @@ const Login = () => {
       return;
     }
     try {
-  const res = await axios.post("http://localhost:3333/login", {
-    email,
-    password: senha,
-  });
-  const { token, user } = res.data;
-  // Salva token e usuário no localStorage
-  localStorage.setItem("token", token);
-  localStorage.setItem("usuario", JSON.stringify(user));
+      const res = await axios.post("http://localhost:3333/login", {
+        email,
+        password: senha,
+      });
+      const { token, user } = res.data;
+      // Salva token e usuário no localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("usuario", JSON.stringify(user));
 
-  // LOGS PARA DEPURAÇÃO
-  console.log("TOKEN SALVO:", token);
-  console.log("USER SALVO:", user);
+      // LOGS PARA DEPURAÇÃO
+      console.log("TOKEN SALVO:", token);
+      console.log("USER SALVO:", user);
 
-  // Redireciona conforme o role do backend
-  if (user.role === "client") {
-    navigate("/usuario/dashboard");
-  } else if (user.role === "provider") {
-    navigate("/prestador/dashboard");
-  } else {
-    navigate("/");
-  }
-} catch (error) {
-  setErro(
-    error.response?.data?.error ||
-    "Erro ao conectar ao servidor. Tente novamente."
-  );
-}
+      // Redireciona com base no role do usuário
+      if (user.role === "client") {
+        window.location.href = "/usuario/dashboard";
+      } else if (user.role === "provider") {
+        window.location.href = "/prestador/dashboard";
+      } else {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      setErro(
+        error.response?.data?.error ||
+        "Erro ao conectar ao servidor. Tente novamente."
+      );
+    }
   };
 
   return (
