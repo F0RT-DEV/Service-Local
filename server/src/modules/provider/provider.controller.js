@@ -101,6 +101,11 @@ export async function getAuthenticatedProfile(req, res) {
 
 			return res.status(200).json({role, user, provider});
 		}
+		if (role === "admin") {
+            const user = await db("users").where({id}).first();
+            if (!user) return res.status(404).json({error: "Usuário não encontrado"});
+            return res.status(200).json({role, user});
+        }
 
 		return res.status(403).json({error: "Perfil não autorizado"});
 	} catch (error) {

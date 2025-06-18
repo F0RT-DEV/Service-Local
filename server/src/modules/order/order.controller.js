@@ -17,7 +17,7 @@ export async function createOrder(req, res) {
 			return res.status(400).json({ error: "Serviço inválido ou sem prestador" });
 		}
 		const provider_id = service.provider_id;
-		
+
 
 		const order = {
 			...validated,

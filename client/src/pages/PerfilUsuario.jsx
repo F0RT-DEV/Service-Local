@@ -51,7 +51,7 @@ const PerfilUsuario = () => {
 
   // Busca todos os serviços para mostrar o nome na tabela de OS
   useEffect(() => {
-    fetch("http://localhost:3333/servicos")
+    fetch("http://localhost:3333/services")
       .then(res => res.json())
       .then(setServicos)
       .catch(() => setServicos([]));
