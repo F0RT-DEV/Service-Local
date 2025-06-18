@@ -10,7 +10,6 @@ import providerOrders from "./provider/orders.routes.js";
 import publicCategories from "./public/categories.routes.js";
 import publicProviders from "./public/providers.routes.js";
 import publicServices from "./public/services.routes.js";
-import providerOrders from "./provider/orders.routes.js";
 
 
 const router = Router();
@@ -26,7 +25,6 @@ router.use(providerOrders);
 router.use(publicCategories);
 router.use(publicProviders);
 router.use(publicServices);
-router.use(providerOrders);
 
 
 export default router;
