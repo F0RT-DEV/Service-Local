@@ -6,9 +6,12 @@ import adminUsers from "./admin/users.routes.js";
 import clientOrders from "./client/orders.routes.js";
 import providerProfile from "./provider/profile.routes.js";
 import providerServices from "./provider/services.routes.js";
+import providerOrders from "./provider/orders.routes.js";
 import publicCategories from "./public/categories.routes.js";
 import publicProviders from "./public/providers.routes.js";
 import publicServices from "./public/services.routes.js";
+import providerOrders from "./provider/orders.routes.js";
+
 
 const router = Router();
 
@@ -19,8 +22,11 @@ router.use(adminUsers);
 router.use(clientOrders);
 router.use(providerProfile);
 router.use(providerServices);
+router.use(providerOrders);
 router.use(publicCategories);
 router.use(publicProviders);
 router.use(publicServices);
+router.use(providerOrders);
+
 
 export default router;

@@ -30,6 +30,7 @@ export function getById(id) {
 			"email",
 			"phone",
 			"role",
+			"cpf",
 			"cep",
 			"logradouro",
 			"complemento",

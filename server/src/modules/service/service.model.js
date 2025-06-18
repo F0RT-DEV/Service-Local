@@ -12,7 +12,7 @@ export async function createService(data) {
 	const newService = await db("services").where({id}).first();
 	return newService;
 }
-export async function getServiceById(id) {
+export  function getServiceById(id) {
 	return db("services").where({id}).first();
 }
 export async function getAllService(id) {
@@ -27,4 +27,8 @@ export async function getAllServicesByCategoryName(categoryName) {
 		.join("categories", "services.category_id", "categories.id")
 		.select("services.*")
 		.where("categories.name", categoryName);
+}
+
+export function getById(id) {
+  return db("services").where({ id }).first();
 }
