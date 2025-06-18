@@ -31,3 +31,4 @@ export function getByProviderId(provider_id) {
 export function getByClientId(client_id) {
     return db("orders").where({ client_id });
 }
+

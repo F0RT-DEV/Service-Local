@@ -1,10 +1,13 @@
   import { authenticateToken } from "../../middlewares/authMiddleware.js";
 import { verifyProviderRole } from "../../middlewares/role.middleware.js";
 import {
-    getAllOrders,
-    getOrderById,
+
     acceptOrder,
     rejectOrder,
+	getProviderOrders,
+	getProviderOrderById,
+	startOrderProgress,
+	completeOrder
 } from "../../modules/order/order.controller.js";
 import router from "./services.routes.js";
 //const router = express.Router();
