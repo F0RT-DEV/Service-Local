@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./Login.module.css";
 
@@ -76,6 +77,12 @@ const Login = () => {
           Entrar
         </button>
       </form>
+      <div style={{ marginTop: 16, textAlign: "center" }}>
+      <span>Não tem conta? </span>
+      <Link to="/cadastro" style={{ color: "#2563EB", textDecoration: "underline", fontWeight: 600 }}>
+        Cadastre-se agora
+      </Link>
+    </div>
     </div>
   );
 };

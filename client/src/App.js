@@ -12,6 +12,7 @@ import DashboardADM from './pages/Admin/DashboardADM';
 import './App.css';
 import PerfilUsuarioComum from './components/PerfilUsuarioComum';
 import PerfilPrestador from './components/PerfilPrestador';
+import PerfilPublicoPrestador from './pages/PrestadorServico/PerfilPublicoPrestador';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/" element={<PaginaInicial />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<CadastroMultiStep />} />
+            <Route path="/providers/:id" element={<PerfilPublicoPrestador />} />
             <Route path="/usuario/perfil" element={
   <ProtectedRoute tipoPermitido="client">
     <PerfilUsuarioComum />

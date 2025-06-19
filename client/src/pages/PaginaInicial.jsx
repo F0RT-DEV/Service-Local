@@ -1,8 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./PaginaInicial.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = "http://localhost:3333";
 
 const PaginaInicial = () => {
+  // Estados para armazenar dados
+  const [categorias, setCategorias] = useState([]);
+  const [prestadores, setPrestadores] = useState([]);
+  const [servicos, setServicos] = useState([]);
+  const navigate = useNavigate();
+   // Buscar categorias
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/categories`)
+      .then((res) => setCategorias(res.data))
+      .catch(() => setCategorias([]));
+  }, []);
+
+  // Buscar prestadores (exibir só alguns)
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/providers`)
+      .then((res) => setPrestadores(res.data.slice(0, 3)))
+      .catch(() => setPrestadores([]));
+  }, []);
+
+  // Buscar serviços (exibir só alguns)
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/services`)
+      .then((res) => setServicos(res.data.slice(0, 6)))
+      .catch(() => setServicos([]));
+  }, []);
+  
+    // Função para checar autenticação e redirecionar
+  const handleProtectedNavigation = (url) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate(url);
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className={styles["techconnect-landing"]}>
       {/* Hero Section */}
@@ -51,7 +93,103 @@ const PaginaInicial = () => {
           <div className={styles["stat-label"]}>Tempo Médio</div>
         </div>
       </section>
+{/* CATEGORIAS */}
+      <section className={styles.container} style={{ padding: "4rem 0" }}>
+        <h2 className={styles["section-title"]}>Categorias de Serviços</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
+          {categorias.length === 0 && <p>Carregando categorias...</p>}
+          {categorias.map((cat) => (
+            <Link
+              key={cat.id}
+              className={styles["btn-outline"]}
+              style={{ minWidth: 180, marginBottom: 12, textAlign: "center" }}
+              onClick={() => handleProtectedNavigation(`/services/category/${encodeURIComponent(cat.name)}`)}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+      </section>
 
+      {/* PRESTADORES EM DESTAQUE */}
+      <section className={styles.container} style={{ padding: "4rem 0" }}>
+        <h2 className={styles["section-title"]}>Profissionais em Destaque</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
+          {prestadores.length === 0 && <p>Carregando prestadores...</p>}
+          {prestadores.map((p) => (
+  <div
+    key={p.provider_id || p.id}
+    style={{
+      background: "#fff",
+      borderRadius: 12,
+      boxShadow: "0 2px 10px #eee",
+      padding: 24,
+      minWidth: 220,
+      textDecoration: "none",
+      color: "#222",
+      display: "block",
+      marginBottom: 12,
+    }}
+  >
+    <div style={{ fontWeight: 700, fontSize: 18 }}>{p.bio || "Profissional"}</div>
+    <div style={{ color: "#888", fontSize: 14, margin: "8px 0" }}>
+      {p.cnpj ? "PJ" : "Autônomo"}
+    </div>
+    <div>
+      {Array.isArray(p.categories)
+        ? p.categories.map((c) => c.name).join(", ")
+        : ""}
+    </div>
+    <Link
+      to={`/providers/${p.provider_id || p.id}`}
+      className={styles["btn-outline"]}
+      style={{ marginTop: 16, width: "100%", display: "inline-block", textAlign: "center" }}
+    >
+      Ver perfil
+    </Link>
+  </div>
+))}
+        </div>
+      </section>
+
+      {/* SERVIÇOS EM DESTAQUE */}
+      <section className={styles.container} style={{ padding: "4rem 0" }}>
+        <h2 className={styles["section-title"]}>Serviços Recentes</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
+          {servicos.length === 0 && <p>Carregando serviços...</p>}
+          {servicos.map((s) => (
+            <Link
+              key={s.id}
+              onClick={() => handleProtectedNavigation(`/services/${s.id}`)}
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                boxShadow: "0 2px 10px #eee",
+                padding: 24,
+                minWidth: 220,
+                textDecoration: "none",
+                color: "#222",
+                display: "block",
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: 18 }}>{s.title}</div>
+              <div style={{ color: "#888", fontSize: 14, margin: "8px 0" }}>
+                {s.description?.slice(0, 60)}...
+              </div>
+              <div style={{ color: "#2563EB", fontWeight: 600 }}>
+  {s.price_min && s.price_max
+    ? `R$ ${Number(s.price_min).toFixed(2)} - R$ ${Number(s.price_max).toFixed(2)}`
+    : "A combinar"}
+</div>
+            </Link>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <Link to="/login" className={styles["btn-accent"]}>
+            Ver todos os serviços
+          </Link>
+        </div>
+      </section>
       {/* Benefits Section */}
       <section
         id="benefits"

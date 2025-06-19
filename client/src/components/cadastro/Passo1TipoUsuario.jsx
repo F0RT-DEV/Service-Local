@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserIcon, WrenchIcon, ShieldIcon } from 'lucide-react';
+import { UserIcon, WrenchIcon,  } from 'lucide-react';
 import styles from './Passo1TipoUsuario.module.css';
 
 const Passo1TipoUsuario = ({ tipoSelecionado, onSelecionar, erro }) => {
@@ -34,7 +34,7 @@ const Passo1TipoUsuario = ({ tipoSelecionado, onSelecionar, erro }) => {
           </p>
         </div>
 
-        <div 
+        {/* <div 
           className={`${styles['tipo-card']} ${tipoSelecionado === 'admin' ? styles['selecionado'] : ''}`}
           onClick={() => onSelecionar('admin')}
         >
@@ -45,7 +45,7 @@ const Passo1TipoUsuario = ({ tipoSelecionado, onSelecionar, erro }) => {
           <p className={`${styles['descricao']} ${styles['mt-2']}`}>
             Gerencie profissionais, ordens de serviço e usuários
           </p>
-        </div>
+        </div> */}
       </div>
       
       {erro && <p className={`${styles['mensagem-erro']} ${styles['mt-4']} ${styles['text-center']}`}>{erro}</p>}
