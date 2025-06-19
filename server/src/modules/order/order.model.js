@@ -30,3 +30,9 @@ export function getByProviderId(provider_id) {
 export function getByClientId(client_id) {
 	return db("orders").where({client_id});
 }
+export function findActiveByClientId(client_id) {
+	return db("orders")
+		.where({ client_id })
+		.whereIn("status", ["pending", "accepted"])
+		.first(); // retorna a primeira encontrada
+}

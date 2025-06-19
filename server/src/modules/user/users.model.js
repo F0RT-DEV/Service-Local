@@ -52,27 +52,8 @@ export function create(user) {
 	return db("users").insert({id, ...user});
 }
 
-export function update(id, updates) {
-	const allowedFields = [
-		"name",
-		"phone",
-		"cep",
-		"logradouro",
-		"complemento",
-		"bairro",
-		"localidade",
-		"uf",
-		"numero",
-	];
-
-	const filteredUpdates = Object.keys(updates)
-		.filter((key) => allowedFields.includes(key) && updates[key] !== undefined)
-		.reduce((obj, key) => {
-			obj[key] = updates[key];
-			return obj;
-		}, {});
-
-	return db("users").where({id}).update(filteredUpdates);
+export function update(id, data) {
+	 return db("users").where({ id }).update(data);
 }
 
 export function remove(id) {

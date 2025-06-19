@@ -54,7 +54,11 @@ export async function updateProvider(req, res) {
 export async function getPrestadores(req, res) {
 	try {
 		const prestadores = await providerModel.getAllWithCategories();
-		res.status(200).json(prestadores);
+
+		// Filtra apenas os prestadores aprovados
+		const aprovados = prestadores.filter((p) => p.status === "approved");
+
+		res.status(200).json(aprovados);
 	} catch (error) {
 		console.error("Erro ao buscar prestadores:", error);
 		res.status(500).json({
@@ -68,9 +72,18 @@ export async function getPrestadorById(req, res) {
 	const {id} = req.params;
 	try {
 		const prestador = await providerModel.getByIdWithCategories(id);
+
 		if (!prestador) {
 			return res.status(404).json({message: "Prestador não encontrado"});
 		}
+
+		// Verifica se o prestador está aprovado
+		if (prestador.status !== "approved") {
+			return res.status(403).json({
+				error: "Prestador não autorizado a exibir informações públicas.",
+			});
+		}
+
 		res.status(200).json(prestador);
 	} catch (error) {
 		console.error("Erro ao buscar prestador por ID:", error);
@@ -80,6 +93,7 @@ export async function getPrestadorById(req, res) {
 		});
 	}
 }
+
 export async function getAuthenticatedProfile(req, res) {
 	const {id, role} = req.user;
 
@@ -102,14 +116,35 @@ export async function getAuthenticatedProfile(req, res) {
 			return res.status(200).json({role, user, provider});
 		}
 		if (role === "admin") {
-            const user = await db("users").where({id}).first();
-            if (!user) return res.status(404).json({error: "Usuário não encontrado"});
-            return res.status(200).json({role, user});
-        }
+			const user = await db("users").where({id}).first();
+			if (!user) return res.status(404).json({error: "Usuário não encontrado"});
+			return res.status(200).json({role, user});
+		}
 
 		return res.status(403).json({error: "Perfil não autorizado"});
 	} catch (error) {
 		console.error("Erro ao buscar perfil:", error);
 		return res.status(500).json({error: "Erro interno do servidor"});
+	}
+}
+export async function getMyRatings(req, res) {
+	const providerId = req.user?.provider_id;
+
+	try {
+		const reviews = await providerModel.getRatingsByProviderId(providerId);
+		res.json(reviews);
+	} catch (error) {
+		res.status(500).json({error: "Erro ao buscar avaliações"});
+	}
+}
+
+export async function getRatingsSummary(req, res) {
+	const providerId = req.user?.provider_id;
+
+	try {
+		const summary = await providerModel.getRatingsSummary(providerId);
+		res.json(summary);
+	} catch (error) {
+		res.status(500).json({error: "Erro ao buscar resumo das avaliações"});
 	}
 }

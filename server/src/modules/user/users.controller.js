@@ -191,3 +191,26 @@ export async function resetPassword(req, res) {
 		});
 	}
 }
+export async function updateMyProfile(req, res) {
+  const userId = req.user.id;
+  const updates = req.body;
+
+  try {
+    await userModel.update(userId, updates); // Corrigido!
+    const updatedUser = await userModel.getById(userId);
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao atualizar perfil do usuário" });
+  }
+}
+
+export async function deleteMyAccount(req, res) {
+  const userId = req.user.id;
+
+  try {
+    await userModel.remove(userId); // Corrigido!
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao deletar conta do usuário" });
+  }
+}

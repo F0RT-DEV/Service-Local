@@ -5,12 +5,17 @@ import {
 	resetPassword,
 	createUser,
 	loginUser,
-} from "../../modules/user/users.controller.js";
+	updateMyProfile,deleteMyAccount} from "../../modules/user/users.controller.js";
 const router = Router();
 
 router.post("/register", createUser);
 router.post("/login", loginUser);
 router.get("/me", authenticateToken, getAuthenticatedProfile);
+router.put("/me", authenticateToken, updateMyProfile);
+router.delete("/me", authenticateToken, deleteMyAccount);
+
 router.put("/resetPassword", resetPassword);
+
+
 
 export default router;
