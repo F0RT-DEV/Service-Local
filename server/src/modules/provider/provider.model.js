@@ -130,3 +130,18 @@ export function getByProviderByCategory(categoryId) {
 			"p.availability"
 		);
 }
+export function getRatingsByProviderId(providerId) {
+	return db("orders")
+		.where({ provider_id: providerId })
+		.whereNotNull("rating")
+		.select("rating", "rating_comment", "created_at", "client_id");
+}
+
+export function getRatingsSummary(providerId) {
+	return db("orders")
+		.where({ provider_id: providerId })
+		.whereNotNull("rating")
+		.avg("rating as average_rating")
+		.count("rating as total_reviews")
+		.first();
+}

@@ -3,7 +3,6 @@ import * as orderModel from "./order.model.js";
 import * as serviceModel from "../service/service.model.js";
 import {CreateOrderSchema} from "./order.schema.js";
 
-
 export async function getAllOrders(req, res) {
 	try {
 		const orders = await orderModel.getAll();
@@ -21,19 +20,32 @@ export async function createOrder(req, res) {
 		const id = uuidv4();
 		const client_id = req.user.id;
 
-		// Buscar provider_id do serviço
+		// Verifica se o cliente já tem uma ordem em andamento
+		const existingOrder = await orderModel.findActiveByClientId(client_id);
+		if (existingOrder) {
+			return res.status(400).json({
+				error: "Você já possui uma ordem em andamento. Finalize ou cancele antes de criar uma nova.",
+			});
+		}
+
+		// Buscar serviço
 		const service = await serviceModel.getById(validated.service_id);
 		if (!service || !service.provider_id) {
 			return res.status(400).json({ error: "Serviço inválido ou sem prestador" });
 		}
-		const provider_id = service.provider_id;
 
+		// Verifica se o serviço está ativo
+		if (service.is_active !== 1) {
+			return res.status(400).json({
+				error: "Este serviço não está ativo e não pode ser usado para criar uma ordem.",
+			});
+		}
 
 		const order = {
 			...validated,
 			id,
 			client_id,
-			provider_id,
+			provider_id: service.provider_id,
 			category_id: service.category_id,
 			status: "pending",
 			created_at: new Date(),
@@ -50,21 +62,21 @@ export async function createOrder(req, res) {
 
 export async function getClientOrders(req, res) {
 	try {
-        const { provider_id, client_id } = req.query;
-        let orders;
+		const {provider_id, client_id} = req.query;
+		let orders;
 
-        if (provider_id) {
-            orders = await orderModel.getByProviderId(provider_id);
-        } else if (client_id) {
-            orders = await orderModel.getByClientId(client_id);
-        } else {
-            orders = await orderModel.getAll();
-        }
+		if (provider_id) {
+			orders = await orderModel.getByProviderId(provider_id);
+		} else if (client_id) {
+			orders = await orderModel.getByClientId(client_id);
+		} else {
+			orders = await orderModel.getAll();
+		}
 
-        res.status(200).json(orders);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+		res.status(200).json(orders);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
 }
 
 export async function getClientOrderById(req, res) {
@@ -88,7 +100,12 @@ export async function cancelClientOrder(req, res) {
 		if (!order) return res.status(404).json({error: "Ordem não encontrada"});
 		if (order.client_id !== req.user.id)
 			return res.status(403).json({error: "Acesso negado"});
-
+		if (order.status !== "pending") {
+			return res.status(400).json({
+				error:
+					"A ordem só pode ser cancelada enquanto estiver com status 'pending'.",
+			});
+		}
 		const updated = await orderModel.update(id, {
 			status: "cancelled",
 			cancelled_at: new Date(),
@@ -136,11 +153,12 @@ export async function getProviderOrders(req, res) {
 	try {
 		const providerId = req.user?.provider_id;
 		const orders = await orderModel.getByProviderId(providerId);
-		if(!orders || orders.length === 0) {
-			return res.status(404).json({error: "Nenhuma ordem encontrada para este prestador"});
+		if (!orders || orders.length === 0) {
+			return res
+				.status(404)
+				.json({error: "Nenhuma ordem encontrada para este prestador"});
 		}
 		res.json(orders);
-		
 	} catch (error) {
 		res.status(500).json({error: {message: error.message}});
 	}
@@ -162,21 +180,25 @@ export async function getProviderOrderById(req, res) {
 
 export async function acceptOrder(req, res) {
 	try {
-		const { id } = req.params;
+		const {id} = req.params;
 		const order = await orderModel.getById(id);
 
 		// Verifica se a ordem existe e se pertence ao provider autenticado
 		if (!order || order.provider_id !== req.user.provider_id) {
-			return res.status(403).json({ error: "Acesso negado ou ordem não encontrada" });
+			return res
+				.status(403)
+				.json({error: "Acesso negado ou ordem não encontrada"});
 		}
 
-		const updated = await orderModel.update(id, { status: "accepted", updated_at: new Date() });
+		const updated = await orderModel.update(id, {
+			status: "accepted",
+			updated_at: new Date(),
+		});
 		res.json(updated[0]);
 	} catch (error) {
-		res.status(400).json({ error: error.message });
+		res.status(400).json({error: error.message});
 	}
 }
-
 
 export async function rejectOrder(req, res) {
 	try {
@@ -231,16 +253,41 @@ export async function completeOrder(req, res) {
 
 // GERAL
 
+const validStatuses = ["pending", "accepted", "rejected", "in_progress", "done", "canceled"];
+
 export async function updateOrderStatus(req, res) {
 	try {
-		const {id} = req.params;
-		const {status} = req.body;
-		if (!status) return res.status(400).json({error: "Status obrigatório"});
+		const { id } = req.params;
+		const { status } = req.body;
 
-		const updated = await orderModel.update(id, {status});
-		res.json(updated[0]);
+		if (!status) {
+			return res.status(400).json({ error: "Status obrigatório." });
+		}
+
+	
+		if (!validStatuses.includes(status)) {
+			return res.status(400).json({
+				error: "Status inválido.",
+				validStatuses,
+			});
+		}
+
+		// Verifica se a ordem existe antes de tentar atualizar
+		const existingOrder = await orderModel.getById(id);
+		if (!existingOrder) {
+			return res.status(404).json({ error: "Ordem não encontrada." });
+		}
+
+		// Atualiza o status da ordem
+		const updated = await orderModel.update(id, { status });
+
+		res.status(200).json({
+			message: "Status da ordem atualizado com sucesso.",
+			order: updated[0],
+		});
 	} catch (error) {
-		res.status(400).json({error: error.message});
+		console.error("Erro ao atualizar status da ordem:", error);
+		res.status(500).json({ error: "Erro interno ao atualizar a ordem." });
 	}
 }
 
@@ -260,4 +307,16 @@ export async function cancelOrder(req, res) {
 	} catch (error) {
 		res.status(400).json({error: error.message});
 	}
+}
+export async function getRatingsSummary(req, res) {
+    try {
+        const providerId = req.params.id || req.params.providerId;
+        const summary = await reviewModel.getRatingsSummary(providerId);
+        res.status(200).json(summary[0]);
+    } catch (err) {
+        res.status(500).json({
+            error: "Erro ao gerar resumo das avaliações",
+            details: err.message,
+        });
+    }
 }

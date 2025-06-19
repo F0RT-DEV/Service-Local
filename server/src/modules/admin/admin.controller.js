@@ -1,4 +1,5 @@
 import ProviderModel from "./admin.model.js";
+import db from "../../db.js";
 
 export async function approveProvider(req, res) {
 	try {
@@ -61,5 +62,27 @@ export async function readUsers(req, res) {
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({message: "Erro interno do servidor"});
+	}
+}
+
+export async function getDashboardStats(req, res) {
+	try {
+		const [users, providers, orders, reviews] = await Promise.all([
+			db("users").count("id as total_users").first(),
+			db("providers").count("id as total_providers").first(),
+			db("orders").count("id as total_orders").first(),
+			db("orders").whereNotNull("rating").count("id as total_reviews").first(),
+		]);
+
+		// Convertendo os valores para números (MySQL retorna como string)
+		res.json({
+			total_users: Number(users.total_users),
+			total_providers: Number(providers.total_providers),
+			total_orders: Number(orders.total_orders),
+			total_reviews: Number(reviews.total_reviews),
+		});
+	} catch (error) {
+		console.error("Erro ao buscar estatísticas do dashboard:", error);
+		res.status(500).json({error: "Erro ao buscar estatísticas do dashboard"});
 	}
 }
