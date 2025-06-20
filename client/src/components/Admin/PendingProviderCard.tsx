@@ -1,6 +1,5 @@
-import React from 'react';
 import { Eye, Check, X } from 'lucide-react';
-import { Card, CardContent } from '../UI/Card';
+import { Card } from '../UI/Card';
 import { ActionButton } from '../UI/ActionButton';
 import { StatusBadge } from '../UI/StatusBadge';
 
