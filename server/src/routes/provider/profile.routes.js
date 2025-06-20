@@ -5,6 +5,6 @@ import {authenticateToken} from "../../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.put("/provider/me", authenticateToken, verifyProviderRole, updateProvider);
+router.put("/provider", authenticateToken, verifyProviderRole, updateProvider);
 
 export default router;
