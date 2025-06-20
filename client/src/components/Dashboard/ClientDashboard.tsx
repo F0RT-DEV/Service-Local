@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Search, Star, Calendar, DollarSign } from 'lucide-react';
 import { StatsCard } from '../UI/StatsCard';
 import { OrderCard } from '../Client/OrderCard';

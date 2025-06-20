@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Phone, MapPin, Hash } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface RegisterFormProps {
@@ -12,7 +12,16 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'client' as 'client' | 'provider'
+    role: 'client' as 'client' | 'provider',
+    cpf: '',
+    phone: '',
+    cep: '',
+    logradouro: '',
+    complemento: '',
+    bairro: '',
+    localidade: '',
+    uf: '',
+    numero: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -32,7 +41,16 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role
+        role: formData.role,
+        cpf: formData.cpf,
+        phone: formData.phone,
+        cep: formData.cep,
+        logradouro: formData.logradouro,
+        complemento: formData.complemento,
+        bairro: formData.bairro,
+        localidade: formData.localidade,
+        uf: formData.uf,
+        numero: formData.numero
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao criar conta');
@@ -106,7 +124,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Tipo de conta
@@ -151,7 +169,170 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 </label>
               </div>
             </div>
-            
+
+            <div>
+              <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
+                CPF
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Hash className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="cpf"
+                  name="cpf"
+                  type="text"
+                  value={formData.cpf}
+                  onChange={(e) => setFormData({...formData, cpf: e.target.value})}
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite seu CPF"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Telefone
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite seu telefone"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="cep" className="block text-sm font-medium text-gray-700">
+                CEP
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="cep"
+                  name="cep"
+                  type="text"
+                  value={formData.cep}
+                  onChange={(e) => setFormData({...formData, cep: e.target.value})}
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite seu CEP"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="logradouro" className="block text-sm font-medium text-gray-700">
+                Logradouro
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="logradouro"
+                  name="logradouro"
+                  type="text"
+                  value={formData.logradouro}
+                  onChange={(e) => setFormData({...formData, logradouro: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite o logradouro"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="complemento" className="block text-sm font-medium text-gray-700">
+                Complemento
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="complemento"
+                  name="complemento"
+                  type="text"
+                  value={formData.complemento}
+                  onChange={(e) => setFormData({...formData, complemento: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite o complemento"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="bairro" className="block text-sm font-medium text-gray-700">
+                Bairro
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="bairro"
+                  name="bairro"
+                  type="text"
+                  value={formData.bairro}
+                  onChange={(e) => setFormData({...formData, bairro: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite o bairro"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="localidade" className="block text-sm font-medium text-gray-700">
+                Cidade
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="localidade"
+                  name="localidade"
+                  type="text"
+                  value={formData.localidade}
+                  onChange={(e) => setFormData({...formData, localidade: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Digite a cidade"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="uf" className="block text-sm font-medium text-gray-700">
+                UF
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="uf"
+                  name="uf"
+                  type="text"
+                  maxLength={2}
+                  value={formData.uf}
+                  onChange={(e) => setFormData({...formData, uf: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="UF"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="numero" className="block text-sm font-medium text-gray-700">
+                Número
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="numero"
+                  name="numero"
+                  type="text"
+                  value={formData.numero}
+                  onChange={(e) => setFormData({...formData, numero: e.target.value})}
+                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Número"
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -217,6 +398,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           </div>
         </form>
       </div>
-    </div>
+      </div>
   );
 }
