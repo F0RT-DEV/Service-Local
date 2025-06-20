@@ -98,27 +98,36 @@ export async function getAuthenticatedProfile(req, res) {
 	const {id, role} = req.user;
 
 	try {
-		if (role === "client" || role === "user") {
-			const user = await db("users").where({id}).first();
-			if (!user) return res.status(404).json({error: "Usuário não encontrado"});
+		const user = await db("users").where({id}).first();
+		if (!user) return res.status(404).json({error: "Usuário não encontrado"});
 
+		if (role === "client" || role === "user" || role === "admin") {
 			return res.status(200).json({role, user});
 		}
 
 		if (role === "provider") {
-			const user = await db("users").where({id}).first();
-			if (!user) return res.status(404).json({error: "Usuário não encontrado"});
-
 			const provider = await db("providers").where({user_id: id}).first();
 			if (!provider)
 				return res.status(404).json({error: "Prestador não encontrado"});
 
-			return res.status(200).json({role, user, provider});
-		}
-		if (role === "admin") {
-			const user = await db("users").where({id}).first();
-			if (!user) return res.status(404).json({error: "Usuário não encontrado"});
-			return res.status(200).json({role, user});
+			// Buscar categorias associadas ao provider
+			const categories = await db("providers_categories")
+				.join("categories", "providers_categories.category_id", "categories.id")
+				.where("providers_categories.provider_id", provider.id)
+				.select("categories.id", "categories.name");
+
+			return res.status(200).json({
+				role,
+				user,
+				provider: {
+					id: provider.id,
+					bio: provider.bio,
+					status: provider.status,
+					availability: provider.availability,
+					cnpj: provider.cnpj,
+					categories,
+				},
+			});
 		}
 
 		return res.status(403).json({error: "Perfil não autorizado"});
@@ -127,6 +136,7 @@ export async function getAuthenticatedProfile(req, res) {
 		return res.status(500).json({error: "Erro interno do servidor"});
 	}
 }
+
 export async function getMyRatings(req, res) {
 	const providerId = req.user?.provider_id;
 
