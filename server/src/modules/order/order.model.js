@@ -37,6 +37,10 @@ export function remove(id) {
 export function getByClientId(client_id) {
 	return db("orders").where({client_id});
 }
+export function getById(id) {
+	return db("orders").where({ id }).first();
+}
+
 export function findActiveByClientId(client_id) {
 	return db("orders")
 		.where({ client_id })

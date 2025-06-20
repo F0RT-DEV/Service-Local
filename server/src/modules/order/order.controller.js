@@ -24,20 +24,22 @@ export async function createOrder(req, res) {
 		const existingOrder = await orderModel.findActiveByClientId(client_id);
 		if (existingOrder) {
 			return res.status(400).json({
-				error: "Você já possui uma ordem em andamento. Finalize ou cancele antes de criar uma nova.",
+				error:
+					"Você já possui uma ordem em andamento. Finalize ou cancele antes de criar uma nova.",
 			});
 		}
 
 		// Buscar serviço
 		const service = await serviceModel.getById(validated.service_id);
 		if (!service || !service.provider_id) {
-			return res.status(400).json({ error: "Serviço inválido ou sem prestador" });
+			return res.status(400).json({error: "Serviço inválido ou sem prestador"});
 		}
 
 		// Verifica se o serviço está ativo
 		if (service.is_active !== 1) {
 			return res.status(400).json({
-				error: "Este serviço não está ativo e não pode ser usado para criar uma ordem.",
+				error:
+					"Este serviço não está ativo e não pode ser usado para criar uma ordem.",
 			});
 		}
 
@@ -55,10 +57,9 @@ export async function createOrder(req, res) {
 		res.status(201).json(order);
 	} catch (error) {
 		console.error("Erro ao criar ordem:", error);
-		res.status(400).json({ error: error.errors || error.message });
+		res.status(400).json({error: error.errors || error.message});
 	}
 }
-
 
 export async function getClientOrders(req, res) {
 	try {
@@ -78,12 +79,12 @@ export async function getClientOrders(req, res) {
 		res.status(500).json({error: error.message});
 	}
 }
-
 export async function getClientOrderById(req, res) {
 	try {
-		const {id} = req.params;
-		const order = await orderModel.getById(id);
+		const {id} = req.params; // id da ordem
+		const order = await orderModel.getById(id); // buscar ordem pelo ID da ordem
 		if (!order) return res.status(404).json({error: "Ordem não encontrada"});
+
 		if (order.client_id !== req.user.id)
 			return res.status(403).json({error: "Acesso negado"});
 
@@ -253,18 +254,24 @@ export async function completeOrder(req, res) {
 
 // GERAL
 
-const validStatuses = ["pending", "accepted", "rejected", "in_progress", "done", "canceled"];
+const validStatuses = [
+	"pending",
+	"accepted",
+	"rejected",
+	"in_progress",
+	"done",
+	"canceled",
+];
 
 export async function updateOrderStatus(req, res) {
 	try {
-		const { id } = req.params;
-		const { status } = req.body;
+		const {id} = req.params;
+		const {status} = req.body;
 
 		if (!status) {
-			return res.status(400).json({ error: "Status obrigatório." });
+			return res.status(400).json({error: "Status obrigatório."});
 		}
 
-	
 		if (!validStatuses.includes(status)) {
 			return res.status(400).json({
 				error: "Status inválido.",
@@ -275,11 +282,11 @@ export async function updateOrderStatus(req, res) {
 		// Verifica se a ordem existe antes de tentar atualizar
 		const existingOrder = await orderModel.getById(id);
 		if (!existingOrder) {
-			return res.status(404).json({ error: "Ordem não encontrada." });
+			return res.status(404).json({error: "Ordem não encontrada."});
 		}
 
 		// Atualiza o status da ordem
-		const updated = await orderModel.update(id, { status });
+		const updated = await orderModel.update(id, {status});
 
 		res.status(200).json({
 			message: "Status da ordem atualizado com sucesso.",
@@ -287,7 +294,7 @@ export async function updateOrderStatus(req, res) {
 		});
 	} catch (error) {
 		console.error("Erro ao atualizar status da ordem:", error);
-		res.status(500).json({ error: "Erro interno ao atualizar a ordem." });
+		res.status(500).json({error: "Erro interno ao atualizar a ordem."});
 	}
 }
 
@@ -309,14 +316,14 @@ export async function cancelOrder(req, res) {
 	}
 }
 export async function getRatingsSummary(req, res) {
-    try {
-        const providerId = req.params.id || req.params.providerId;
-        const summary = await reviewModel.getRatingsSummary(providerId);
-        res.status(200).json(summary[0]);
-    } catch (err) {
-        res.status(500).json({
-            error: "Erro ao gerar resumo das avaliações",
-            details: err.message,
-        });
-    }
+	try {
+		const providerId = req.params.id || req.params.providerId;
+		const summary = await reviewModel.getRatingsSummary(providerId);
+		res.status(200).json(summary[0]);
+	} catch (err) {
+		res.status(500).json({
+			error: "Erro ao gerar resumo das avaliações",
+			details: err.message,
+		});
+	}
 }
