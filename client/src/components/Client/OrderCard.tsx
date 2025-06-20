@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Eye } from 'lucide-react';
 import { Card } from '../UI/Card';
 import { StatusBadge } from '../UI/StatusBadge';

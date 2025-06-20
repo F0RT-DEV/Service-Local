@@ -1,20 +1,11 @@
-import React from 'react';
-import { Search, Star, MapPin, DollarSign } from 'lucide-react';
-import { Card } from '../UI/Card';
-import { ActionButton } from '../UI/ActionButton';
-
 interface Service {
   id: string;
+  category_id: string;
   title: string;
-  provider: string;
-  category: string;
-  rating: number;
-  reviewsCount: number;
-  price: number;
-  priceType: string;
-  location: string;
   description: string;
-  image: string;
+  price_min: number;
+  price_max: number;
+  images: string;
 }
 
 interface ServiceGridProps {
@@ -23,21 +14,9 @@ interface ServiceGridProps {
 }
 
 export function ServiceGrid({ services, onRequestService }: ServiceGridProps) {
-  const getPriceText = (service: Service) => {
-    switch (service.priceType) {
-      case 'hourly':
-        return `R$ ${service.price}/hora`;
-      case 'negotiable':
-        return 'Preço negociável';
-      default:
-        return `R$ ${service.price}`;
-    }
-  };
-
   if (services.length === 0) {
     return (
       <div className="text-center py-12">
-        <Search className="mx-auto h-12 w-12 text-gray-400" />
         <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum serviço encontrado</h3>
         <p className="mt-1 text-sm text-gray-500">
           Tente ajustar os filtros ou termos de busca.
@@ -49,53 +28,28 @@ export function ServiceGrid({ services, onRequestService }: ServiceGridProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {services.map((service) => (
-        <Card key={service.id} hover className="overflow-hidden">
+        <div key={service.id} className="border rounded-lg p-4 flex flex-col">
           <img
-            src={service.image}
+            src={service.images || '/placeholder.jpg'}
             alt={service.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-48 object-cover mb-2"
           />
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-                {service.title}
-              </h3>
-              <div className="flex items-center">
-                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                <span className="text-sm text-gray-600 ml-1">{service.rating}</span>
-              </div>
-            </div>
-            
-            <p className="text-sm text-gray-600 mb-2">por {service.provider}</p>
-            
-            <div className="flex items-center text-sm text-gray-500 mb-2">
-              <MapPin className="h-4 w-4 mr-1" />
-              {service.location}
-            </div>
-            
-            <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-              {service.description}
-            </p>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <DollarSign className="h-4 w-4 text-green-600" />
-                <span className="text-lg font-bold text-gray-900 ml-1">
-                  {getPriceText(service)}
-                </span>
-              </div>
-              <ActionButton onClick={() => onRequestService(service.id)}>
-                Solicitar
-              </ActionButton>
-            </div>
-            
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
-                {service.reviewsCount} avaliações
-              </p>
-            </div>
+          <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
+          <p className="text-sm text-gray-600 mb-2">{service.description}</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-green-700 font-bold">
+              {service.price_min === service.price_max
+                ? `R$ ${service.price_min}`
+                : `R$ ${service.price_min} - R$ ${service.price_max}`}
+            </span>
           </div>
-        </Card>
+          <button
+            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 mt-auto"
+            onClick={() => onRequestService(service.id)}
+          >
+            Solicitar
+          </button>
+        </div>
       ))}
     </div>
   );

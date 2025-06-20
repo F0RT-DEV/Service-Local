@@ -5,6 +5,15 @@ export interface User {
   role: 'client' | 'provider' | 'admin';
   avatar?: string;
   createdAt: string;
+  phone?: string;
+  cpf?: string;
+  cep?: string;
+  logradouro?: string;
+  complemento?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+  numero?: string;
 }
 
 export interface Provider extends User {
@@ -59,6 +68,7 @@ export interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  setUser?: (user: User | null) => void;
 }
 
 export interface RegisterData {
@@ -66,4 +76,13 @@ export interface RegisterData {
   email: string;
   password: string;
   role: 'client' | 'provider';
+  cpf: string;
+  phone: string;
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  numero: string;
 }

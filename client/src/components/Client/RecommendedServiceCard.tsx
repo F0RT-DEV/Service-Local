@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Star } from 'lucide-react';
 import { Card } from '../UI/Card';
 import { ActionButton } from '../UI/ActionButton';

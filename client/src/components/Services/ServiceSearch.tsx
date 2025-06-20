@@ -1,87 +1,79 @@
-import React, { useState } from 'react';
-import { SearchFilters } from './SearchFilters';
+import { useEffect, useState } from 'react';
 import { ServiceGrid } from './ServiceGrid';
+import { SearchFilters } from './SearchFilters';
+import { RequestOrderModal } from './RequestOrderModal';
+
+interface Service {
+  id: string;
+  category_id: string;
+  title: string;
+  description: string;
+  price_min: number;
+  price_max: number;
+  images: string;
+}
 
 export function ServiceSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [location, setLocation] = useState('');
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
 
-  const services = [
-    {
-      id: '1',
-      title: 'Instalação de Ar Condicionado',
-      provider: 'João Silva',
-      category: 'eletrica',
-      rating: 4.8,
-      reviewsCount: 24,
-      price: 250,
-      priceType: 'fixed',
-      location: 'São Paulo, SP',
-      description: 'Instalação completa de ar condicionado split com garantia de 1 ano.',
-      image: 'https://images.pexels.com/photos/1938348/pexels-photo-1938348.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: '2',
-      title: 'Limpeza Residencial Completa',
-      provider: 'Maria Santos',
-      category: 'limpeza',
-      rating: 4.9,
-      reviewsCount: 31,
-      price: 120,
-      priceType: 'hourly',
-      location: 'Rio de Janeiro, RJ',
-      description: 'Limpeza completa de residências com produtos ecológicos.',
-      image: 'https://images.pexels.com/photos/4239013/pexels-photo-4239013.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: '3',
-      title: 'Jardinagem e Paisagismo',
-      provider: 'Carlos Pereira',
-      category: 'jardinagem',
-      rating: 4.7,
-      reviewsCount: 18,
-      price: 180,
-      priceType: 'negotiable',
-      location: 'Belo Horizonte, MG',
-      description: 'Criação e manutenção de jardins residenciais e comerciais.',
-      image: 'https://images.pexels.com/photos/1005058/pexels-photo-1005058.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: '4',
-      title: 'Reparo Hidráulico',
-      provider: 'Ana Costa',
-      category: 'hidraulica',
-      rating: 4.6,
-      reviewsCount: 42,
-      price: 80,
-      priceType: 'hourly',
-      location: 'Porto Alegre, RS',
-      description: 'Reparos em tubulações, torneiras e instalações hidráulicas.',
-      image: 'https://images.pexels.com/photos/834949/pexels-photo-834949.jpeg?auto=compress&cs=tinysrgb&w=400'
-    }
-  ];
+  // Buscar serviços do backend ao carregar
+  useEffect(() => {
+    const fetchServices = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch('http://localhost:3333/services');
+        if (!res.ok) throw new Error('Erro ao buscar serviços');
+        const data = await res.json();
+        // Mapeia apenas os campos do schema
+        const mapped = data.map((service: any) => ({
+          id: service.id,
+          category_id: service.category_id,
+          title: service.title,
+          description: service.description,
+          price_min: service.price_min,
+          price_max: service.price_max,
+          images: service.images,
+        }));
+        setServices(mapped);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao buscar serviços');
+      }
+      setLoading(false);
+    };
+    fetchServices();
+  }, []);
 
-  const filteredServices = services.filter(service => {
-    const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.provider.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || service.category === selectedCategory;
-    const matchesLocation = !location || service.location.toLowerCase().includes(location.toLowerCase());
-    
-    return matchesSearch && matchesCategory && matchesLocation;
+  // Filtros simples (pode adaptar conforme necessário)
+  const filteredServices = services.filter((service) => {
+    const matchesTerm =
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'all' || service.category_id === selectedCategory;
+    // location não existe no schema, então filtro só por termo e categoria
+    return matchesTerm && matchesCategory;
   });
 
   const handleRequestService = (id: string) => {
-    console.log('Requesting service:', id);
+    setSelectedServiceId(id);
+    setModalOpen(true);
+  };
+
+  const handleSuccess = () => {
+    alert('Ordem criada com sucesso!');
+    // Aqui você pode atualizar a lista de ordens, se quiser
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Buscar Serviços</h1>
-        <p className="text-gray-600">Encontre o profissional ideal para suas necessidades.</p>
-      </div>
-
       <SearchFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -90,10 +82,16 @@ export function ServiceSearch() {
         location={location}
         setLocation={setLocation}
       />
-
-      <ServiceGrid
-        services={filteredServices}
-        onRequestService={handleRequestService}
+      {loading && <div>Carregando serviços...</div>}
+      {error && <div className="text-red-600">{error}</div>}
+      {!loading && !error && (
+        <ServiceGrid services={filteredServices} onRequestService={handleRequestService} />
+      )}
+      <RequestOrderModal
+        serviceId={selectedServiceId || ''}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleSuccess}
       />
     </div>
   );

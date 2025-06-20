@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoginForm } from './components/Auth/LoginForm';
 import { RegisterForm } from './components/Auth/RegisterForm';
@@ -9,11 +9,15 @@ import { ProviderDashboard } from './components/Dashboard/ProviderDashboard';
 import { AdminDashboard } from './components/Dashboard/AdminDashboard';
 import { ServiceSearch } from './components/Services/ServiceSearch';
 import { ProviderProfile } from './components/Profile/ProviderProfile';
+import { MyOrders } from './components/Client/MyOrders';
+import { OrderDetails } from './components/Client/OrderDetails';
+import { ProfileEdit } from './components/Client/ProfileEdit';
 
 function AppContent() {
   const { user } = useAuth();
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   if (!user) {
     return authView === 'login' ? (
@@ -39,10 +43,18 @@ function AppContent() {
       case 'search':
         return <ServiceSearch />;
       case 'profile':
-        return user.role === 'provider' ? <ProviderProfile /> : <div>Perfil do Cliente</div>;
+        return user.role === 'provider'
+          ? <ProviderProfile />
+          : <ProfileEdit />;
       case 'services':
         return <div>Gerenciar Serviços</div>;
       case 'orders':
+        if (user.role === 'client') {
+          return selectedOrderId
+            ? <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
+            : <MyOrders onSelectOrder={setSelectedOrderId} />;
+        }
+        // Adapte para provider/admin se necessário
         return <div>Gerenciar Ordens</div>;
       case 'providers':
         return <div>Gerenciar Providers (Admin)</div>;
@@ -55,7 +67,13 @@ function AppContent() {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
+      <Sidebar
+        currentView={currentView}
+        onViewChange={(view) => {
+          setCurrentView(view);
+          if (view !== 'orders') setSelectedOrderId(null); // limpa seleção ao sair de orders
+        }}
+      />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto">
