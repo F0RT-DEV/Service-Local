@@ -10,8 +10,17 @@ export function getAll() {
 	return db("orders").select("*");
 }
 
-export function getById(id) {
-	return db("orders").where({id}).first();
+export function getByProviderId(provider_id) {
+	return db("orders")
+		.select(
+			"orders.*",
+			"services.title as service_name",
+			"users.name as client_name"
+		)
+		.join("services", "orders.service_id", "services.id")
+		.join("users", "orders.client_id", "users.id")
+		.where("orders.provider_id", provider_id)
+		.orderBy("orders.created_at", "desc");
 }
 
 // Atualizar por ID
@@ -23,9 +32,7 @@ export function remove(id) {
 	return db("orders").where({id}).del();
 }
 
-export function getByProviderId(provider_id) {
-	return db("orders").where({provider_id});
-}
+
 
 export function getByClientId(client_id) {
 	return db("orders").where({client_id});
