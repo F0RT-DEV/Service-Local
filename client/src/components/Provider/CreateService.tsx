@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CreateServiceProps {
   onBack: () => void;
@@ -16,6 +16,16 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
     is_active: true,
   });
   const [loading, setLoading] = useState(false);
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [mensagem, setMensagem] = useState("");
+
+  // Buscar categorias dinamicamente
+  useEffect(() => {
+    fetch("http://localhost:3333/categories")
+      .then((res) => res.json())
+      .then(setCategorias)
+      .catch(() => setCategorias([]));
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -31,18 +41,35 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMensagem("");
+    // Validação básica
+    if (
+      !form.title ||
+      !form.description ||
+      !form.category_id ||
+      form.price_min === "" ||
+      form.price_max === ""
+    ) {
+      setMensagem("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    if (form.description.length < 10) {
+      setMensagem("A descrição deve ter pelo menos 10 caracteres.");
+      return;
+    }
+    const priceMin = parseFloat(form.price_min);
+    const priceMax = parseFloat(form.price_max);
+    if (isNaN(priceMin) || isNaN(priceMax)) {
+      setMensagem("Preços devem ser números válidos.");
+      return;
+    }
+
     setLoading(true);
     try {
-      // Veja o que está sendo enviado
-      console.log({
-        ...form,
-        price_min: Number(form.price_min),
-        price_max: Number(form.price_max),
-      });
       await onCreate({
         ...form,
-        price_min: Number(form.price_min),
-        price_max: Number(form.price_max),
+        price_min: priceMin,
+        price_max: priceMax,
       });
     } finally {
       setLoading(false);
@@ -52,6 +79,9 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
   return (
     <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
       <h2 className="text-xl font-bold mb-4">Cadastrar Novo Serviço</h2>
+      {mensagem && (
+        <div className="mb-2 text-red-600 font-medium">{mensagem}</div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium mb-1">Título</label>
@@ -73,6 +103,23 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
             className="w-full border rounded px-3 py-2 outline-none resize-none"
             required
           />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Categoria</label>
+          <select
+            name="category_id"
+            value={form.category_id}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            required
+          >
+            <option value="">Selecione...</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex gap-4">
           <div className="flex-1">
@@ -99,22 +146,6 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
               min={0}
             />
           </div>
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Categoria</label>
-          <select
-            name="category_id"
-            value={form.category_id}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="">Selecione...</option>
-            <option value="c9d9fa49-cdd0-4a52-8557-fe55401f2423">
-              Criação de Sites
-            </option>
-            {/* Adicione as categorias reais aqui */}
-          </select>
         </div>
         <div>
           <label className="block font-medium mb-1">URL da Imagem</label>

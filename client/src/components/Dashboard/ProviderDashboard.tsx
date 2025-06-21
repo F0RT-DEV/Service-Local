@@ -7,12 +7,19 @@ import { ProfileAlert } from '../Provider/ProfileAlert';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { ActionButton } from '../UI/ActionButton';
 import { CreateService } from '../Provider/CreateService';
+import { ServiceDetailsModal } from '../Provider/ServiceDetailsModal';
+import { ServiceEditModal } from '../Provider/ServiceEditModal';
 
 export function ProviderDashboard() {
   const [showCreateService, setShowCreateService] = useState(false);
   const [myServices, setMyServices] = useState<any[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [providerStatus, setProviderStatus] = useState<string | null>(null);
+
+  // Estados para modais
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const pendingOrders = [
     // ...existing code...
@@ -32,39 +39,43 @@ export function ProviderDashboard() {
       });
   }, []);
 
-// Carrega status do provider ao montar
-useEffect(() => {
-  async function fetchProviderStatus() {
+  // Carrega status do provider ao montar
+  useEffect(() => {
+    async function fetchProviderStatus() {
+      try {
+        const res = await fetch('http://localhost:3333/me', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const data = await res.json();
+        setProviderStatus(data.provider?.status);
+      } catch {
+        setProviderStatus(null);
+      }
+    }
+    fetchProviderStatus();
+  }, []);
+
+  // Atualiza serviço editado
+  const handleUpdateService = async (updatedService: any) => {
     try {
-      const res = await fetch('http://localhost:3333/me', {
+      const res = await fetch(`http://localhost:3333/services/${updatedService.id}`, {
+        method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        body: JSON.stringify(updatedService),
       });
-      const data = await res.json();
-      setProviderStatus(data.provider?.status); // <-- Aqui está a mudança!
-    } catch {
-      setProviderStatus(null);
+      if (!res.ok) throw new Error('Erro ao atualizar serviço');
+      const updated = await res.json();
+      setMyServices((prev) =>
+        prev.map((s) => (s.id === updated.id ? updated : s))
+      );
+    } catch (err) {
+      alert('Erro ao atualizar serviço!');
     }
-  }
-  fetchProviderStatus();
-}, []);
-
-  // Funções para evitar erro de referência
-  const handleEditService = () => {
-    // Lógica de edição futura
-  };
-
-  const handleViewServiceDetails = () => {
-    // Lógica de visualização futura
-  };
-
-  const handleAcceptOrder = () => {
-    // Lógica de aceitar ordem (implemente se necessário)
-  };
-
-  const handleRejectOrder = () => {
-    // Lógica de rejeitar ordem (implemente se necessário)
   };
 
   const handleCreateService = () => {
@@ -152,8 +163,8 @@ useEffect(() => {
                 <PendingOrderCard
                   key={order.id}
                   order={order}
-                  onAccept={handleAcceptOrder}
-                  onReject={handleRejectOrder}
+                  onAccept={() => {}}
+                  onReject={() => {}}
                 />
               ))}
             </div>
@@ -177,8 +188,14 @@ useEffect(() => {
                   <ServiceCard
                     key={service.id}
                     service={service}
-                    onEdit={handleEditService}
-                    onViewDetails={handleViewServiceDetails}
+                    onEdit={() => {
+                      setSelectedService(service);
+                      setShowEdit(true);
+                    }}
+                    onViewDetails={() => {
+                      setSelectedService(service);
+                      setShowDetails(true);
+                    }}
                   />
                 ))
               )}
@@ -186,6 +203,19 @@ useEffect(() => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modais */}
+      <ServiceDetailsModal
+        open={showDetails}
+        service={selectedService}
+        onClose={() => setShowDetails(false)}
+      />
+      <ServiceEditModal
+        open={showEdit}
+        service={selectedService}
+        onClose={() => setShowEdit(false)}
+        onSave={handleUpdateService}
+      />
     </div>
   );
 }
