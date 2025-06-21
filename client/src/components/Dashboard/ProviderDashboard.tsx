@@ -20,11 +20,31 @@ export function ProviderDashboard() {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+    const [averageRating, setAverageRating] = useState<string>('0.0');
+
 
   const pendingOrders = [
     // ...existing code...
   ];
 
+
+  // Busca avaliação média do provider
+  useEffect(() => {
+    async function fetchAverageRating() {
+      try {
+        const res = await fetch('http://localhost:3333/providers/ratings/summary', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const data = await res.json();
+        setAverageRating(Number(data.average_rating).toFixed(2));
+      } catch {
+        setAverageRating('0.0');
+      }
+    }
+    fetchAverageRating();
+  }, []);
   // Carrega serviços do banco ao montar
   useEffect(() => {
     fetch('http://localhost:3333/services/me', {
@@ -138,7 +158,7 @@ export function ProviderDashboard() {
           icon={Star}
           iconColor="text-yellow-600"
           title="Avaliação Média"
-          value="4.8"
+          value={averageRating}
         />
         <StatsCard
           icon={DollarSign}
