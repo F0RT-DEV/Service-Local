@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Star, Calendar, DollarSign, Users, Plus } from 'lucide-react';
 import { StatsCard } from '../UI/StatsCard';
 import { PendingOrderCard } from '../Provider/PendingOrderCard';
@@ -5,63 +6,79 @@ import { ServiceCard } from '../Provider/ServiceCard';
 import { ProfileAlert } from '../Provider/ProfileAlert';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { ActionButton } from '../UI/ActionButton';
+import { CreateService } from '../Provider/CreateService';
 
 export function ProviderDashboard() {
+  const [showCreateService, setShowCreateService] = useState(false);
+  const [myServices, setMyServices] = useState<any[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+
   const pendingOrders = [
-    {
-      id: '1',
-      service: 'Instalação de Ar Condicionado',
-      client: 'João Cliente',
-      date: '2024-01-15',
-      price: 250,
-      description: 'Instalação de ar condicionado split 12000 BTUs em quarto'
-    },
-    {
-      id: '2',
-      service: 'Manutenção Elétrica',
-      client: 'Maria Silva',
-      date: '2024-01-16',
-      price: 180,
-      description: 'Verificação e reparo de tomadas e interruptores'
-    }
+    // ...existing code...
   ];
 
-  const myServices = [
-    {
-      id: '1',
-      title: 'Instalação de Ar Condicionado',
-      price: 250,
-      requests: 5,
-      status: 'active'
-    },
-    {
-      id: '2',
-      title: 'Manutenção Elétrica',
-      price: 120,
-      requests: 3,
-      status: 'active'
-    }
-  ];
+  // Carrega serviços do banco ao montar
+  useEffect(() => {
+    fetch('http://localhost:3333/services/me', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMyServices(data);
+        setLoadingServices(false);
+      });
+  }, []);
 
-  const handleAcceptOrder = (id: string) => {
-    console.log('Accepting order:', id);
+  // Funções para evitar erro de referência
+  const handleEditService = () => {
+    // Lógica de edição futura
   };
 
-  const handleRejectOrder = (id: string) => {
-    console.log('Rejecting order:', id);
+  const handleViewServiceDetails = () => {
+    // Lógica de visualização futura
   };
 
-  const handleEditService = (id: string) => {
-    console.log('Editing service:', id);
+  const handleAcceptOrder = () => {
+    // Lógica de aceitar ordem (implemente se necessário)
   };
 
-  const handleViewServiceDetails = (id: string) => {
-    console.log('Viewing service details:', id);
+  const handleRejectOrder = () => {
+    // Lógica de rejeitar ordem (implemente se necessário)
   };
 
   const handleCreateService = () => {
-    console.log('Creating new service');
+    setShowCreateService(true);
   };
+
+  const handleBackToDashboard = () => {
+    setShowCreateService(false);
+  };
+
+  // Adiciona novo serviço ao banco e à lista local
+  const handleServiceCreated = async (serviceData: any) => {
+    setShowCreateService(false);
+    try {
+      const res = await fetch('http://localhost:3333/services', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(serviceData),
+      });
+      if (!res.ok) throw new Error('Erro ao criar serviço');
+      const created = await res.json();
+      setMyServices((prev) => [created, ...prev]);
+    } catch (err) {
+      alert('Erro ao cadastrar serviço!');
+    }
+  };
+
+  if (showCreateService) {
+    return <CreateService onBack={handleBackToDashboard} onCreate={handleServiceCreated} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -133,14 +150,18 @@ export function ProviderDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {myServices.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  onEdit={handleEditService}
-                  onViewDetails={handleViewServiceDetails}
-                />
-              ))}
+              {loadingServices ? (
+                <div>Carregando...</div>
+              ) : (
+                myServices.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    onEdit={handleEditService}
+                    onViewDetails={handleViewServiceDetails}
+                  />
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
