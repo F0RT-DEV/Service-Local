@@ -12,6 +12,7 @@ export function ProviderDashboard() {
   const [showCreateService, setShowCreateService] = useState(false);
   const [myServices, setMyServices] = useState<any[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
+  const [providerStatus, setProviderStatus] = useState<string | null>(null);
 
   const pendingOrders = [
     // ...existing code...
@@ -30,6 +31,24 @@ export function ProviderDashboard() {
         setLoadingServices(false);
       });
   }, []);
+
+// Carrega status do provider ao montar
+useEffect(() => {
+  async function fetchProviderStatus() {
+    try {
+      const res = await fetch('http://localhost:3333/me', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await res.json();
+      setProviderStatus(data.provider?.status); // <-- Aqui está a mudança!
+    } catch {
+      setProviderStatus(null);
+    }
+  }
+  fetchProviderStatus();
+}, []);
 
   // Funções para evitar erro de referência
   const handleEditService = () => {
@@ -87,7 +106,8 @@ export function ProviderDashboard() {
         <p className="text-gray-600">Gerencie seus serviços e ordens recebidas.</p>
       </div>
 
-      <ProfileAlert />
+      {/* Só mostra o alerta se o status for "pending" */}
+      {providerStatus === 'pending' && <ProfileAlert />}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
