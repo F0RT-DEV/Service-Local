@@ -1,62 +1,42 @@
-
-import { Eye } from 'lucide-react';
-import { Card } from '../UI/Card';
-import { StatusBadge } from '../UI/StatusBadge';
-import { ActionButton } from '../UI/ActionButton';
-
-interface Order {
-  id: string;
-  service: string;
-  provider: string;
-  status: string;
-  price: number;
-  date: string;
-}
+import { traduzirStatus } from "../UI/orderStatus";
 
 interface OrderCardProps {
-  order: Order;
+  order: {
+    id: string;
+    service_name?: string;
+    provider_name?: string;
+    provider_id?: string;
+    status: string;
+    //price?: number;
+    created_at: string;
+    scheduled_date?: string;
+  };
   onViewDetails: (id: string) => void;
 }
 
 export function OrderCard({ order, onViewDetails }: OrderCardProps) {
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case 'pending': return 'warning';
-      case 'in_progress': return 'default';
-      case 'completed': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'in_progress': return 'Em Andamento';
-      case 'completed': return 'Concluído';
-      default: return status;
-    }
-  };
-
   return (
-    <Card hover className="p-4">
-      <div className="flex justify-between items-start">
-        <div className="flex-1">
-          <h3 className="font-medium text-gray-900">{order.service}</h3>
-          <p className="text-sm text-gray-600">por {order.provider}</p>
-          <p className="text-sm text-gray-500">Data: {new Date(order.date).toLocaleDateString()}</p>
-        </div>
-        <div className="text-right">
-          <StatusBadge status={order.status} variant={getStatusVariant(order.status)}>
-            {getStatusText(order.status)}
-          </StatusBadge>
-          <p className="text-lg font-bold text-gray-900 mt-1">R$ {order.price}</p>
-        </div>
+    <div className="border rounded-lg p-4 flex flex-col">
+      <div className="font-medium text-base">{order.service_name || order.id}</div>
+      <div className="text-sm text-gray-500">
+        Prestador: {order.provider_name || order.provider_id}
+       
       </div>
-      <div className="mt-3 flex justify-end">
-        <ActionButton variant="primary" icon={Eye} onClick={() => onViewDetails(order.id)}>
-          Ver detalhes
-        </ActionButton>
+      <div className="text-sm text-gray-500">
+        Status: {traduzirStatus(order.status)}
       </div>
-    </Card>
+      <div className="text-sm text-gray-500">
+        Data: {order.scheduled_date
+          ? new Date(order.scheduled_date).toLocaleString()
+          : new Date(order.created_at).toLocaleString()}
+      </div>
+      {/* <div className="text-sm text-gray-500">Valor: R$ {order.price ?? 0}</div> */}
+      <button
+        className="text-blue-600 hover:underline mt-2 self-start"
+        onClick={() => onViewDetails(order.id)}
+      >
+        Ver detalhes
+      </button>
+    </div>
   );
 }

@@ -1,17 +1,17 @@
-
 import { 
   Home, 
-  User, 
-  Settings, 
+  User,
   FileText, 
-  Star, 
   Users, 
   ShoppingBag,
   Search,
   Calendar,
-  Shield
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+
+// Menu lateral de navegação.
+// Mostra opções diferentes conforme o tipo de usuário (admin, provider, client).
+// Permite trocar de tela no sistema.
 
 interface SidebarProps {
   currentView: string;

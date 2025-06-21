@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { RateProviderForm } from "./RateProviderForm";
+import { traduzirStatus } from "../UI/orderStatus";
+// Componente que mostra os detalhes completos de uma ordem selecionada pelo cliente.
+// Busca os dados da ordem pelo ID (GET /clients/orders/:id).
+// Exibe informações detalhadas, endereço, status, observações, cancelamento e avaliação.
+// Permite avaliar o prestador após a conclusão do serviço.
 
 interface Order {
   id: string;
@@ -8,7 +13,7 @@ interface Order {
   provider_id: string;
   provider_name?: string;
   status: string;
-  price?: number;
+  //price?: number;
   scheduled_date?: string;
   created_at?: string;
   address?: any;
@@ -52,7 +57,7 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
         provider_id: data.provider_id,
         provider_name: data.provider_name,
         status: data.status,
-        price: data.price ?? 0,
+        //price: data.price ?? 0,
         scheduled_date: data.scheduled_date,
         created_at: data.created_at,
         address: data.address
@@ -89,7 +94,7 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
           <b>Prestador:</b> {order.provider_name || order.provider_id}
         </div>
         <div>
-          <b>Status:</b> {order.status}
+          <b>Status:</b> {traduzirStatus(order.status)}
         </div>
         <div>
           <b>Data agendada:</b>{" "}
@@ -99,9 +104,9 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
             ? new Date(order.created_at).toLocaleString()
             : "-"}
         </div>
-        <div>
+        {/* <div>
           <b>Valor:</b> R$ {order.price}
-        </div>
+        </div> */}
         {order.address && (
           <div className="mt-2">
             <b>Endereço:</b>

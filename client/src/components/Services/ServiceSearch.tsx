@@ -5,6 +5,7 @@ import { RequestOrderModal } from './RequestOrderModal';
 
 interface Service {
   id: string;
+  provider_id: string;
   category_id: string;
   title: string;
   description: string;
@@ -13,11 +14,27 @@ interface Service {
   images: string;
 }
 
+interface Provider {
+  id: string; // provider_id
+  user_id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  cep?: string;
+  logradouro?: string;
+  complemento?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+  numero?: string;
+}
+
 export function ServiceSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [location, setLocation] = useState('');
   const [services, setServices] = useState<Service[]>([]);
+  const [users, setUsers] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,17 +49,7 @@ export function ServiceSearch() {
         const res = await fetch('http://localhost:3333/services');
         if (!res.ok) throw new Error('Erro ao buscar serviços');
         const data = await res.json();
-        // Mapeia apenas os campos do schema
-        const mapped = data.map((service: any) => ({
-          id: service.id,
-          category_id: service.category_id,
-          title: service.title,
-          description: service.description,
-          price_min: service.price_min,
-          price_max: service.price_max,
-          images: service.images,
-        }));
-        setServices(mapped);
+        setServices(data);
       } catch (err: any) {
         setError(err.message || 'Erro ao buscar serviços');
       }
@@ -51,16 +58,42 @@ export function ServiceSearch() {
     fetchServices();
   }, []);
 
-  // Filtros simples (pode adaptar conforme necessário)
-  const filteredServices = services.filter((service) => {
-    const matchesTerm =
-      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'all' || service.category_id === selectedCategory;
-    // location não existe no schema, então filtro só por termo e categoria
+useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('http://localhost:3333/users');
+      if (!res.ok) throw new Error('Erro ao buscar usuários');
+      const data = await res.json();
+      setUsers(data);
+    } catch {
+      setUsers([]);
+    }
+  };
+  fetchUsers();
+}, []);
+
+// Mapeia user_id => user (para lookup rápido)
+const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
+
+// Filtro por localização (cidade)
+const filteredServices = services.filter((service) => {
+  const matchesTerm =
+    service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    service.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesCategory =
+    selectedCategory === 'all' || service.category_id === selectedCategory;
+
+  if (!location.trim()) {
     return matchesTerm && matchesCategory;
-  });
+  }
+  // Busca o usuário (prestador) pelo provider_id do serviço
+  const user = userMap[service.provider_id];
+  if (!user) return false;
+  const matchesLocation =
+    user.localidade &&
+    user.localidade.toLowerCase().includes(location.trim().toLowerCase());
+  return matchesTerm && matchesCategory && matchesLocation;
+});
 
   const handleRequestService = (id: string) => {
     setSelectedServiceId(id);
@@ -84,8 +117,16 @@ export function ServiceSearch() {
       />
       {loading && <div>Carregando serviços...</div>}
       {error && <div className="text-red-600">{error}</div>}
-      {!loading && !error && (
-        <ServiceGrid services={filteredServices} onRequestService={handleRequestService} />
+      {!loading && !error && filteredServices.length === 0 && (
+        <h1 className="text-center text-lg text-gray-600 mt-8">
+          Serviço não encontrado! Verifique se digitou certo
+        </h1>
+      )}
+      {!loading && !error && filteredServices.length > 0 && (
+        <ServiceGrid
+  services={filteredServices}
+  onRequestService={handleRequestService}
+/>
       )}
       <RequestOrderModal
         serviceId={selectedServiceId || ''}

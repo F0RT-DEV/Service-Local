@@ -1,6 +1,10 @@
-import React from 'react';
+
 import { User, LogOut, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+
+
+// Cabeçalho do sistema.
+// Mostra nome do sistema, usuário logado, botão de logout e ícone de notificações.
 
 export function Header() {
   const { user, logout } = useAuth();

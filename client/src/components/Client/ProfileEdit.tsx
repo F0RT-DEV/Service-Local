@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
+// Tela de perfil do usuário (cliente).
+// Mostra os dados cadastrais do usuário e permite editar após clicar em "Editar".
+// Ao salvar, envia os dados atualizados para o backend (PUT /auth/me).
+// Exibe mensagens de sucesso ou erro conforme o resultado da atualização.
+
+
 export function ProfileEdit() {
   const { user, setUser } = useAuth();
   const token = localStorage.getItem('token');

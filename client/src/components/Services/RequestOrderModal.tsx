@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 
+
+// Modal para o cliente solicitar um serviço.
+// Exibe formulário para preencher data, endereço e observações.
+// Ao enviar, faz POST para /clients/orders criando uma nova ordem.
+
+
 interface RequestOrderModalProps {
   serviceId: string;
   open: boolean;

@@ -1,3 +1,9 @@
+
+
+// Tipos TypeScript usados em todo o frontend.
+// Define interfaces para User, Provider, Service, ServiceOrder, AuthContext, etc.
+
+
 export interface User {
   id: string;
   email: string;

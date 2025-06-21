@@ -61,24 +61,50 @@ export async function createOrder(req, res) {
 	}
 }
 
+// export async function getClientOrders(req, res) {
+// 	try {
+		
+// 		const {provider_id, client_id} = req.query;
+// 		let orders;
+
+// 		if (provider_id) {
+// 			orders = await orderModel.getByProviderId(provider_id);
+// 		} else if (client_id) {
+// 			orders = await orderModel.getByClientId(client_id);
+// 		} else {
+// 			orders = await orderModel.getAll();
+// 		}
+
+// 		res.status(200).json(orders);
+// 	} catch (error) {
+// 		res.status(500).json({error: error.message});
+// 	}
+// }
+
 export async function getClientOrders(req, res) {
-	try {
-		const {provider_id, client_id} = req.query;
-		let orders;
+    try {
+        // Tenta pegar client_id ou provider_id da query, se não pega do usuário autenticado
+        const { provider_id, client_id: queryClientId } = req.query;
+        let orders;
 
-		if (provider_id) {
-			orders = await orderModel.getByProviderId(provider_id);
-		} else if (client_id) {
-			orders = await orderModel.getByClientId(client_id);
-		} else {
-			orders = await orderModel.getAll();
-		}
+        if (provider_id) {
+            orders = await orderModel.getByProviderId(provider_id);
+        } else if (queryClientId) {
+            orders = await orderModel.getByClientId(queryClientId);
+        } else if (req.user && req.user.id) {
+            // Padrão: pega as ordens do usuário autenticado
+            orders = await orderModel.getByClientId(req.user.id);
+        } else {
+            // Se não tiver nada, retorna erro
+            return res.status(400).json({ error: "client_id não informado ou usuário não autenticado" });
+        }
 
-		res.status(200).json(orders);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 }
+
 export async function getClientOrderById(req, res) {
 	try {
 		const {id} = req.params; // id da ordem
@@ -107,13 +133,14 @@ export async function cancelClientOrder(req, res) {
 					"A ordem só pode ser cancelada enquanto estiver com status 'pending'.",
 			});
 		}
-		const updated = await orderModel.update(id, {
-			status: "cancelled",
-			cancelled_at: new Date(),
-			cancel_reason: "Cancelado pelo cliente",
-		});
+		await orderModel.update(id, {
+            status: "cancelled",
+            cancelled_at: new Date(),
+            cancel_reason: "Cancelado pelo cliente",
+        });
 
-		res.json(updated[0]);
+        const updatedOrder = await orderModel.getById(id);
+        res.json(updatedOrder);
 	} catch (error) {
 		res.status(400).json({error: error.message});
 	}

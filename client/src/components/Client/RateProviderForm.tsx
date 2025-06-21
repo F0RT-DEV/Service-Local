@@ -1,5 +1,11 @@
 import { useState } from "react";
 
+
+// Formulário para o cliente avaliar o prestador após o serviço.
+// Permite selecionar uma nota (1 a 5) e adicionar um comentário opcional.
+// Envia a avaliação para o backend (PATCH /clients/orders/:id/rate).
+
+
 interface RateProviderFormProps {
   orderId: string;
   onRated: () => void;

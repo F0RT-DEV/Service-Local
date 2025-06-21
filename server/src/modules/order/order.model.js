@@ -33,12 +33,38 @@ export function remove(id) {
 }
 
 
-
+// export function getByClientId(client_id) {
+// 	return db("orders").where({client_id});
+// }
 export function getByClientId(client_id) {
-	return db("orders").where({client_id});
+  return db("orders")
+    .select(
+      "orders.*",
+      "services.title as service_name",
+      "users.name as provider_name"
+    )
+    .join("services", "orders.service_id", "services.id")
+    .join("providers", "orders.provider_id", "providers.id")
+    .join("users", "providers.user_id", "users.id")
+    .where("orders.client_id", client_id)
+    .orderBy("orders.created_at", "desc");
 }
+
+// export function getById(id) {
+// 	return db("orders").where({ id }).first();
+// }
 export function getById(id) {
-	return db("orders").where({ id }).first();
+  return db("orders")
+    .select(
+      "orders.*",
+      "services.title as service_name",
+      "users.name as provider_name"
+    )
+    .join("services", "orders.service_id", "services.id")
+    .join("providers", "orders.provider_id", "providers.id")
+    .join("users", "providers.user_id", "users.id")
+    .where("orders.id", id)
+    .first();
 }
 
 export function findActiveByClientId(client_id) {

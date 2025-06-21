@@ -1,9 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthContextType, RegisterData } from '../types';
 
+
+// Contexto de autenticação do React.
+// Gerencia login, logout, registro e usuário autenticado no frontend.
+// Fornece funções e estado para os componentes filhos.
+
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = 'http://localhost:3333'; // ajuste se necessário
+const API_URL = 'http://localhost:3333'; 
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

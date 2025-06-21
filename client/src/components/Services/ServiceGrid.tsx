@@ -1,3 +1,7 @@
+
+// Grid de exibição dos serviços encontrados na busca.
+// Mostra cards com informações resumidas de cada serviço e botão para solicitar.
+
 interface Service {
   id: string;
   category_id: string;

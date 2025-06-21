@@ -1,4 +1,10 @@
 import { useEffect, useState } from "react";
+import { traduzirStatus } from "../UI/orderStatus";
+
+
+// Componente de listagem das ordens do cliente logado.
+// Busca as ordens do backend (GET /clients/orders) e exibe informações básicas de cada ordem.
+// Permite visualizar detalhes de uma ordem (chama onSelectOrder) e cancelar ordens pendentes.
 
 interface Order {
   id: string;
@@ -47,7 +53,7 @@ export function MyOrders({ onSelectOrder }: MyOrdersProps) {
         provider_id: order.provider_id,
         provider_name: order.provider_name,
         status: order.status,
-        price: order.price ?? 0,
+        //price: order.price ?? 0,
         scheduled_date: order.scheduled_date,
         created_at: order.created_at,
         address: order.address
@@ -99,53 +105,60 @@ export function MyOrders({ onSelectOrder }: MyOrdersProps) {
   };
 
   if (loading) return <div>Carregando...</div>;
-  if (error) return <div className="text-red-600">{error}</div>;
+  if (error) return <div className="text-red-600">Erro ao mostrar suas ordens</div>;
 
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Minhas Ordens</h2>
-      {orders.length === 0 && <div>Nenhuma ordem encontrada.</div>}
-      <ul className="space-y-4">
-        {orders.map((order) => (
-          <li key={order.id} className="border rounded-lg p-4 flex justify-between items-center">
-            <div>
-              <div className="font-medium">{order.service_name || order.service_id}</div>
-              <div className="text-sm text-gray-500">Prestador: {order.provider_name || order.provider_id}</div>
-              <div className="text-sm text-gray-500">Status: {order.status}</div>
-              <div className="text-sm text-gray-500">
-                Data agendada:{" "}
-                {order.scheduled_date
-                  ? new Date(order.scheduled_date).toLocaleString()
-                  : order.created_at
-                  ? new Date(order.created_at).toLocaleString()
-                  : "-"}
-              </div>
-              <div className="text-sm text-gray-500">Valor: R$ {order.price}</div>
-              {order.cancelled_at && (
-                <div className="text-sm text-red-600">
-                  Cancelada em: {new Date(order.cancelled_at).toLocaleString()}
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <button
-                className="text-blue-600 hover:underline"
-                onClick={() => onSelectOrder(order.id)}
-              >
-                Ver detalhes
-              </button>
-              {order.status === "pending" && !order.cancelled_at && (
-                <button
-                  className="text-red-600 hover:underline"
-                  onClick={() => cancelOrder(order.id)}
-                >
-                  Cancelar
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+      {orders.length === 0 &&  <div className="text-center py-8">
+        <h1 className="text-lg font-semibold mb-2">Você não possui ordens de serviços.</h1>
+        <p>Solicite um serviço para que sua ordem apareça aqui.</p>
+      </div>}
+<ul className="space-y-4">
+  {orders.map((order) => (
+    <li key={order.id} className="border rounded-lg p-4 flex justify-between items-center">
+      <div>
+        <div className="font-medium">
+          Serviço: <span className="font-bold">{order.service_name ?? <span className="text-red-500">NÃO ENVIADO</span>}</span>
+        </div>
+        <div className="text-sm text-gray-500">
+          Prestador: <span className="font-bold">{order.provider_name ?? <span className="text-red-500">NÃO ENVIADO</span>}</span>
+        </div>
+        <div className="text-sm text-gray-500">Status: {traduzirStatus(order.status)}</div>
+        <div className="text-sm text-gray-500">
+          Data agendada:{" "}
+          {order.scheduled_date
+            ? new Date(order.scheduled_date).toLocaleString()
+            : order.created_at
+            ? new Date(order.created_at).toLocaleString()
+            : "-"}
+        </div>
+        {/* <div className="text-sm text-gray-500">Valor: R$ {order.price}</div> */}
+        {order.cancelled_at && (
+          <div className="text-sm text-red-600">
+            Cancelada em: {new Date(order.cancelled_at).toLocaleString()}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <button
+          className="text-blue-600 hover:underline"
+          onClick={() => onSelectOrder(order.id)}
+        >
+          Ver detalhes
+        </button>
+        {order.status === "pending" && !order.cancelled_at && (
+          <button
+            className="text-red-600 hover:underline"
+            onClick={() => cancelOrder(order.id)}
+          >
+            Cancelar
+          </button>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
     </div>
   );
 }
