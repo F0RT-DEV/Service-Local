@@ -7,11 +7,11 @@ import { Sidebar } from './components/Layout/Sidebar';
 import { ClientDashboard } from './components/Dashboard/ClientDashboard';
 import { ProviderDashboard } from './components/Dashboard/ProviderDashboard';
 import { AdminDashboard } from './components/Dashboard/AdminDashboard';
-import { ServiceSearch } from './components/Services/ServiceSearch';
 import { ProviderProfile } from './components/Profile/ProviderProfile';
 import { MyOrders } from './components/Client/MyOrders';
 import { OrderDetails } from './components/Client/OrderDetails';
 import { ProfileEdit } from './components/Client/ProfileEdit';
+import { MyProviderServices } from './components/Provider/MyProviderServices';
 
 function AppContent() {
   const { user } = useAuth();
@@ -40,8 +40,8 @@ function AppContent() {
           default:
             return <div>Dashboard não encontrado</div>;
         }
-      case 'search':
-        return <ServiceSearch />;
+      case 'my-provider-services':
+        return <MyProviderServices />;
       case 'profile':
         return user.role === 'provider'
           ? <ProviderProfile />
@@ -54,7 +54,6 @@ function AppContent() {
             ? <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
             : <MyOrders onSelectOrder={setSelectedOrderId} />;
         }
-        // Adapte para provider/admin se necessário
         return <div>Gerenciar Ordens</div>;
       case 'providers':
         return <div>Gerenciar Providers (Admin)</div>;
@@ -71,7 +70,7 @@ function AppContent() {
         currentView={currentView}
         onViewChange={(view) => {
           setCurrentView(view);
-          if (view !== 'orders') setSelectedOrderId(null); // limpa seleção ao sair de orders
+          if (view !== 'orders') setSelectedOrderId(null);
         }}
       />
       <div className="flex-1 flex flex-col overflow-hidden">

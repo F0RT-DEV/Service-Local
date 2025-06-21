@@ -1,16 +1,4 @@
-
-import { 
-  Home, 
-  User, 
-  Settings, 
-  FileText, 
-  Star, 
-  Users, 
-  ShoppingBag,
-  Search,
-  Calendar,
-  Shield
-} from 'lucide-react';
+import { Home, User, FileText, Users, ShoppingBag, Calendar, Search } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
@@ -34,7 +22,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         return [
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'profile', label: 'Meu Perfil', icon: User },
-          { id: 'services', label: 'Meus Serviços', icon: ShoppingBag },
+          { id: 'my-provider-services', label: 'Meus Serviços', icon: ShoppingBag }, // NOVA ABA
           { id: 'orders', label: 'Ordens Recebidas', icon: FileText },
           { id: 'calendar', label: 'Agenda', icon: Calendar },
         ];
@@ -59,7 +47,6 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
-            
             return (
               <li key={item.id}>
                 <button
