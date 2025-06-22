@@ -9,7 +9,38 @@ export function create(order) {
 export function getAll() {
 	return db("orders").select("*");
 }
-
+// order.model.js
+export function countAllByProviderId(provider_id) {
+  return db("orders")
+    .where({ provider_id })
+    .count()
+    .first();
+}
+export function countPendingByProviderId(provider_id) {
+  return db("orders")
+    .where({ provider_id, status: "pending" })
+    .count()
+    .first();
+}
+export function getPendingByProviderId(provider_id) {
+  return db("orders")
+    .select(
+      "orders.id",
+      "orders.scheduled_date",
+      "orders.notes",
+      "orders.status",
+      "orders.service_id",
+      "orders.client_id",
+      "orders.address",
+      "services.title as service_name",
+      "users.name as client_name"
+    )
+    .join("services", "orders.service_id", "services.id")
+    .join("users", "orders.client_id", "users.id")
+    .where("orders.provider_id", provider_id)
+    .andWhere("orders.status", "pending")
+    .orderBy("orders.created_at", "desc");
+}
 export function getByProviderId(provider_id) {
 	return db("orders")
 		.select(

@@ -22,6 +22,7 @@ export async function getAllService(id) {
 export async function getAllServicesByProviderId(providerId) {
 	return db("services").where({provider_id: providerId});
 }
+
 export async function getAllServicesByCategoryName(categoryName) {
 	return db("services")
 		.join("categories", "services.category_id", "categories.id")
@@ -31,4 +32,11 @@ export async function getAllServicesByCategoryName(categoryName) {
 
 export function getById(id) {
   return db("services").where({ id }).first();
+}
+// service.model.js
+export function countAllServicesByProviderId(provider_id) {
+  return db("services")
+    .where({ provider_id })
+    .count()
+    .first();
 }

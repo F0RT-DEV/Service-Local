@@ -1,13 +1,15 @@
-  import { authenticateToken } from "../../middlewares/authMiddleware.js";
-import { verifyProviderRole } from "../../middlewares/role.middleware.js";
+import {authenticateToken} from "../../middlewares/authMiddleware.js";
+import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {
-
-    acceptOrder,
-    rejectOrder,
+	acceptOrder,
+	rejectOrder,
 	getProviderOrders,
 	getProviderOrderById,
 	startOrderProgress,
-	completeOrder
+	completeOrder,
+	getPendingOrdersCountForProvider,
+	getPendingOrdersForProvider,
+	getTotalOrdersForProvider,
 } from "../../modules/order/order.controller.js";
 import router from "./services.routes.js";
 //const router = express.Router();
@@ -17,6 +19,24 @@ router.get(
 	authenticateToken,
 	verifyProviderRole,
 	getProviderOrders
+);
+router.get(
+  "/orders/total",
+  authenticateToken,
+  verifyProviderRole,
+  getTotalOrdersForProvider
+);
+router.get(
+	"/orders/pending/count",
+	authenticateToken,
+	verifyProviderRole,
+	getPendingOrdersCountForProvider
+);
+router.get(
+	"/orders/pending",
+	authenticateToken,
+	verifyProviderRole,
+	getPendingOrdersForProvider
 );
 router.get(
 	"/providers/orders/:id",
@@ -48,6 +68,5 @@ router.patch(
 	verifyProviderRole,
 	completeOrder
 );
-
 
 export default router;

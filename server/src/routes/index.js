@@ -1,11 +1,11 @@
 import {Router} from "express";
+import providerServices from "./provider/services.routes.js";
 
 import authRoutes from "./auth/auth.routes.js";
 import adminProvider from "./admin/providers.routes.js";
 import clientOrders from "./client/orders.routes.js";
 import providerProfile from "./provider/profile.routes.js";
 import ratingsProfile from "./provider/ratings.routes.js";
-import providerServices from "./provider/services.routes.js";
 import providerOrders from "./provider/orders.routes.js";
 import publicCategories from "./public/categories.routes.js";
 import publicProviders from "./public/providers.routes.js";

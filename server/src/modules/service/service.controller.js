@@ -4,6 +4,7 @@ import {
 	getAllService,
 	getAllServicesByProviderId,
 	getAllServicesByCategoryName,
+	countAllServicesByProviderId
 } from "./service.model.js";
 import {serviceSchema} from "./service.schema.js";
 import {getById} from "../provider/provider.model.js"
@@ -124,4 +125,15 @@ export async function getMyServicesHandler(req, res) {
 			details: err.message,
 		});
 	}
+}
+export async function getTotalServicesForProvider(req, res) {
+  try {
+    const providerId = req.user?.provider_id;
+    if (!providerId) return res.status(401).json({ error: "Prestador não autenticado" });
+    const result = await countAllServicesByProviderId(providerId);
+    const total = Number(result.count || result['count(*)'] || 0);
+    return res.status(200).json({ total });
+  } catch (err) {
+    return res.status(500).json({ error: "Erro ao buscar total de serviços", details: err.message });
+  }
 }

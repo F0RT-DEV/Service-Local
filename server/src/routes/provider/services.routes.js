@@ -1,6 +1,7 @@
 import {
 	createServiceHandler,
 	getMyServicesHandler,
+	getTotalServicesForProvider
 } from "../../modules/service/service.controller.js";
 import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
@@ -21,5 +22,10 @@ router.get(
 	verifyProviderRole,
 	getMyServicesHandler
 );
-
+router.get(
+  "/services/total",
+  authenticateToken,
+  verifyProviderRole,
+  getTotalServicesForProvider
+);
 export default router;

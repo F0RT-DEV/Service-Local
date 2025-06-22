@@ -63,7 +63,7 @@ export async function createOrder(req, res) {
 
 // export async function getClientOrders(req, res) {
 // 	try {
-		
+
 // 		const {provider_id, client_id} = req.query;
 // 		let orders;
 
@@ -82,27 +82,29 @@ export async function createOrder(req, res) {
 // }
 
 export async function getClientOrders(req, res) {
-    try {
-        // Tenta pegar client_id ou provider_id da query, se não pega do usuário autenticado
-        const { provider_id, client_id: queryClientId } = req.query;
-        let orders;
+	try {
+		// Tenta pegar client_id ou provider_id da query, se não pega do usuário autenticado
+		const {provider_id, client_id: queryClientId} = req.query;
+		let orders;
 
-        if (provider_id) {
-            orders = await orderModel.getByProviderId(provider_id);
-        } else if (queryClientId) {
-            orders = await orderModel.getByClientId(queryClientId);
-        } else if (req.user && req.user.id) {
-            // Padrão: pega as ordens do usuário autenticado
-            orders = await orderModel.getByClientId(req.user.id);
-        } else {
-            // Se não tiver nada, retorna erro
-            return res.status(400).json({ error: "client_id não informado ou usuário não autenticado" });
-        }
+		if (provider_id) {
+			orders = await orderModel.getByProviderId(provider_id);
+		} else if (queryClientId) {
+			orders = await orderModel.getByClientId(queryClientId);
+		} else if (req.user && req.user.id) {
+			// Padrão: pega as ordens do usuário autenticado
+			orders = await orderModel.getByClientId(req.user.id);
+		} else {
+			// Se não tiver nada, retorna erro
+			return res
+				.status(400)
+				.json({error: "client_id não informado ou usuário não autenticado"});
+		}
 
-        res.status(200).json(orders);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+		res.status(200).json(orders);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
 }
 
 export async function getClientOrderById(req, res) {
@@ -134,13 +136,13 @@ export async function cancelClientOrder(req, res) {
 			});
 		}
 		await orderModel.update(id, {
-            status: "cancelled",
-            cancelled_at: new Date(),
-            cancel_reason: "Cancelado pelo cliente",
-        });
+			status: "cancelled",
+			cancelled_at: new Date(),
+			cancel_reason: "Cancelado pelo cliente",
+		});
 
-        const updatedOrder = await orderModel.getById(id);
-        res.json(updatedOrder);
+		const updatedOrder = await orderModel.getById(id);
+		res.json(updatedOrder);
 	} catch (error) {
 		res.status(400).json({error: error.message});
 	}
@@ -191,7 +193,49 @@ export async function getProviderOrders(req, res) {
 		res.status(500).json({error: {message: error.message}});
 	}
 }
+export async function getTotalOrdersForProvider(req, res) {
+  try {
+    const providerId = req.user?.provider_id;
+    if (!providerId) return res.status(401).json({ error: "Prestador não autenticado" });
+    const result = await orderModel.countAllByProviderId(providerId);
+    const total = Number(result.count || result['count(*)'] || 0);
+    return res.status(200).json({ total });
+  } catch (err) {
+    return res.status(500).json({ error: "Erro ao buscar total de ordens", details: err.message });
+  }
+}
+export async function getPendingOrdersCountForProvider(req, res) {
+	try {
+		const providerId = req.user?.provider_id;
+		if (!providerId) {
+			return res.status(401).json({error: "Prestador não autenticado"});
+		}
+		const result = await orderModel.countPendingByProviderId(providerId);
+		const total = Number(result.count || result["count(*)"] || 0);
+		return res.status(200).json({total});
+	} catch (err) {
+		return res.status(500).json({
+			error: "Erro ao buscar total de ordens pendentes do prestador",
+			details: err.message,
+		});
+	}
+}
 
+export async function getPendingOrdersForProvider(req, res) {
+  try {
+    const providerId = req.user?.provider_id;
+    if (!providerId) {
+      return res.status(401).json({ error: "Prestador não autenticado" });
+    }
+    const orders = await orderModel.getPendingByProviderId(providerId);
+    return res.status(200).json(orders);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Erro ao buscar ordens pendentes do prestador",
+      details: err.message,
+    });
+  }
+}
 export async function getProviderOrderById(req, res) {
 	try {
 		const {id} = req.params;
