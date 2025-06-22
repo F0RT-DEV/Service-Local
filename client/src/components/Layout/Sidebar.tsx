@@ -26,7 +26,11 @@ export function Sidebar({currentView, onViewChange}: SidebarProps) {
 				return [
 					{id: "dashboard", label: "Dashboard", icon: Home},
 					{id: "profile", label: "Meu Perfil", icon: User},
-					{id: "services", label: "Meus Serviços", icon: ShoppingBag},
+					{
+						id: "my-provider-services",
+						label: "Meus Serviços",
+						icon: ShoppingBag,
+					}, // <-- aqui!
 					{id: "orders", label: "Ordens Recebidas", icon: FileText},
 				];
 			case "client":
