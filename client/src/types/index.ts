@@ -92,3 +92,8 @@ export interface RegisterData {
   uf: string;
   numero: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+}

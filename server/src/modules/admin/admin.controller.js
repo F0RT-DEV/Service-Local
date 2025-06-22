@@ -38,13 +38,15 @@ export async function rejectProvider(req, res) {
 	}
 }
 export async function getPendingProviders(req, res) {
-	try {
-		const pendingProviders = await ProviderModel.findPending();
-		return res.status(200).json(pendingProviders);
-	} catch (error) {
-		console.error(error);
-		return res.status(500).json({message: "Erro interno do servidor"});
-	}
+    try {
+        console.log("Iniciando busca de providers pendentes"); // <-- Aqui
+        const pendingProviders = await ProviderModel.findPendingWithDetails();
+        console.log("Providers encontrados:", pendingProviders); // <-- Aqui
+        return res.status(200).json(pendingProviders);
+    } catch (error) {
+        console.error("Erro em getPendingProviders:", error); // <-- Aqui
+        return res.status(500).json({message: "Erro interno do servidor"});
+    }
 }
 export async function getApprovedProviders(req, res) {
 	try {

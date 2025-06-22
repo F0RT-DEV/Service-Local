@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { User, Mail, Phone, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { FormInput } from '../UI/FormInput';

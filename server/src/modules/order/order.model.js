@@ -6,8 +6,19 @@ export function create(order) {
 }
 
 // Listar todas (geral, normalmente uso interno ou admin)
+// export function getAll() {
+// 	return db("orders").select("*");
+// }
 export function getAll() {
-	return db("orders").select("*");
+  return db("orders")
+    .leftJoin("users as client", "orders.client_id", "client.id")
+    .leftJoin("providers", "orders.provider_id", "providers.id")
+    .leftJoin("users as provider", "providers.user_id", "provider.id")
+    .select(
+      "orders.*",
+      "client.name as client_name",
+      "provider.name as provider_name"
+    );
 }
 // order.model.js
 export function countAllByProviderId(provider_id) {

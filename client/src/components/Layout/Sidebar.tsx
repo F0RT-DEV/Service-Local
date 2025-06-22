@@ -1,4 +1,4 @@
-import {Home, User, FileText, Users, ShoppingBag, Search} from "lucide-react";
+import {Home, User, FileText, Users, ShoppingBag, Search, BarChart2} from "lucide-react";
 import {useAuth} from "../../contexts/AuthContext";
 
 // Menu lateral de navegação.
@@ -18,9 +18,9 @@ export function Sidebar({currentView, onViewChange}: SidebarProps) {
 			case "admin":
 				return [
 					{id: "dashboard", label: "Dashboard", icon: Home},
-					{id: "providers", label: "Providers Pendentes", icon: Users},
-					{id: "services", label: "Todos os Serviços", icon: ShoppingBag},
-					{id: "orders", label: "Todas as Ordens", icon: FileText},
+          {id: "providers", label: "Providers Pendentes", icon: Users},
+          {id: "orders", label: "Todas as Ordens", icon: FileText},
+          {id: "report", label: "Relatório", icon: BarChart2},
 				];
 			case "provider":
 				return [

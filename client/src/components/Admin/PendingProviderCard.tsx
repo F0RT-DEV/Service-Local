@@ -6,10 +6,11 @@ import { StatusBadge } from '../UI/StatusBadge';
 interface PendingProvider {
   id: string;
   name: string;
-  email: string;
+  email: string; // Aqui está vindo a bio
   specialties: string[];
   documents: string;
   requestDate: string;
+  cnpj?: string;
 }
 
 interface PendingProviderCardProps {
@@ -30,10 +31,15 @@ export function PendingProviderCard({
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-medium text-gray-900">{provider.name}</h3>
-          <p className="text-sm text-gray-600">{provider.email}</p>
+          <p className="text-sm text-gray-600">Bio: {provider.email}</p>
           <p className="text-sm text-gray-500">
-            Especialidades: {provider.specialties.join(', ')}
+            Especialidades: {provider.specialties.join(', ') || 'Nenhuma'}
           </p>
+          {provider.cnpj && (
+            <p className="text-sm text-gray-500">
+              CNPJ: {provider.cnpj}
+            </p>
+          )}
           <p className="text-sm text-gray-500">
             Solicitado em: {new Date(provider.requestDate).toLocaleDateString()}
           </p>

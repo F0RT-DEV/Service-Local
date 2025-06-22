@@ -14,6 +14,11 @@ import { ProfileEdit } from './components/Client/ProfileEdit';
 import { MyProviderServices } from './components/Provider/MyProviderServices';
 import { ServiceSearch } from './components/Services/ServiceSearch';
 import { ProviderOrders } from './components/Provider/ProviderOrders';
+import { PendingProvidersPage } from './components/Admin/PendingProvidersPage';
+import { ServiceSettingsPage } from './components/Admin/ServiceSettingsPage';
+import { ReportPage } from './components/Admin/ReportPage';
+import { AdminOrdersPage } from './components/Admin/AdminOrdersPage';
+import { UsersListPage } from './components/Admin/UsersListPage';
 
 function AppContent() {
   const { user } = useAuth();
@@ -34,7 +39,13 @@ function AppContent() {
       case 'dashboard':
         switch (user.role) {
           case 'admin':
-            return <AdminDashboard />;
+            return (
+              <AdminDashboard
+                onManageUsers={() => setCurrentView('users')}
+                onServiceSettings={() => setCurrentView('service-settings')}
+                onStatistics={() => setCurrentView('report')}
+              />
+            );
           case 'provider':
             return <ProviderDashboard />;
           case 'client':
@@ -50,9 +61,20 @@ function AppContent() {
         return user.role === 'provider'
           ? <ProviderProfile />
           : <ProfileEdit />;
+      case 'providers':
+        return <PendingProvidersPage />;
+      case 'service-settings':
+        return <ServiceSettingsPage />;
+      case 'report':
+        return <ReportPage />;
+      case 'users':
+        return <UsersListPage />;
       case 'services':
         return <div>Gerenciar Serviços</div>;
       case 'orders':
+        if (user.role === 'admin') {
+          return <AdminOrdersPage />;
+        }
         if (user.role === 'client') {
           return selectedOrderId
             ? <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
