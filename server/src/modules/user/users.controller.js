@@ -216,3 +216,15 @@ export async function deleteMyAccount(req, res) {
     res.status(500).json({ error: "Erro ao deletar conta do usuário" });
   }
 }
+export async function updateMyAvatar(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Nenhum arquivo enviado." });
+    }
+    const avatarPath = `/uploads/avatars/${req.file.filename}`;
+    await userModel.update(req.user.id, { avatar: avatarPath });
+    res.json({ avatar: avatarPath });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao atualizar avatar." });
+  }
+}
