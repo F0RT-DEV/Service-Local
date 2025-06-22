@@ -38,8 +38,19 @@ router.patch(
 );
 
 router.get(
-    "/orders",
-   
-    orderController.getAllOrders
+	"/orders",
+
+	orderController.getAllOrders
 );
+router.get(
+	"/clients/orders/finished/count",
+	authenticateToken,
+	orderController.getClientFinishedOrdersCount
+);
+router.get(
+	"/clients/providers/unique/count",
+	authenticateToken,
+	orderController.getClientUniqueProvidersCount
+);
+
 export default router;

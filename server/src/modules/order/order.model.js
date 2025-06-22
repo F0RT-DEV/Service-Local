@@ -104,3 +104,20 @@ export function findActiveByClientId(client_id) {
 		.whereIn("status", ["pending", "accepted"])
 		.first(); // retorna a primeira encontrada
 }
+export function countFinishedOrdersByClient(clientId) {
+  return db('orders')
+    .where({ client_id: clientId, status: 'done' })
+    .count('id as total')
+    .first()
+    .then(res => Number(res.total) || 0);
+}
+
+// Conta prestadores diferentes já contratados pelo cliente
+export function countUniqueProvidersByClient(clientId) {
+  return db('orders')
+    .where({ client_id: clientId })
+    .distinct('provider_id')
+    .countDistinct('provider_id as total')
+    .first()
+    .then(res => Number(res.total) || 0);
+}

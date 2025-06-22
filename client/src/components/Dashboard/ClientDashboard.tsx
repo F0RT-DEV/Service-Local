@@ -39,6 +39,44 @@ export function ClientDashboard() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [searches, setSearches] = useState<string[]>([]); // Simulação de pesquisas
 
+  // ...seus estados...
+  const [finishedOrdersCount, setFinishedOrdersCount] = useState(0);
+  const [uniqueProvidersCount, setUniqueProvidersCount] = useState(0);
+
+  // Buscar total de ordens finalizadas
+  useEffect(() => {
+    const fetchFinishedOrdersCount = async () => {
+      try {
+        const res = await fetch('http://localhost:3333/clients/orders/finished/count', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setFinishedOrdersCount(data.total || 0);
+      } catch {
+        setFinishedOrdersCount(0);
+      }
+    };
+    if (token) fetchFinishedOrdersCount();
+  }, [token]);
+
+  // Buscar total de prestadores diferentes
+  useEffect(() => {
+    const fetchUniqueProvidersCount = async () => {
+      try {
+        const res = await fetch('http://localhost:3333/clients/providers/unique/count', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setUniqueProvidersCount(data.total || 0);
+      } catch {
+        setUniqueProvidersCount(0);
+      }
+    };
+    if (token) fetchUniqueProvidersCount();
+  }, [token]);
+
   // Buscar ordens do cliente
   useEffect(() => {
     const fetchOrders = async () => {
@@ -137,12 +175,6 @@ const recommendedServices = [...services]
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatsCard
-          icon={Search}
-          iconColor="text-blue-600"
-          title="Pesquisas"
-          value={searches.length.toString()}
-        />
-        <StatsCard
           icon={Calendar}
           iconColor="text-green-600"
           title="Ordens Ativas"
@@ -156,9 +188,15 @@ const recommendedServices = [...services]
         />
         <StatsCard
           icon={DollarSign}
-          iconColor="text-green-700"
-          title="Total Gasto"
-          value={`R$ ${totalSpent.toFixed(2)}`}
+          iconColor="text-blue-700"
+          title="Ordens Finalizadas"
+          value={finishedOrdersCount.toString()}
+        />
+        <StatsCard
+          icon={Search}
+          iconColor="text-purple-600"
+          title="Prestadores Contratados"
+          value={uniqueProvidersCount.toString()}
         />
       </div>
 

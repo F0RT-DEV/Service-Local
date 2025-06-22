@@ -398,3 +398,24 @@ export async function getRatingsSummary(req, res) {
 		});
 	}
 }
+// Total de ordens finalizadas do cliente
+export async function getClientFinishedOrdersCount(req, res) {
+  try {
+    const clientId = req.user?.id;
+    const count = await orderModel.countFinishedOrdersByClient(clientId);
+    res.json({ total: count });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar total de ordens finalizadas" });
+  }
+}
+
+// Total de prestadores diferentes contratados pelo cliente
+export async function getClientUniqueProvidersCount(req, res) {
+  try {
+    const clientId = req.user?.id;
+    const count = await orderModel.countUniqueProvidersByClient(clientId);
+    res.json({ total: count });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar total de prestadores" });
+  }
+}
