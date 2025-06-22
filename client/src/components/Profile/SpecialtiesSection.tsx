@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Card, CardContent, CardHeader } from '../UI/Card';
 
 interface SpecialtyOption {

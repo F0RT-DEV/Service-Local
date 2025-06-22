@@ -68,10 +68,10 @@ const handleViewProfile = (id: string) => {
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <h2 className="text-2xl font-bold mb-6">Providers Pendentes</h2>
+      <h2 className="text-2xl font-bold mb-6">Prestadores Pendentes</h2>
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-gray-900">Lista de Providers Pendentes</span>
+          <span className="text-lg font-semibold text-gray-900">Lista de Prestadores Pendentes</span>
           <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
             {pendingProviders.length} pendente(s)
           </span>

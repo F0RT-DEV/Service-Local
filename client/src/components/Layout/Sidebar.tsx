@@ -18,7 +18,7 @@ export function Sidebar({currentView, onViewChange}: SidebarProps) {
 			case "admin":
 				return [
 					{id: "dashboard", label: "Dashboard", icon: Home},
-          {id: "providers", label: "Providers Pendentes", icon: Users},
+          {id: "providers", label: "Prestadores Pendentes", icon: Users},
           {id: "orders", label: "Todas as Ordens", icon: FileText},
           {id: "report", label: "Relatório", icon: BarChart2},
 				];

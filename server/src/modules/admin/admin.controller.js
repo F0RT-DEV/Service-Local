@@ -39,7 +39,7 @@ export async function rejectProvider(req, res) {
 }
 export async function getPendingProviders(req, res) {
     try {
-        console.log("Iniciando busca de providers pendentes"); // <-- Aqui
+        //console.log("Iniciando busca de providers pendentes"); // <-- Aqui
         const pendingProviders = await ProviderModel.findPendingWithDetails();
         console.log("Providers encontrados:", pendingProviders); // <-- Aqui
         return res.status(200).json(pendingProviders);

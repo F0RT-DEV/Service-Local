@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FileText } from 'lucide-react';
 import { ActionButton } from '../UI/ActionButton';
 import { SpecialtiesSection } from './SpecialtiesSection';

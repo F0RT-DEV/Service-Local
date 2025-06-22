@@ -128,7 +128,7 @@ const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>
         <StatsCard
           icon={Shield}
           iconColor="text-yellow-600"
-          title="Providers Pendentes"
+          title="Prestadores Pendentes"
           value={pendingProviders.length}
         />
         <StatsCard
@@ -149,7 +149,7 @@ const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>
         {/* Pending Providers */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Providers Pendentes</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Prestadores Pendentes</h2>
             <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
               {pendingProviders.length} pendente(s)
             </span>
@@ -158,7 +158,7 @@ const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>
             {loading ? (
               <div>Carregando...</div>
             ) : pendingProviders.length === 0 ? (
-              <div className="text-gray-500">Nenhum provider pendente.</div>
+              <div className="text-gray-500">Nenhum prestador pendente.</div>
             ) : (
               pendingProviders.map((provider) => (
                 <PendingProviderCard

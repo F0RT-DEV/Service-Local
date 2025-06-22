@@ -9,12 +9,14 @@ import {CreateService} from "../Provider/CreateService";
 import {ServiceDetailsModal} from "../Provider/ServiceDetailsModal";
 import {ServiceEditModal} from "../Provider/ServiceEditModal";
 
-export function ProviderDashboard() {
+
+export function ProviderDashboard({ setCurrentView }: { setCurrentView: (view: string) => void }) {
     const [showCreateService, setShowCreateService] = useState(false);
     const [myServices, setMyServices] = useState<any[]>([]);
 	const [loadingServices, setLoadingServices] = useState(true);
     const [providerStatus, setProviderStatus] = useState<string | null>(null);
     const [pendingCount, setPendingCount] = useState(0);
+
 
     // Estados para modais
     const [selectedService, setSelectedService] = useState<any>(null);
@@ -250,7 +252,9 @@ export function ProviderDashboard() {
             </div>
 
             {/* Só mostra o alerta se o status for "pending" */}
-            {providerStatus === "pending" && <ProfileAlert />}
+            {providerStatus === "pending" && (
+                <ProfileAlert onCompleteProfile={() => setCurrentView("profile")} />
+            )}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

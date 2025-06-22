@@ -1,4 +1,3 @@
-import React from 'react';
 import { Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { FormInput } from '../UI/FormInput';

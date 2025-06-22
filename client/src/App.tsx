@@ -46,8 +46,8 @@ function AppContent() {
                 onStatistics={() => setCurrentView('report')}
               />
             );
-          case 'provider':
-            return <ProviderDashboard />;
+         case 'provider':
+          return <ProviderDashboard setCurrentView={setCurrentView} />;
           case 'client':
             return <ClientDashboard />;
           default:

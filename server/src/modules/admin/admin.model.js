@@ -30,7 +30,7 @@ export const ProviderModel = {
 	async findPendingWithDetails() {
 		try {
 			// Busca providers pendentes com nome, bio e categorias
-			console.log("Buscando providers pendentes no banco"); // <-- Aqui
+			//console.log("Buscando providers pendentes no banco"); // <-- Aqui
         const providers = await db("providers")
             .where({ status: "pending" })
             .select(
@@ -41,7 +41,7 @@ export const ProviderModel = {
                 "providers.cnpj",
                 "providers.bio"
             );
-        console.log("Providers pendentes:", providers); // <-- Aqui
+        //console.log("Providers pendentes:", providers); // <-- Aqui
 
         const userIds = providers.map((p) => p.user_id);
         let users = [];
@@ -49,7 +49,7 @@ export const ProviderModel = {
             users = await db("users")
                 .whereIn("id", userIds)
                 .select("id", "name");
-            console.log("Usuários relacionados:", users); // <-- Aqui
+            //console.log("Usuários relacionados:", users); // <-- Aqui
         }
 
         const providerIds = providers.map((p) => p.id);
@@ -59,7 +59,7 @@ export const ProviderModel = {
                 .join("categories as c", "pc.category_id", "c.id")
                 .whereIn("pc.provider_id", providerIds)
                 .select("pc.provider_id", "c.name as category");
-            console.log("Categorias relacionadas:", categories); // <-- Aqui
+            //console.log("Categorias relacionadas:", categories); // <-- Aqui
         }
 
         const result = providers.map((provider) => {
