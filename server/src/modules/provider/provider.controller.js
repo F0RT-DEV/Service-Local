@@ -3,10 +3,10 @@ import * as providerModel from "./provider.model.js";
 
 export async function updateProvider(req, res) {
 	const userId = req.user.id;
-	const {bio, categories, cnpj, areas_of_expertise, availability} = req.body;
+	const {bio, categories, cnpj, areas_of_expertise, } = req.body;
 
 	try {
-		if (!bio && !cnpj && !categories && !availability) {
+		if (!bio && !cnpj && !categories ) {
 			return res
 				.status(400)
 				.json({error: "Nenhum dado válido para atualização"});
@@ -17,7 +17,7 @@ export async function updateProvider(req, res) {
 			bio,
 			cnpj,
 			areas_of_expertise,
-			availability,
+			
 		});
 
 		const provider = await providerModel.getByUserId(userId);
@@ -95,20 +95,25 @@ export async function getPrestadorById(req, res) {
 }
 
 export async function getAuthenticatedProfile(req, res) {
-	const {id, role} = req.user;
+	const { id, role } = req.user;
 
 	try {
-		const user = await db("users").where({id}).first();
-		if (!user) return res.status(404).json({error: "Usuário não encontrado"});
+		const user = await db("users").where({ id }).first();
+		if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 
 		if (role === "client" || role === "user" || role === "admin") {
-			return res.status(200).json({role, user});
+			return res.status(200).json({ role, user });
 		}
 
 		if (role === "provider") {
-			const provider = await db("providers").where({user_id: id}).first();
+			const provider = await db("providers")
+				// Removido o campo "availability"
+				.select("id", "user_id", "bio", "cnpj", "status")
+				.where({ user_id: id })
+				.first();
+
 			if (!provider)
-				return res.status(404).json({error: "Prestador não encontrado"});
+				return res.status(404).json({ error: "Prestador não encontrado" });
 
 			// Buscar categorias associadas ao provider
 			const categories = await db("providers_categories")
@@ -123,17 +128,16 @@ export async function getAuthenticatedProfile(req, res) {
 					id: provider.id,
 					bio: provider.bio,
 					status: provider.status,
-					availability: provider.availability,
 					cnpj: provider.cnpj,
 					categories,
 				},
 			});
 		}
 
-		return res.status(403).json({error: "Perfil não autorizado"});
+		return res.status(403).json({ error: "Perfil não autorizado" });
 	} catch (error) {
 		console.error("Erro ao buscar perfil:", error);
-		return res.status(500).json({error: "Erro interno do servidor"});
+		return res.status(500).json({ error: "Erro interno do servidor" });
 	}
 }
 

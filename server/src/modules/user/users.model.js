@@ -11,6 +11,7 @@ export function getAllProviders() {
 			"phone",
 			"role",
 			"cep",
+			"cpf",
 			"logradouro",
 			"complemento",
 			"bairro",

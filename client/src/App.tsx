@@ -14,6 +14,8 @@ import { ProfileEdit } from './components/Client/ProfileEdit';
 import { MyProviderServices } from './components/Provider/MyProviderServices';
 import { ServiceSearch } from './components/Services/ServiceSearch';
 import { ProviderOrders } from './components/Provider/ProviderOrders';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ResetPassword } from './components/Auth/ResetPassword';
 
 function AppContent() {
   const { user } = useAuth();
@@ -28,6 +30,11 @@ function AppContent() {
       <RegisterForm onSwitchToLogin={() => setAuthView('login')} />
     );
   }
+   <BrowserRouter>
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+    </BrowserRouter>
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -95,7 +102,14 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginForm onSwitchToRegister={() => {}} />} />
+          <Route path="/register" element={<RegisterForm onSwitchToLogin={() => {}} />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          {/* Outras rotas protegidas aqui */}
+        </Routes>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
