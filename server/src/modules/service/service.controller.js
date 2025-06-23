@@ -4,10 +4,11 @@ import {
 	getAllService,
 	getAllServicesByProviderId,
 	getAllServicesByCategoryName,
-	countAllServicesByProviderId
+	countAllServicesByProviderId,
+	updateService, // <-- ADICIONE ESTA LINHA
 } from "./service.model.js";
 import {serviceSchema} from "./service.schema.js";
-import {getById} from "../provider/provider.model.js"
+import {getById} from "../provider/provider.model.js";
 
 export async function createServiceHandler(req, res) {
 	try {
@@ -69,7 +70,9 @@ export async function getAllServicesHandler(req, res) {
 		const services = await getAllService();
 
 		// Filtra apenas os serviços com status "active"
-		const activeServices = services.filter(service => service.is_active === 1);
+		const activeServices = services.filter(
+			(service) => service.is_active === 1
+		);
 
 		return res.status(200).json(activeServices);
 	} catch (err) {
@@ -127,13 +130,44 @@ export async function getMyServicesHandler(req, res) {
 	}
 }
 export async function getTotalServicesForProvider(req, res) {
-  try {
-    const providerId = req.user?.provider_id;
-    if (!providerId) return res.status(401).json({ error: "Prestador não autenticado" });
-    const result = await countAllServicesByProviderId(providerId);
-    const total = Number(result.count || result['count(*)'] || 0);
-    return res.status(200).json({ total });
-  } catch (err) {
-    return res.status(500).json({ error: "Erro ao buscar total de serviços", details: err.message });
-  }
+	try {
+		const providerId = req.user?.provider_id;
+		if (!providerId)
+			return res.status(401).json({error: "Prestador não autenticado"});
+		const result = await countAllServicesByProviderId(providerId);
+		const total = Number(result.count || result["count(*)"] || 0);
+		return res.status(200).json({total});
+	} catch (err) {
+		return res
+			.status(500)
+			.json({error: "Erro ao buscar total de serviços", details: err.message});
+	}
+}
+
+export async function updateServiceHandler(req, res) {
+	const {id} = req.params;
+	const providerId = req.user?.provider_id;
+	const updateData = req.body;
+
+	if (!providerId) {
+		return res.status(401).json({error: "Prestador não autenticado"});
+	}
+
+	try {
+		// Garante que o serviço pertence ao prestador autenticado
+		const service = await getServiceById(id);
+		if (!service || service.provider_id !== providerId) {
+			return res.status(403).json({error: "Acesso negado ao serviço"});
+		}
+
+		await updateService(id, updateData);
+		const updated = await getServiceById(id);
+		console.log(updateData);
+		return res.status(200).json(updated);
+	} catch (err) {
+		return res.status(500).json({
+			error: "Erro ao atualizar serviço",
+			details: err.message,
+		});
+	}
 }

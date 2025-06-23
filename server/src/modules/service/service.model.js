@@ -51,3 +51,13 @@ export function getById(id) {
 export function countAllServicesByProviderId(provider_id) {
 	return db("services").where({provider_id}).count().first();
 }
+export async function updateService(id, data) {
+  // Filtra apenas os campos válidos
+  const allowed = ["title", "description", "price_min", "price_max"];
+  const updateData = {};
+  for (const key of allowed) {
+    if (data[key] !== undefined) updateData[key] = data[key];
+  }
+  updateData.updated_at = new Date();
+  await db("services").where({ id }).update(updateData);
+}

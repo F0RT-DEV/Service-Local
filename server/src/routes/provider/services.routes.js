@@ -1,7 +1,7 @@
 import {
 	createServiceHandler,
 	getMyServicesHandler,
-	getTotalServicesForProvider
+	getTotalServicesForProvider,updateServiceHandler
 } from "../../modules/service/service.controller.js";
 import {verifyProviderRole} from "../../middlewares/role.middleware.js";
 import {authenticateToken} from "../../middlewares/authMiddleware.js";
@@ -21,6 +21,12 @@ router.get(
 	authenticateToken,
 	verifyProviderRole,
 	getMyServicesHandler
+);
+router.put(
+	"/services/:id",
+	authenticateToken,
+	verifyProviderRole,
+	updateServiceHandler
 );
 router.get(
   "/services/total",
