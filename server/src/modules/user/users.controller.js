@@ -198,11 +198,14 @@ export async function updateMyProfile(req, res) {
   const updates = req.body;
 
   try {
-    await userModel.update(userId, updates); // Corrigido!
+    await userModel.update(userId, updates);
     const updatedUser = await userModel.getById(userId);
+    if (!updatedUser) {
+      return res.status(404).json({ error: "Usuário não encontrado após atualização" });
+    }
     res.json(updatedUser);
   } catch (error) {
-	console.error("Erro ao atualizar perfil do usuário:", userId, updates, error);
+    console.error("Erro ao atualizar perfil do usuário:", userId, updates, error);
     res.status(500).json({ error: "Erro ao atualizar perfil do usuário" });
   }
 }

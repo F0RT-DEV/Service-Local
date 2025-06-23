@@ -7,6 +7,15 @@ interface RegisterFormProps {
   onSwitchToLogin: () => void;
 }
 
+function formatCPF(value: string) {
+  return value
+    .replace(/\D/g, '')
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1-$2')
+    .slice(0, 14);
+}
+
 export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -28,6 +37,32 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [error, setError] = useState('');
   const { register, isLoading } = useAuth();
   const alerts = usePromptAlerts();
+
+  // Busca dados do endereço pelo CEP usando ViaCEP
+  const handleCepBlur = async () => {
+    const cep = formData.cep.replace(/\D/g, "");
+    if (cep.length !== 8) {
+      alerts.warning("CEP deve ter 8 dígitos.", "CEP inválido");
+      return;
+    }
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        alerts.error("CEP não encontrado.", "Erro no CEP");
+        return;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        logradouro: data.logradouro || "",
+        bairro: data.bairro || "",
+        localidade: data.localidade || "",
+        uf: data.uf || "",
+      }));
+    } catch {
+      alerts.error("Erro ao buscar o CEP.", "Erro no CEP");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,8 +132,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   name="name"
                   type="text"
                   required
+                  maxLength={100}
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({...formData, name: e.target.value.slice(0, 100)})}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu nome completo"
                 />
@@ -115,8 +151,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   name="email"
                   type="email"
                   required
+                  maxLength={100}
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({...formData, email: e.target.value.slice(0, 100)})}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu email"
                 />
@@ -175,8 +212,14 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="cpf"
                   name="cpf"
                   type="text"
-                  value={formData.cpf}
-                  onChange={(e) => setFormData({...formData, cpf: e.target.value})}
+                  maxLength={14}
+                  value={formatCPF(formData.cpf)}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      cpf: e.target.value.replace(/\D/g, "").slice(0, 11)
+                    })
+                  }
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu CPF"
                 />
@@ -192,8 +235,14 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="phone"
                   name="phone"
                   type="text"
+                  maxLength={11}
                   value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      phone: e.target.value.replace(/\D/g, "").slice(0, 15)
+                    })
+                  }
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu telefone"
                 />
@@ -209,8 +258,15 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="cep"
                   name="cep"
                   type="text"
+                  maxLength={8}
                   value={formData.cep}
-                  onChange={(e) => setFormData({...formData, cep: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      cep: e.target.value.replace(/\D/g, "").slice(0, 8)
+                    })
+                  }
+                  onBlur={handleCepBlur}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu CEP"
                 />
@@ -225,8 +281,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="logradouro"
                   name="logradouro"
                   type="text"
+                  maxLength={100}
                   value={formData.logradouro}
-                  onChange={(e) => setFormData({...formData, logradouro: e.target.value})}
+                  onChange={(e) => setFormData({...formData, logradouro: e.target.value.slice(0, 100)})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o logradouro"
                 />
@@ -241,8 +298,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="complemento"
                   name="complemento"
                   type="text"
+                  maxLength={50}
                   value={formData.complemento}
-                  onChange={(e) => setFormData({...formData, complemento: e.target.value})}
+                  onChange={(e) => setFormData({...formData, complemento: e.target.value.slice(0, 50)})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o complemento"
                 />
@@ -257,8 +315,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="bairro"
                   name="bairro"
                   type="text"
+                  maxLength={50}
                   value={formData.bairro}
-                  onChange={(e) => setFormData({...formData, bairro: e.target.value})}
+                  onChange={(e) => setFormData({...formData, bairro: e.target.value.slice(0, 50)})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o bairro"
                 />
@@ -273,8 +332,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="localidade"
                   name="localidade"
                   type="text"
+                  maxLength={50}
                   value={formData.localidade}
-                  onChange={(e) => setFormData({...formData, localidade: e.target.value})}
+                  onChange={(e) => setFormData({...formData, localidade: e.target.value.slice(0, 50)})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite a cidade"
                 />
@@ -291,7 +351,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   maxLength={2}
                   value={formData.uf}
-                  onChange={(e) => setFormData({...formData, uf: e.target.value})}
+                  onChange={(e) => setFormData({...formData, uf: e.target.value.slice(0, 2).toUpperCase()})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="UF"
                 />
@@ -306,8 +366,9 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   id="numero"
                   name="numero"
                   type="text"
+                  maxLength={10}
                   value={formData.numero}
-                  onChange={(e) => setFormData({...formData, numero: e.target.value})}
+                  onChange={(e) => setFormData({...formData, numero: e.target.value.slice(0, 10)})}
                   className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Número"
                 />
@@ -324,6 +385,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
+                  minLength={6}
+                  maxLength={50}
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   className="w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
@@ -353,6 +416,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   name="confirmPassword"
                   type="password"
                   required
+                  minLength={6}
+                  maxLength={50}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
