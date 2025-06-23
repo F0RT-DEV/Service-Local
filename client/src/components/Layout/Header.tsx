@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { User, LogOut, Bell } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from "react";
+import { User, LogOut, Bell } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Cabeçalho do sistema com efeito de clique no ícone de notificações.
 export function Header() {
@@ -16,8 +16,8 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900">
-              Sistema de Classificados
+            <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 tracking-tight">
+              Auxtech
             </h1>
           </div>
 
@@ -27,8 +27,8 @@ export function Header() {
                 onClick={toggleNotificacoes}
                 className={`p-2 transition-colors rounded-full ${
                   notificacoesAtivas
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'text-gray-400 hover:text-gray-500'
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-400 hover:text-gray-500"
                 }`}
                 title="Notificações"
               >
@@ -41,8 +41,12 @@ export function Header() {
                     <User className="h-4 w-4 text-white" />
                   </div>
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize">
+                      {user.role}
+                    </p>
                   </div>
                 </div>
 
