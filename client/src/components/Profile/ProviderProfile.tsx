@@ -236,7 +236,7 @@ export function ProviderProfile() {
             <div>
               <label className="block font-medium mb-1">Bio</label>
               <textarea
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded px-3 py-2 resize-none"
                 value={profileData.bio}
                 onChange={e => setProfileData({ ...profileData, bio: e.target.value })}
                 disabled={!isEditing}
