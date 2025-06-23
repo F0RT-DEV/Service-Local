@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export function ResetPassword() {
+interface ResetPasswordProps {
+  onBackToLogin?: () => void; // Opcional para uso flexível
+}
+
+export function ResetPassword({ onBackToLogin }: ResetPasswordProps) {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,15 +29,24 @@ export function ResetPassword() {
     setLoading(true);
     try {
       const response = await fetch('http://localhost:3333/resetPassword', {
-        method: 'POST',
+        method: 'PUT', // Corrigido para PUT
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: newPassword }),
       });
 
-      if (!response.ok) throw new Error('Erro ao redefinir senha');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erro ao redefinir senha');
+      }
 
       setMessage('Senha redefinida com sucesso! Faça login.');
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => {
+        if (onBackToLogin) {
+          onBackToLogin();
+        } else {
+          navigate('/login');
+        }
+      }, 2000);
     } catch (err: any) {
       setError(err.message || 'Erro ao redefinir senha');
     } finally {
@@ -44,7 +57,16 @@ export function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="max-w-md w-full space-y-6 bg-white p-8 shadow rounded-lg">
-        <div className="flex items-center gap-2 text-gray-700 cursor-pointer" onClick={() => navigate('/login')}>
+        <div
+          className="flex items-center gap-2 text-gray-700 cursor-pointer"
+          onClick={() => {
+            if (onBackToLogin) {
+              onBackToLogin();
+            } else {
+              navigate('/login');
+            }
+          }}
+        >
           <ArrowLeft size={20} />
           <span className="text-sm font-medium hover:underline">Voltar para o login</span>
         </div>

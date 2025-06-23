@@ -119,7 +119,7 @@ const filteredServices = services.filter((service) => {
       {error && <div className="text-red-600">{error}</div>}
       {!loading && !error && filteredServices.length === 0 && (
         <h1 className="text-center text-lg text-gray-600 mt-8">
-          Serviço não encontrado! Verifique se digitou certo
+          Serviço não encontrado!
         </h1>
       )}
       {!loading && !error && filteredServices.length > 0 && (

@@ -30,12 +30,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
     if (formData.password !== formData.confirmPassword) {
       setError('As senhas não coincidem');
       return;
     }
-    
     try {
       await register({
         name: formData.name,
@@ -58,13 +56,14 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-2 py-8">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 space-y-8 border border-blue-100 overflow-y-auto max-h-[90vh]">
+        <div className="flex flex-col items-center gap-2">
+          <User className="h-12 w-12 text-blue-600 mb-2" />
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center">
             Crie sua conta
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="text-center text-gray-500 text-sm">
             Ou{' '}
             <button
               onClick={onSwitchToLogin}
@@ -74,23 +73,19 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             </button>
           </p>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm text-center">
               {error}
             </div>
           )}
-          
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Nome completo
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
+                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="name"
                   name="name"
@@ -98,20 +93,17 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu nome completo"
                 />
               </div>
             </div>
-            
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="email"
                   name="email"
@@ -119,12 +111,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu email"
                 />
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Tipo de conta
@@ -140,15 +131,14 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     className="sr-only"
                   />
                   <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                    formData.role === 'client' 
-                      ? 'border-blue-500 bg-blue-50' 
+                    formData.role === 'client'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}>
                     <div className="text-sm font-medium text-gray-900">Cliente</div>
                     <div className="text-xs text-gray-500">Buscar e contratar serviços</div>
                   </div>
                 </label>
-                
                 <label className="relative">
                   <input
                     type="radio"
@@ -159,8 +149,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     className="sr-only"
                   />
                   <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                    formData.role === 'provider' 
-                      ? 'border-blue-500 bg-blue-50' 
+                    formData.role === 'provider'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}>
                     <div className="text-sm font-medium text-gray-900">Prestador</div>
@@ -169,67 +159,57 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 </label>
               </div>
             </div>
-
             <div>
               <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
                 CPF
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Hash className="h-5 w-5 text-gray-400" />
-                </div>
+                <Hash className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="cpf"
                   name="cpf"
                   type="text"
                   value={formData.cpf}
                   onChange={(e) => setFormData({...formData, cpf: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu CPF"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                 Telefone
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                </div>
+                <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="phone"
                   name="phone"
                   type="text"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu telefone"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="cep" className="block text-sm font-medium text-gray-700">
                 CEP
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin className="h-5 w-5 text-gray-400" />
-                </div>
+                <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="cep"
                   name="cep"
                   type="text"
                   value={formData.cep}
                   onChange={(e) => setFormData({...formData, cep: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite seu CEP"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="logradouro" className="block text-sm font-medium text-gray-700">
                 Logradouro
@@ -241,12 +221,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   value={formData.logradouro}
                   onChange={(e) => setFormData({...formData, logradouro: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o logradouro"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="complemento" className="block text-sm font-medium text-gray-700">
                 Complemento
@@ -258,12 +237,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   value={formData.complemento}
                   onChange={(e) => setFormData({...formData, complemento: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o complemento"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="bairro" className="block text-sm font-medium text-gray-700">
                 Bairro
@@ -275,12 +253,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   value={formData.bairro}
                   onChange={(e) => setFormData({...formData, bairro: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite o bairro"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="localidade" className="block text-sm font-medium text-gray-700">
                 Cidade
@@ -292,12 +269,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   value={formData.localidade}
                   onChange={(e) => setFormData({...formData, localidade: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite a cidade"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="uf" className="block text-sm font-medium text-gray-700">
                 UF
@@ -310,12 +286,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   maxLength={2}
                   value={formData.uf}
                   onChange={(e) => setFormData({...formData, uf: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="UF"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="numero" className="block text-sm font-medium text-gray-700">
                 Número
@@ -327,20 +302,17 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   type="text"
                   value={formData.numero}
                   onChange={(e) => setFormData({...formData, numero: e.target.value})}
-                  className="appearance-none relative block w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-3 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Número"
                 />
               </div>
             </div>
-
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="password"
                   name="password"
@@ -348,7 +320,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Digite sua senha"
                 />
                 <button
@@ -364,15 +336,12 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 </button>
               </div>
             </div>
-            
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirmar senha
               </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -380,24 +349,21 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
                   placeholder="Confirme sua senha"
                 />
               </div>
             </div>
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Criando conta...' : 'Criar conta'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 rounded-lg font-semibold shadow-lg hover:from-blue-700 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+          >
+            {isLoading ? 'Criando conta...' : 'Criar conta'}
+          </button>
         </form>
       </div>
-      </div>
+    </div>
   );
 }

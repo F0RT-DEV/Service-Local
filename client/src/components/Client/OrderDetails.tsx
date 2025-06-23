@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { RateProviderForm } from "./RateProviderForm";
+
 import { traduzirStatus } from "../UI/orderStatus";
 import { Card } from "../UI/Card";
-
+import { RateProviderModal } from "./RateProviderForm";
 interface Order {
   id: string;
   service_id: string;
@@ -39,7 +39,7 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [showRate, setShowRate] = useState(false);
-
+const [showModal, setShowModal] = useState(false);
   useEffect(() => {
     const fetchOrder = async () => {
       setLoading(true);
@@ -203,11 +203,17 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
         <Card className="mb-6">
           <div className="p-6 text-center">
             <button
-              onClick={() => setShowRate(true)}
-              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg shadow-sm transition-colors"
-            >
-              Avaliar Prestador
-            </button>
+        onClick={() => setShowModal(true)}
+        className="mx-auto block bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+      >
+        Avaliar Prestador
+      </button>
+      <RateProviderModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        orderId={orderId}
+        onRated={() => {/* atualizar lista ou feedback */}}
+      />
           </div>
         </Card>
       )}

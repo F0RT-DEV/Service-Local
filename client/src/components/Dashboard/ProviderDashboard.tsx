@@ -227,82 +227,112 @@ export function ProviderDashboard({ setCurrentView }: { setCurrentView: (view: s
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">Ordens Pendentes</h2>
-            <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              {pendingOrders.length} nova(s)
-            </span>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {pendingOrders.length === 0 && (
-                <div className="text-gray-500 text-sm">Nenhuma ordem pendente.</div>
-              )}
-              {pendingOrders.map((order) => (
-                <div key={order.id} className="border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-blue-700">{order.service_name}</span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(order.scheduled_date).toLocaleString("pt-BR")}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-700">
-                    Cliente: <span className="font-medium">{order.client_name}</span>
-                  </div>
-                  <div className="text-sm text-gray-700">
-                    Notas: <span className="font-normal">{order.notes || "Nenhuma"}</span>
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      className="px-3 py-1 rounded bg-green-600 text-white text-sm hover:bg-green-700"
-                      onClick={() => handleAcceptOrder(order.id)}
-                    >
-                      Aceitar
-                    </button>
-                    <button
-                      className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700"
-                      onClick={() => handleRejectOrder(order.id)}
-                    >
-                      Recusar
-                    </button>
-                  </div>
-                </div>
-              ))}
+<Card>
+  <CardHeader className="flex justify-between items-center border-b pb-2 bg-gradient-to-r from-red-50 to-white rounded-t-lg">
+    <div className="flex items-center gap-2">
+      <Calendar className="text-blue-500" size={22} />
+      <h2 className="text-lg font-bold text-gray-900 tracking-tight">Ordens Pendentes</h2>
+    </div>
+    <span className="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full shadow">
+      {pendingOrders.length} nova(s)
+    </span>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      {pendingOrders.length === 0 ? (
+        <div className="text-gray-400 text-center py-8 flex flex-col items-center">
+          <Users className="mb-2 text-gray-300" size={32} />
+          Nenhuma ordem pendente.
+        </div>
+      ) : (
+        pendingOrders.map((order) => (
+          <div
+            key={order.id}
+            className="border border-red-100 rounded-xl p-4 bg-gradient-to-br from-white to-red-50 shadow flex flex-col gap-2 transition hover:shadow-lg"
+          >
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-blue-700 text-base flex items-center gap-1">
+                <Calendar size={16} className="text-blue-400" />
+                {order.service_name}
+              </span>
+              <span className="text-xs text-gray-500 font-mono">
+                {new Date(order.scheduled_date).toLocaleString("pt-BR")}
+              </span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-sm text-gray-700">
+              <span className="font-semibold">Cliente:</span>{" "}
+              <span className="font-medium">{order.client_name}</span>
+            </div>
+            <div className="text-sm text-gray-700">
+              <span className="font-semibold">Notas:</span>{" "}
+              <span className="font-normal">{order.notes || "Nenhuma"}</span>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                className="flex-1 px-3 py-1 rounded bg-green-600 text-white text-sm font-semibold shadow hover:bg-green-700 transition"
+                onClick={() => handleAcceptOrder(order.id)}
+              >
+                Aceitar
+              </button>
+              <button
+                className="flex-1 px-3 py-1 rounded bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition"
+                onClick={() => handleRejectOrder(order.id)}
+              >
+                Recusar
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </CardContent>
+</Card>
 
-        <Card>
-          <CardHeader className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">Meus Serviços</h2>
-            <ActionButton icon={Plus} onClick={handleCreateService} disabled={providerStatus === "pending"}>
-              Novo Serviço
-            </ActionButton>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {loadingServices ? (
-                <div>Carregando...</div>
-              ) : (
-                myServices.map((service) => (
-                  <ServiceCard
-                    key={service.id}
-                    service={service}
-                    onEdit={() => {
-                      setSelectedService(service);
-                      setShowEdit(true);
-                    }}
-                    onViewDetails={() => {
-                      setSelectedService(service);
-                      setShowDetails(true);
-                    }}
-                  />
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+<Card>
+  <CardHeader className="flex justify-between items-center border-b pb-2 bg-gradient-to-r from-orange-50 to-white rounded-t-lg">
+    <div className="flex items-center gap-2">
+      <DollarSign className="text-orange-500" size={22} />
+      <h2 className="text-lg font-bold text-gray-900 tracking-tight">Meus Serviços</h2>
+    </div>
+    <ActionButton
+      icon={Plus}
+      onClick={handleCreateService}
+      disabled={providerStatus === "pending"}
+    >
+      Novo Serviço
+    </ActionButton>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      {loadingServices ? (
+        <div className="text-gray-400 text-center py-8 flex flex-col items-center">
+          <DollarSign className="mb-2 text-gray-300" size={32} />
+          Carregando...
+        </div>
+      ) : myServices.length === 0 ? (
+        <div className="text-gray-400 text-center py-8 flex flex-col items-center">
+          <Plus className="mb-2 text-gray-300" size={32} />
+          Nenhum serviço cadastrado.
+        </div>
+      ) : (
+        myServices.map((service) => (
+          <ServiceCard
+            key={service.id}
+            service={service}
+            onEdit={() => {
+              setSelectedService(service);
+              setShowEdit(true);
+            }}
+            onViewDetails={() => {
+              setSelectedService(service);
+              setShowDetails(true);
+            }}
+          />
+        ))
+      )}
+    </div>
+  </CardContent>
+</Card>
       </div>
 
       <ServiceDetailsModal open={showDetails} service={selectedService} onClose={() => setShowDetails(false)} />

@@ -1,7 +1,7 @@
-import React from 'react';
+
 import { Card } from '../UI/Card';
 import { StatusBadge } from '../UI/StatusBadge';
-
+import { BadgeCheck, Edit2, Info } from "lucide-react";
 interface Service {
   id: string;
   title: string;
@@ -22,44 +22,49 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service, onEdit, onViewDetails }: ServiceCardProps) {
   return (
-    <Card hover className="p-4">
+    <Card hover className="p-5 bg-gradient-to-br from-orange-50 to-white border border-orange-100 shadow-md transition hover:shadow-lg">
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <h3 className="font-medium text-gray-900">{service.title}</h3>
-          <p className="text-sm text-gray-600 mb-1">{service.description}</p>
+          <h3 className="font-bold text-orange-700 text-lg flex items-center gap-1 mb-1">
+            <BadgeCheck className="text-orange-400" size={18} />
+            {service.title}
+          </h3>
+          <p className="text-sm text-gray-700 mb-2">{service.description}</p>
           {service.category && (
-            <p className="text-xs text-gray-500 mb-1">Categoria: {service.category}</p>
+            <span className="inline-block text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded mb-1">
+              {service.category}
+            </span>
           )}
-          <p className="text-xs text-gray-500">
-            {service.requests !== undefined
-              ? `${service.requests} solicitação(ões) recebida(s)`
-              : ''}
-          </p>
+          {service.requests !== undefined && (
+            <p className="text-xs text-gray-500 mt-1">
+              {service.requests} solicitação(ões) recebida(s)
+            </p>
+          )}
         </div>
-        <div className="text-right">
-          <p className="text-lg font-bold text-gray-900">
-            R$ {service.price_min} - R$ {service.price_max}
-          </p>
+        <div className="text-right min-w-[120px] flex flex-col items-end gap-2">
+          <span className="text-base font-bold text-gray-900">
+            R$ {service.price_min?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} - R$ {service.price_max?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+          </span>
           <StatusBadge
             status={service.is_active ? 'ativo' : 'inativo'}
-            variant={service.is_active ? 'success' : 'danger'}
+            variant={service.is_active ? 'success' : 'error'}
           >
             {service.is_active ? 'Ativo' : 'Inativo'}
           </StatusBadge>
         </div>
       </div>
-      <div className="mt-3 flex justify-end space-x-3">
+      <div className="mt-4 flex justify-end gap-4">
         <button
           onClick={() => onEdit(service.id)}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          className="flex items-center gap-1 text-sm text-blue-600 font-semibold hover:underline transition"
         >
-          Editar
+          <Edit2 size={15} /> Editar
         </button>
         <button
           onClick={() => onViewDetails(service.id)}
-          className="text-sm text-gray-600 hover:text-gray-800"
+          className="flex items-center gap-1 text-sm text-gray-700 font-semibold hover:underline transition"
         >
-          Ver detalhes
+          <Info size={15} /> Ver detalhes
         </button>
       </div>
     </Card>
