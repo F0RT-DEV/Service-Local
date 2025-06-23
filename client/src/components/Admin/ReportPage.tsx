@@ -159,12 +159,12 @@ export function ReportPage() {
               <h3 className="text-lg font-semibold text-gray-800">Últimas Avaliações</h3>
               <p className="text-sm text-gray-500">Feedback recente dos usuários</p>
             </div>
-            <button 
+            {/* <button 
               onClick={fetchRatings}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
             >
               Atualizar
-            </button>
+            </button> */}
           </div>
 
           {loading ? (
