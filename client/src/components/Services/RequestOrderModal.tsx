@@ -143,7 +143,7 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
             name="notes"
             value={form.notes}
             onChange={handleChange}
-            className="w-full border rounded px-2 py-1"
+            className="w-full border rounded px-2 py-1 resize-none"
             placeholder="Observações"
           />
           {error && <div className="text-red-600">{error}</div>}
