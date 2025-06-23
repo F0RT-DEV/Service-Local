@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { usePromptAlerts } from '../UI/AlertContainer';
 
 // Modal para o cliente solicitar um serviço.
 // Exibe formulário para preencher data, endereço e observações.
@@ -26,18 +26,38 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const alerts = usePromptAlerts();
 
   if (!open) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
+    // Validações básicas
+    if (!form.scheduled_date) {
+      alerts.warning('Por favor, selecione uma data para o serviço', 'Data obrigatória');
+      setLoading(false);
+      return;
+    }
+    
+    if (!form.cep || !form.logradouro || !form.bairro || !form.cidade || !form.uf) {
+      alerts.error('Por favor, preencha todos os campos de endereço obrigatórios', 'Campos obrigatórios');
+      setLoading(false);
+      return;
+    }
+    
     const token = localStorage.getItem("token");
+    if (!token) {
+      alerts.error('Você precisa estar logado para solicitar um serviço', 'Erro de autenticação');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const res = await fetch("http://localhost:3333/clients/orders", {
         method: "POST",
@@ -59,14 +79,30 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
           notes: form.notes,
         }),
       });
+      
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Erro ao criar ordem");
       }
+      
+      // Limpar formulário após sucesso
+      setForm({
+        scheduled_date: "",
+        cep: "",
+        logradouro: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        uf: "",
+        notes: "",
+      });
+      
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || "Erro ao criar ordem");
+      const errorMessage = err.message || "Erro ao criar ordem";
+      setError(errorMessage);
+      alerts.error(errorMessage, 'Erro na Solicitação');
     }
     setLoading(false);
   };

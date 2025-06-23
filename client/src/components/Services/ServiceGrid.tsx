@@ -39,12 +39,10 @@ export function ServiceGrid({ services, onRequestService }: ServiceGridProps) {
             className="w-full h-48 object-cover mb-2"
           />
           <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
-          <p className="text-sm text-gray-600 mb-2">{service.description}</p>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-green-700 font-bold">
+          <p className="text-sm text-gray-600 mb-2">{service.description}</p>          <div className="flex items-center gap-2 mb-2">            <span className="text-green-700 font-bold">
               {service.price_min === service.price_max
-                ? `R$ ${service.price_min}`
-                : `R$ ${service.price_min} - R$ ${service.price_max}`}
+                ? `R$ ${parseFloat(String(service.price_min || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                : `R$ ${parseFloat(String(service.price_min || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} - R$ ${parseFloat(String(service.price_max || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
             </span>
           </div>
           <button

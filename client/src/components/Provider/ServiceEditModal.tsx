@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, X } from "lucide-react";
 
+interface ServiceFormData {
+  title: string;
+  description: string;
+  price_min: number | string;
+  price_max: number | string;
+  [key: string]: any;
+}
+
 interface ServiceEditModalProps {
   open: boolean;
   service: any;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from '../UI/Card';
 import { ActionButton } from '../UI/ActionButton';
 
@@ -26,7 +25,7 @@ export function PendingOrderCard({ order, onAccept, onReject }: PendingOrderCard
           <p className="text-sm text-gray-600">Cliente: {order.client}</p>
           <p className="text-sm text-gray-500">Data solicitada: {new Date(order.date).toLocaleDateString()}</p>
         </div>
-        <p className="text-lg font-bold text-gray-900">R$ {order.price}</p>
+        <p className="text-lg font-bold text-gray-900">R$ {parseFloat(String(order.price || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
       </div>
       <p className="text-sm text-gray-600 mb-3">{order.description}</p>
       <div className="flex space-x-2">

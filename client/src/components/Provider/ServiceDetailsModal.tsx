@@ -1,5 +1,4 @@
 import { BadgeCheck, X } from "lucide-react";
-import React from "react";
 
 interface ServiceDetailsModalProps {
   open: boolean;
@@ -32,12 +31,11 @@ export function ServiceDetailsModal({ open, service, onClose }: ServiceDetailsMo
             <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${service.is_active ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-500"}`}>
               {service.is_active ? "Ativo" : "Inativo"}
             </span>
-          </div>
-          <div className="mb-3">
+          </div>          <div className="mb-3">
             <span className="block text-sm text-gray-600 font-semibold">
               Preço:
               <span className="ml-2 text-base text-gray-900 font-bold">
-                R$ {Number(service.price_min).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} - R$ {Number(service.price_max).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                R$ {parseFloat(String(service.price_min || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} - R$ {parseFloat(String(service.price_max || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </span>
           </div>

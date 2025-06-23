@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Star, Calendar, Search, DollarSign } from 'lucide-react';
 import { StatsCard } from '../UI/StatsCard';
-import { OrderCard } from '../Client/OrderCard';
 import { RecommendedServiceCard } from '../Client/RecommendedServiceCard';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { OrderDetails } from '../Client/OrderDetails';
@@ -32,13 +31,10 @@ interface Service {
   rating?: number;
 }
 
-export function ClientDashboard() {
-  const token = localStorage.getItem('token');
+export function ClientDashboard() {  const token = localStorage.getItem('token');
   const [orders, setOrders] = useState<Order[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [searches, setSearches] = useState<string[]>([]); // Simulação de pesquisas
 
   // Estados para o modal de solicitação de serviço recomendado
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,11 +77,9 @@ export function ClientDashboard() {
     };
     if (token) fetchUniqueProvidersCount();
   }, [token]);
-
   // Buscar ordens do cliente
   useEffect(() => {
     const fetchOrders = async () => {
-      setLoading(true);
       try {
         const res = await fetch('http://localhost:3333/clients/orders', {
           headers: { Authorization: `Bearer ${token}` },
@@ -93,17 +87,9 @@ export function ClientDashboard() {
         if (!res.ok) throw new Error('Erro ao buscar ordens');
         const data = await res.json();
         setOrders(data);
-
-        // Simulação: se você salva pesquisas no backend, troque por fetch real
-        const pesquisas = data
-          .map((o: Order) => o.search_term)
-          .filter((v: string | undefined) => !!v) as string[];
-        setSearches(pesquisas);
       } catch {
         setOrders([]);
-        setSearches([]);
       }
-      setLoading(false);
     };
     fetchOrders();
   }, [token]);
@@ -132,14 +118,8 @@ export function ClientDashboard() {
   const activeOrdersCount = orders.filter(
     (o) => ['pending', 'accepted', 'in_progress'].includes(o.status)
   ).length;
-
   // Avaliações feitas
   const ratingsCount = orders.filter((o) => o.rating != null).length;
-
-  // Total gasto (soma dos valores das ordens finalizadas)
-  const totalSpent = orders
-    .filter((o) => ['done'].includes(o.status))
-    .reduce((sum, o) => sum + (o.price ?? 0), 0);
 
   // Serviços recomendados: top 2 por avaliação
   const recommendedServices = [...services]
@@ -311,9 +291,8 @@ export function ClientDashboard() {
     </div>
     {/* Valor e botão Ver detalhes */}
     <div className="flex flex-col items-end">
-      {order.price !== undefined && (
-        <span className="text-green-700 font-bold text-base mb-1">
-          R$ {order.price}
+      {order.price !== undefined && (        <span className="text-green-700 font-bold text-base mb-1">
+          R$ {parseFloat(String(order.price || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
       )}
       <span>

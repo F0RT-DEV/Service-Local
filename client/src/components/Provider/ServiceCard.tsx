@@ -21,6 +21,14 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ service, onEdit, onViewDetails }: ServiceCardProps) {
+  // Função para converter string de preço para number e formatar corretamente
+  const formatPrice = (price: string | number | undefined): string => {
+    if (!price) return '0,00';
+    // Se for string, converter para número primeiro
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+    return numericPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  };
+  
   return (
     <Card hover className="p-5 bg-gradient-to-br from-orange-50 to-white border border-orange-100 shadow-md transition hover:shadow-lg">
       <div className="flex justify-between items-start">
@@ -41,9 +49,8 @@ export function ServiceCard({ service, onEdit, onViewDetails }: ServiceCardProps
             </p>
           )}
         </div>
-        <div className="text-right min-w-[120px] flex flex-col items-end gap-2">
-          <span className="text-base font-bold text-gray-900">
-            R$ {service.price_min?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} - R$ {service.price_max?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        <div className="text-right min-w-[120px] flex flex-col items-end gap-2">          <span className="text-base font-bold text-gray-900">
+            R$ {formatPrice(service.price_min)} - R$ {formatPrice(service.price_max)}
           </span>
           <StatusBadge
             status={service.is_active ? 'ativo' : 'inativo'}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, UserCircle2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePromptAlerts } from '../UI/AlertContainer';
 import { ResetPassword } from './ResetPassword';
 
 interface LoginFormProps {
@@ -14,14 +15,17 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [error, setError] = useState('');
   const [showReset, setShowReset] = useState(false);
   const { login, isLoading } = useAuth();
+  const alerts = usePromptAlerts();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await login(email, password);
+      alerts.success('Login realizado com sucesso!', 'Bem-vindo!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
+      alerts.error(errorMessage, 'Erro de autenticação');
     }
   };
 

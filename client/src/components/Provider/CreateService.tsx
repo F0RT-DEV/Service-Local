@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePromptAlerts } from '../UI/AlertContainer';
 
 interface CreateServiceProps {
   onBack: () => void;
@@ -14,10 +15,9 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
     category_id: "",
     images: "",
     is_active: true,
-  });
-  const [loading, setLoading] = useState(false);
+  });  const [loading, setLoading] = useState(false);
   const [categorias, setCategorias] = useState<any[]>([]);
-  const [mensagem, setMensagem] = useState("");
+  const alerts = usePromptAlerts();
 
   // Buscar categorias dinamicamente
   useEffect(() => {
@@ -26,22 +26,21 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
       .then(setCategorias)
       .catch(() => setCategorias([]));
   }, []);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMensagem("");
+    
     // Validação básica
     if (
       !form.title ||
@@ -50,17 +49,25 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
       form.price_min === "" ||
       form.price_max === ""
     ) {
-      setMensagem("Preencha todos os campos obrigatórios.");
+      alerts.error("Preencha todos os campos obrigatórios.", "Campos obrigatórios");
       return;
     }
+    
     if (form.description.length < 10) {
-      setMensagem("A descrição deve ter pelo menos 10 caracteres.");
+      alerts.warning("A descrição deve ter pelo menos 10 caracteres.", "Descrição muito curta");
       return;
     }
+    
     const priceMin = parseFloat(form.price_min);
     const priceMax = parseFloat(form.price_max);
+    
     if (isNaN(priceMin) || isNaN(priceMax)) {
-      setMensagem("Preços devem ser números válidos.");
+      alerts.error("Preços devem ser números válidos.", "Erro de validação");
+      return;
+    }
+    
+    if (priceMin > priceMax) {
+      alerts.warning("O preço mínimo não pode ser maior que o máximo.", "Preços inválidos");
       return;
     }
 
@@ -71,17 +78,16 @@ export function CreateService({ onBack, onCreate }: CreateServiceProps) {
         price_min: priceMin,
         price_max: priceMax,
       });
+      alerts.success("Serviço criado com sucesso!", "Sucesso");
+    } catch (error) {
+      alerts.error("Erro ao criar serviço. Tente novamente.", "Falha na operação");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
+  return (    <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
       <h2 className="text-xl font-bold mb-4">Cadastrar Novo Serviço</h2>
-      {mensagem && (
-        <div className="mb-2 text-red-600 font-medium">{mensagem}</div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-medium mb-1">Título</label>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ServiceGrid } from './ServiceGrid';
 import { SearchFilters } from './SearchFilters';
 import { RequestOrderModal } from './RequestOrderModal';
+import { usePromptAlerts } from '../UI/AlertContainer';
 
 interface Service {
   id: string;
@@ -39,6 +40,7 @@ export function ServiceSearch() {
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const alerts = usePromptAlerts();
 
   // Buscar serviços do backend ao carregar
   useEffect(() => {
@@ -47,61 +49,66 @@ export function ServiceSearch() {
       setError('');
       try {
         const res = await fetch('http://localhost:3333/services');
-        if (!res.ok) throw new Error('Erro ao buscar serviços');
-        const data = await res.json();
+        if (!res.ok) throw new Error('Erro ao buscar serviços');        const data = await res.json();
         setServices(data);
+        if (data.length === 0) {
+          alerts.info('Nenhum serviço encontrado no momento', 'Busca de Serviços');
+        } else {
+          alerts.success(`${data.length} serviços carregados com sucesso!`, 'Serviços Disponíveis');
+        }
       } catch (err: any) {
-        setError(err.message || 'Erro ao buscar serviços');
+        const errorMessage = err.message || 'Erro ao buscar serviços';
+        setError(errorMessage);
+        alerts.error(errorMessage, 'Erro ao Carregar Serviços');
       }
       setLoading(false);
     };
     fetchServices();
   }, []);
 
-useEffect(() => {
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch('http://localhost:3333/users');
-      if (!res.ok) throw new Error('Erro ao buscar usuários');
-      const data = await res.json();
-      setUsers(data);
-    } catch {
-      setUsers([]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('http://localhost:3333/users');
+        if (!res.ok) throw new Error('Erro ao buscar usuários');
+        const data = await res.json();
+        setUsers(data);
+      } catch {
+        setUsers([]);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // Mapeia user_id => user (para lookup rápido)
+  const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
+
+  // Filtro por localização (cidade)
+  const filteredServices = services.filter((service) => {
+    const matchesTerm =
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'all' || service.category_id === selectedCategory;
+
+    if (!location.trim()) {
+      return matchesTerm && matchesCategory;
     }
-  };
-  fetchUsers();
-}, []);
-
-// Mapeia user_id => user (para lookup rápido)
-const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
-
-// Filtro por localização (cidade)
-const filteredServices = services.filter((service) => {
-  const matchesTerm =
-    service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchTerm.toLowerCase());
-  const matchesCategory =
-    selectedCategory === 'all' || service.category_id === selectedCategory;
-
-  if (!location.trim()) {
-    return matchesTerm && matchesCategory;
-  }
-  // Busca o usuário (prestador) pelo provider_id do serviço
-  const user = userMap[service.provider_id];
-  if (!user) return false;
-  const matchesLocation =
-    user.localidade &&
-    user.localidade.toLowerCase().includes(location.trim().toLowerCase());
-  return matchesTerm && matchesCategory && matchesLocation;
-});
+    // Busca o usuário (prestador) pelo provider_id do serviço
+    const user = userMap[service.provider_id];
+    if (!user) return false;
+    const matchesLocation =
+      user.localidade &&
+      user.localidade.toLowerCase().includes(location.trim().toLowerCase());
+    return matchesTerm && matchesCategory && matchesLocation;
+  });
 
   const handleRequestService = (id: string) => {
     setSelectedServiceId(id);
     setModalOpen(true);
   };
-
   const handleSuccess = () => {
-    alert('Ordem criada com sucesso!');
+    alerts.success('Ordem criada com sucesso!', 'Solicitação Enviada', 6000);
     // Aqui você pode atualizar a lista de ordens, se quiser
   };
 
@@ -124,9 +131,9 @@ const filteredServices = services.filter((service) => {
       )}
       {!loading && !error && filteredServices.length > 0 && (
         <ServiceGrid
-  services={filteredServices}
-  onRequestService={handleRequestService}
-/>
+          services={filteredServices}
+          onRequestService={handleRequestService}
+        />
       )}
       <RequestOrderModal
         serviceId={selectedServiceId || ''}

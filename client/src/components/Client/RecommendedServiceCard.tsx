@@ -44,10 +44,9 @@ export function RecommendedServiceCard({ service, onRequest }: RecommendedServic
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
             <span className="text-sm text-gray-600 ml-1">{service.rating}</span>
           </div>
-        </div>
-        <div className="text-right">
+        </div>        <div className="text-right">
 <div className="text-sm text-green-700 font-bold mb-1">
-        Valor: R$ {service.price}
+        Valor: R$ {parseFloat(String(service.price || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
       </div>
           <ActionButton size="sm" onClick={() => onRequest(service.id)}>
             Solicitar

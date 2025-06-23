@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AlertProvider } from './contexts/AlertContext';
+import { AlertContainer } from './components/UI/AlertContainer';
 import { LoginForm } from './components/Auth/LoginForm';
 import { RegisterForm } from './components/Auth/RegisterForm';
 import { Header } from './components/Layout/Header';
@@ -117,7 +119,10 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <AlertProvider>
+        <AppContent />
+        <AlertContainer />
+      </AlertProvider>
     </AuthProvider>
   );
 }

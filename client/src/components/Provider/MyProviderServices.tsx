@@ -121,10 +121,8 @@ export function MyProviderServices() {
                 {services.map((servico) => (
                   <tr key={servico.id} className="hover:bg-blue-50 transition">
                     <td className="px-4 py-3 font-medium text-gray-900">{servico.title}</td>
-                    <td className="px-4 py-3 text-gray-700">{servico.description}</td>
-                    <td className="px-4 py-3">{getCategoryName(servico.category_id)}</td>
-                    <td className="px-4 py-3 text-green-700 font-semibold">R$ {servico.price_min}</td>
-                    <td className="px-4 py-3 text-green-700 font-semibold">R$ {servico.price_max}</td>
+                    <td className="px-4 py-3 text-gray-700">{servico.description}</td>                    <td className="px-4 py-3">{getCategoryName(servico.category_id)}</td>                    <td className="px-4 py-3 text-green-700 font-semibold">R$ {parseFloat(String(servico.price_min || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-3 text-green-700 font-semibold">R$ {parseFloat(String(servico.price_max || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                     <td className="px-4 py-3">{renderImagens(servico.images)}</td>
                     <td className="px-4 py-3">
                       {servico.is_active == 1 || servico.is_active === true ? (
@@ -137,9 +135,10 @@ export function MyProviderServices() {
                 ))}
               </tbody>
             </table>
-          </div>
-        )
+          </div>        )
       )}
     </div>
   );
 }
+
+export default MyProviderServices;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Phone, MapPin, Hash } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePromptAlerts } from '../UI/AlertContainer';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -26,14 +27,17 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { register, isLoading } = useAuth();
+  const alerts = usePromptAlerts();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
     if (formData.password !== formData.confirmPassword) {
-      setError('As senhas não coincidem');
+      alerts.error('As senhas não coincidem', 'Erro de validação');
       return;
     }
+    
     try {
       await register({
         name: formData.name,
@@ -50,8 +54,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         uf: formData.uf,
         numero: formData.numero
       });
+      alerts.success('Conta criada com sucesso!', 'Bem-vindo!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar conta');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
+      alerts.error(errorMessage, 'Erro no cadastro');
     }
   };
 
