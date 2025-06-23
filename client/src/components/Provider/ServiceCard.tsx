@@ -1,7 +1,7 @@
 
 import { Card } from '../UI/Card';
 import { StatusBadge } from '../UI/StatusBadge';
-import { BadgeCheck, Edit2, Info } from "lucide-react";
+import { BadgeCheck, Info } from "lucide-react";
 interface Service {
   id: string;
   title: string;
@@ -20,7 +20,7 @@ interface ServiceCardProps {
   onViewDetails: (id: string) => void;
 }
 
-export function ServiceCard({ service, onEdit, onViewDetails }: ServiceCardProps) {
+export function ServiceCard({ service, onViewDetails }: ServiceCardProps) {
   // Função para converter string de preço para number e formatar corretamente
   const formatPrice = (price: string | number | undefined): string => {
     if (!price) return '0,00';
@@ -61,12 +61,7 @@ export function ServiceCard({ service, onEdit, onViewDetails }: ServiceCardProps
         </div>
       </div>
       <div className="mt-4 flex justify-end gap-4">
-        <button
-          onClick={() => onEdit(service.id)}
-          className="flex items-center gap-1 text-sm text-blue-600 font-semibold hover:underline transition"
-        >
-          <Edit2 size={15} /> Editar
-        </button>
+        
         <button
           onClick={() => onViewDetails(service.id)}
           className="flex items-center gap-1 text-sm text-gray-700 font-semibold hover:underline transition"
