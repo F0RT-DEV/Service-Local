@@ -60,35 +60,49 @@ export function ServiceSettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-8">
-      <Card>
+<Card className="p-8">
         <h2 className="text-2xl font-bold mb-2">Configurações de Serviços</h2>
         <p className="text-gray-600 mb-6">Configurar parâmetros para serviços</p>
-        <div className="mb-4 flex gap-2">
-          <input
-            type="text"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            placeholder="Nome da nova categoria"
-            className="border rounded p-2 flex-1"
-            disabled={loading}
-          />
+        {/* Formulário de criação */}
+        <div className="mb-8 flex gap-2 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nova Categoria
+            </label>
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Nome da nova categoria"
+              className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-200 transition"
+              disabled={loading}
+            />
+          </div>
           <ActionButton onClick={handleCreateCategory} variant="success" disabled={loading}>
-            Criar Categoria
+            {loading ? 'Criando...' : 'Criar Categoria'}
           </ActionButton>
         </div>
         {error && <p className="text-red-500 mb-2">{error}</p>}
-        <div className="mt-6">
-          <h3 className="text-md font-semibold mb-2">Categorias Existentes:</h3>
+        {/* Lista de categorias */}
+        <div className="mt-8">
+          <h3 className="text-md font-semibold mb-4">Categorias Existentes:</h3>
           {loading ? (
-            <div>Carregando categorias...</div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="animate-spin h-5 w-5 border-2 border-blue-400 border-t-transparent rounded-full"></span>
+              Carregando categorias...
+            </div>
           ) : (
-            <ul>
+            <div className="flex flex-wrap gap-4">
               {categories.map((category) => (
-                <li key={category.id} className="py-1">
-                  {category.name}
-                </li>
+                <div
+                  key={category.id}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 shadow-sm hover:shadow transition"
+                >
+                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
+                  <span className="font-medium text-blue-900">{category.name}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </Card>

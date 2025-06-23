@@ -6,6 +6,7 @@ import { RecommendedServiceCard } from '../Client/RecommendedServiceCard';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { OrderDetails } from '../Client/OrderDetails';
 //import { traduzirStatus } from '../UI/orderStatus';
+import { RequestOrderModal } from '../Services/RequestOrderModal'; // <-- IMPORTANTE
 
 interface Order {
   id: string;
@@ -38,6 +39,10 @@ export function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [searches, setSearches] = useState<string[]>([]); // Simulação de pesquisas
+
+  // Estados para o modal de solicitação de serviço recomendado
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
 
   // ...seus estados...
   const [finishedOrdersCount, setFinishedOrdersCount] = useState(0);
@@ -133,21 +138,21 @@ export function ClientDashboard() {
 
   // Total gasto (soma dos valores das ordens finalizadas)
   const totalSpent = orders
-  .filter((o) => ['done'].includes(o.status))
-  .reduce((sum, o) => sum + (o.price ?? 0), 0);
+    .filter((o) => ['done'].includes(o.status))
+    .reduce((sum, o) => sum + (o.price ?? 0), 0);
 
   // Serviços recomendados: top 2 por avaliação
-const recommendedServices = [...services]
-  .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-  .slice(0, 2)
-  .map((service) => ({
-    id: service.id,
-    title: service.title,
-    description: service.description, // <-- adicione a descrição
-    rating: service.rating ?? 0,
-    price: service.price_min,
-    image: service.images,
-  }));
+  const recommendedServices = [...services]
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    .slice(0, 2)
+    .map((service) => ({
+      id: service.id,
+      title: service.title,
+      description: service.description, // <-- adicione a descrição
+      rating: service.rating ?? 0,
+      price: service.price_min,
+      image: service.images,
+    }));
 
   const handleViewOrderDetails = (id: string) => {
     setSelectedOrderId(id);
@@ -157,8 +162,17 @@ const recommendedServices = [...services]
     setSelectedOrderId(null);
   };
 
+  // Quando clicar em solicitar no serviço recomendado, abre o modal
   const handleRequestService = (id: string) => {
-    // Implemente ação de solicitar serviço se necessário
+    setSelectedServiceId(id);
+    setModalOpen(true);
+  };
+
+  // Quando a ordem for criada com sucesso
+  const handleSuccess = () => {
+    alert('Ordem criada com sucesso!');
+    setModalOpen(false);
+    // Aqui você pode atualizar a lista de ordens, se quiser
   };
 
   if (selectedOrderId) {
@@ -203,24 +217,118 @@ const recommendedServices = [...services]
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
         <Card>
-          <CardHeader>
-            <h2 className="text-lg font-semibold text-gray-900">Ordens Recentes</h2>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.length === 0 && (
-                <p className="text-gray-500">Você ainda não fez nenhuma ordem.</p>
-              )}
-              {recentOrders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  onViewDetails={handleViewOrderDetails}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+  <CardHeader>
+    <h2 className="text-lg font-semibold text-gray-900">Ordens Recentes</h2>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      {recentOrders.length === 0 && (
+        <p className="text-gray-500">Você ainda não fez nenhuma ordem.</p>
+      )}
+      {recentOrders.map((order) => (
+  <button
+    key={order.id}
+    onClick={() => handleViewOrderDetails(order.id)}
+    className={`
+      w-full text-left rounded-xl border border-gray-200 shadow-sm p-4
+      transition hover:shadow-md hover:border-blue-400 bg-white
+      flex items-center gap-4 group
+    `}
+  >
+    {/* Ícone de status */}
+    <div className="flex-shrink-0">
+      {order.status === 'pending' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+          <Calendar className="text-yellow-500" size={22} />
+        </span>
+      )}
+      {order.status === 'accepted' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+          <Calendar className="text-blue-500" size={22} />
+        </span>
+      )}
+      {order.status === 'in_progress' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+          <Calendar className="text-purple-500" size={22} />
+        </span>
+      )}
+      {order.status === 'done' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+          <Star className="text-green-600" size={22} />
+        </span>
+      )}
+      {order.status === 'rejected' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+          <Calendar className="text-red-500" size={22} />
+        </span>
+      )}
+      {order.status === 'cancelled' && (
+        <span className="inline-block w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          <Calendar className="text-gray-500" size={22} />
+        </span>
+      )}
+    </div>
+    {/* Conteúdo principal */}
+    <div className="flex-1">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="font-semibold text-base text-gray-900 group-hover:text-blue-700 transition">
+          {order.service_name || 'Serviço'}
+        </span>
+        <span className={`
+          text-xs px-2 py-0.5 rounded-full font-medium ml-2
+          ${
+            order.status === 'pending'
+              ? 'bg-yellow-100 text-yellow-800'
+              : order.status === 'accepted'
+              ? 'bg-blue-100 text-blue-800'
+              : order.status === 'in_progress'
+              ? 'bg-purple-100 text-purple-800'
+              : order.status === 'done'
+              ? 'bg-green-100 text-green-800'
+              : order.status === 'rejected'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-gray-100 text-gray-800'
+          }
+        `}>
+          {order.status === 'pending' && 'Pendente'}
+          {order.status === 'accepted' && 'Aceita'}
+          {order.status === 'in_progress' && 'Em andamento'}
+          {order.status === 'done' && 'Finalizada'}
+          {order.status === 'rejected' && 'Recusada'}
+          {order.status === 'cancelled' && 'Cancelada'}
+        </span>
+      </div>
+      <div className="text-sm text-gray-600">
+        <span className="font-medium">Prestador:</span> {order.provider_name || '---'}
+      </div>
+      <div className="text-xs text-gray-400 mt-1">
+        {order.scheduled_date
+          ? `Agendada para: ${new Date(order.scheduled_date).toLocaleString('pt-BR')}`
+          : order.created_at
+          ? `Criada em: ${new Date(order.created_at).toLocaleString('pt-BR')}`
+          : ''}
+      </div>
+    </div>
+    {/* Valor e botão Ver detalhes */}
+    <div className="flex flex-col items-end">
+      {order.price !== undefined && (
+        <span className="text-green-700 font-bold text-base mb-1">
+          R$ {order.price}
+        </span>
+      )}
+      <span>
+        <span
+          className="inline-block px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition"
+        >
+          Ver detalhes
+        </span>
+      </span>
+    </div>
+  </button>
+))}
+    </div>
+  </CardContent>
+</Card>
 
         {/* Recommended Services */}
         <Card>
@@ -243,6 +351,14 @@ const recommendedServices = [...services]
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal para solicitar serviço recomendado */}
+      <RequestOrderModal
+        serviceId={selectedServiceId || ''}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleSuccess}
+      />
     </div>
   );
 }

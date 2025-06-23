@@ -84,7 +84,7 @@ function AppContent() {
           return <ProviderOrders />;
         }
         return <div>Gerenciar Ordens</div>;
-      case 'providers':
+      //case 'providers':
         return <div>Gerenciar Providers (Admin)</div>;
       case 'calendar':
         return <div>Agenda</div>;

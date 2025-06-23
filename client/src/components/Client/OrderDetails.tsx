@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { RateProviderForm } from "./RateProviderForm";
 import { traduzirStatus } from "../UI/orderStatus";
-// Componente que mostra os detalhes completos de uma ordem selecionada pelo cliente.
-// Busca os dados da ordem pelo ID (GET /clients/orders/:id).
-// Exibe informações detalhadas, endereço, status, observações, cancelamento e avaliação.
-// Permite avaliar o prestador após a conclusão do serviço.
+import { Card } from "../UI/Card";
 
 interface Order {
   id: string;
@@ -13,7 +10,6 @@ interface Order {
   provider_id: string;
   provider_name?: string;
   status: string;
-  //price?: number;
   scheduled_date?: string;
   created_at?: string;
   address?: any;
@@ -29,11 +25,17 @@ interface OrderDetailsProps {
   onBack: () => void;
 }
 
+const statusColors: Record<string, string> = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  accepted: 'bg-blue-100 text-blue-800',
+  rejected: 'bg-red-100 text-red-800',
+  in_progress: 'bg-purple-100 text-purple-800',
+  done: 'bg-green-100 text-green-800',
+  cancelled: 'bg-gray-100 text-gray-800'
+};
+
 export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
   const token = localStorage.getItem("token");
-  if (!token) {
-    return <div className="text-red-600">Você precisa estar logado para ver os detalhes da ordem.</div>;
-  }
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [showRate, setShowRate] = useState(false);
@@ -41,123 +43,199 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
   useEffect(() => {
     const fetchOrder = async () => {
       setLoading(true);
-      const res = await fetch(`http://localhost:3333/clients/orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        setOrder(null);
+      try {
+        const res = await fetch(`http://localhost:3333/clients/orders/${orderId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Erro ao carregar ordem');
+        const data = await res.json();
+        setOrder({
+          id: data.id,
+          service_id: data.service_id,
+          service_name: data.service_name,
+          provider_id: data.provider_id,
+          provider_name: data.provider_name,
+          status: data.status,
+          scheduled_date: data.scheduled_date,
+          created_at: data.created_at,
+          address: data.address ? (typeof data.address === "string" ? JSON.parse(data.address) : data.address) : undefined,
+          notes: data.notes,
+          rating: data.rating,
+          rating_comment: data.rating_comment,
+          cancelled_at: data.cancelled_at,
+          cancel_reason: data.cancel_reason,
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
         setLoading(false);
-        return;
       }
-      const data = await res.json();
-      setOrder({
-        id: data.id,
-        service_id: data.service_id,
-        service_name: data.service_name,
-        provider_id: data.provider_id,
-        provider_name: data.provider_name,
-        status: data.status,
-        //price: data.price ?? 0,
-        scheduled_date: data.scheduled_date,
-        created_at: data.created_at,
-        address: data.address
-          ? typeof data.address === "string"
-            ? JSON.parse(data.address)
-            : data.address
-          : undefined,
-        notes: data.notes,
-        rating: data.rating,
-        rating_comment: data.rating_comment,
-        cancelled_at: data.cancelled_at,
-        cancel_reason: data.cancel_reason,
-      });
-      setLoading(false);
     };
     fetchOrder();
-    // eslint-disable-next-line
-  }, [orderId]);
+  }, [orderId, token]);
 
-  if (loading) return <div>Carregando...</div>;
-  if (!order) return <div>Ordem não encontrada.</div>;
+  if (!token) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600">
+        Você precisa estar logado para ver os detalhes da ordem.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+        Ordem não encontrada.
+      </div>
+    );
+  }
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center mt-1">
+        {[...Array(5)].map((_, i) => (
+          <span key={i} className={i < rating ? "text-yellow-400" : "text-gray-300"}>
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div>
-      <button onClick={onBack} className="mb-4 text-blue-600 hover:underline">
-        ← Voltar
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <button 
+        onClick={onBack} 
+        className="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+      >
+        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Voltar
       </button>
-      <h2 className="text-xl font-bold mb-4">Detalhes da Ordem</h2>
-      <div className="border rounded-lg p-4 mb-4">
-        <div>
-          <b>Serviço:</b> {order.service_name || order.service_id}
-        </div>
-        <div>
-          <b>Prestador:</b> {order.provider_name || order.provider_id}
-        </div>
-        <div>
-          <b>Status:</b> {traduzirStatus(order.status)}
-        </div>
-        <div>
-          <b>Data agendada:</b>{" "}
-          {order.scheduled_date
-            ? new Date(order.scheduled_date).toLocaleString()
-            : order.created_at
-            ? new Date(order.created_at).toLocaleString()
-            : "-"}
-        </div>
-        {/* <div>
-          <b>Valor:</b> R$ {order.price}
-        </div> */}
-        {order.address && (
-          <div className="mt-2">
-            <b>Endereço:</b>
+
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Detalhes da Ordem</h2>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}>
+          {traduzirStatus(order.status)}
+        </span>
+      </div>
+
+      <Card className="mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+          <div className="space-y-4">
             <div>
-              {order.address.logradouro}
-              {order.address.numero ? `, ${order.address.numero}` : ""}
+              <h3 className="text-sm font-medium text-gray-500">Serviço</h3>
+              <p className="mt-1 text-lg font-medium text-gray-900">
+                {order.service_name || order.service_id}
+              </p>
             </div>
+
             <div>
-              {order.address.bairro} - {order.address.cidade}/{order.address.uf}
+              <h3 className="text-sm font-medium text-gray-500">Prestador</h3>
+              <p className="mt-1 text-lg font-medium text-gray-900">
+                {order.provider_name || order.provider_id}
+              </p>
             </div>
-            <div>CEP: {order.address.cep}</div>
-            {order.address.complemento && <div>Compl.: {order.address.complemento}</div>}
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Data Agendada</h3>
+              <p className="mt-1 text-lg font-medium text-gray-900">
+                {order.scheduled_date
+                  ? new Date(order.scheduled_date).toLocaleString('pt-BR')
+                  : order.created_at
+                  ? new Date(order.created_at).toLocaleString('pt-BR')
+                  : "-"}
+              </p>
+            </div>
           </div>
-        )}
-        {order.notes && (
-          <div className="mt-2">
-            <b>Observações:</b> {order.notes}
-          </div>
-        )}
-        {order.cancelled_at && (
-          <div className="mt-2 text-red-600">
-            <b>Cancelada em:</b> {new Date(order.cancelled_at).toLocaleString()}
-            {order.cancel_reason && (
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Endereço</h3>
+              {order.address ? (
+                <div className="mt-1 text-gray-900">
+                  <p className="font-medium">{order.address.logradouro}{order.address.numero && `, ${order.address.numero}`}</p>
+                  <p>{order.address.bairro} - {order.address.cidade}/{order.address.uf}</p>
+                  <p>CEP: {order.address.cep}</p>
+                  {order.address.complemento && <p>Complemento: {order.address.complemento}</p>}
+                </div>
+              ) : (
+                <p className="mt-1 text-gray-500">Nenhum endereço cadastrado</p>
+              )}
+            </div>
+
+            {order.notes && (
               <div>
-                <b>Motivo:</b> {order.cancel_reason}
+                <h3 className="text-sm font-medium text-gray-500">Observações</h3>
+                <p className="mt-1 text-gray-900 italic">"{order.notes}"</p>
               </div>
             )}
           </div>
-        )}
-        {order.status === "done" && !order.rating && (
-          <button
-            className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded"
-            onClick={() => setShowRate(true)}
-          >
-            Avaliar Prestador
-          </button>
-        )}
-        {order.rating && (
-          <div className="mt-4">
-            <b>Avaliação enviada:</b> {order.rating} estrelas
-            {order.rating_comment && <div>Comentário: {order.rating_comment}</div>}
+        </div>
+      </Card>
+
+      {order.cancelled_at && (
+        <Card className="mb-6 border-red-200 bg-red-50">
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-red-800 mb-2">Ordem Cancelada</h3>
+            <p className="text-red-700">
+              <span className="font-medium">Data:</span> {new Date(order.cancelled_at).toLocaleString('pt-BR')}
+            </p>
+            {order.cancel_reason && (
+              <p className="mt-2 text-red-700">
+                <span className="font-medium">Motivo:</span> {order.cancel_reason}
+              </p>
+            )}
           </div>
-        )}
-      </div>
+        </Card>
+      )}
+
+      {order.status === "done" && !order.rating && (
+        <Card className="mb-6">
+          <div className="p-6 text-center">
+            <button
+              onClick={() => setShowRate(true)}
+              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg shadow-sm transition-colors"
+            >
+              Avaliar Prestador
+            </button>
+          </div>
+        </Card>
+      )}
+
+      {order.rating && (
+        <Card className="mb-6 border-green-200 bg-green-50">
+          <div className="p-6">
+            <h3 className="text-lg font-medium text-green-800 mb-2">Sua Avaliação</h3>
+            <div className="flex items-center">
+              {renderStars(order.rating)}
+              <span className="ml-2 text-green-700 font-medium">{order.rating}/5</span>
+            </div>
+            {order.rating_comment && (
+              <div className="mt-3">
+                <p className="text-sm font-medium text-green-700">Comentário:</p>
+                <p className="mt-1 text-green-800 italic">"{order.rating_comment}"</p>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       {showRate && (
         <RateProviderForm
           orderId={order.id}
           onRated={() => {
             setShowRate(false);
             // Atualiza os dados da ordem após avaliação
-            setLoading(true);
             fetch(`http://localhost:3333/clients/orders/${orderId}`, {
               headers: { Authorization: `Bearer ${token}` },
             })
@@ -168,7 +246,6 @@ export function OrderDetails({ orderId, onBack }: OrderDetailsProps) {
                   rating: data.rating,
                   rating_comment: data.rating_comment,
                 });
-                setLoading(false);
               });
           }}
         />
