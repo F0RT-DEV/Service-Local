@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { usePromptAlerts } from '../UI/AlertContainer';
-import { Calendar, MapPin, Home, Building2, FileText } from 'lucide-react';
+import { Calendar, MapPin, Home, Building2, FileText, Phone } from 'lucide-react';
 
 // Modal para o cliente solicitar um serviço.
 // Exibe formulário para preencher data, endereço e observações.
@@ -14,8 +14,7 @@ interface RequestOrderModalProps {
   onSuccess: () => void;
 }
 
-export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: RequestOrderModalProps) {
-  const [form, setForm] = useState({
+export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: RequestOrderModalProps) {  const [form, setForm] = useState({
     scheduled_date: "",
     cep: "",
     logradouro: "",
@@ -24,7 +23,8 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
     cidade: "",
     uf: "",
     notes: "",
-  });  const [loading, setLoading] = useState(false);
+    phone: "",
+  });const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const alerts = usePromptAlerts();
 
@@ -39,7 +39,6 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
     // Aplica a máscara XXXXX-XXX
     return limitedValue.replace(/(\d{5})(\d)/, '$1-$2');
   };
-
   // Função para formatar UF
   const formatUF = (value: string) => {
     // Remove números e caracteres especiais, mantém apenas letras
@@ -47,6 +46,22 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
     
     // Limita a 2 caracteres e converte para maiúsculo
     return cleanValue.slice(0, 2).toUpperCase();
+  };
+
+  // Função para formatar telefone
+  const formatPhone = (value: string) => {
+    // Remove tudo que não é dígito
+    const cleanValue = value.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    const limitedValue = cleanValue.slice(0, 11);
+    
+    // Aplica a máscara (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    if (limitedValue.length <= 10) {
+      return limitedValue.replace(/(\d{2})(\d{4})(\d)/, '($1) $2-$3');
+    } else {
+      return limitedValue.replace(/(\d{2})(\d{5})(\d)/, '($1) $2-$3');
+    }
   };
 
   // Função para buscar dados do CEP na API ViaCEP
@@ -84,8 +99,7 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
     }
   };
 
-  if (!open) return null;
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  if (!open) return null;  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
     let formattedValue = value;
@@ -95,6 +109,8 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
       formattedValue = formatCEP(value);
     } else if (name === 'uf') {
       formattedValue = formatUF(value);
+    } else if (name === 'phone') {
+      formattedValue = formatPhone(value);
     }
     
     setForm({ ...form, [name]: formattedValue });
@@ -110,9 +126,14 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
       setLoading(false);
       return;
     }
-    
-    if (!form.cep || !form.logradouro || !form.bairro || !form.cidade || !form.uf) {
+      if (!form.cep || !form.logradouro || !form.bairro || !form.cidade || !form.uf) {
       alerts.error('Por favor, preencha todos os campos de endereço obrigatórios', 'Campos obrigatórios');
+      setLoading(false);
+      return;
+    }
+    
+    if (!form.phone.trim()) {
+      alerts.error('Por favor, informe um telefone para contato', 'Telefone obrigatório');
       setLoading(false);
       return;
     }
@@ -130,8 +151,7 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+        },        body: JSON.stringify({
           service_id: serviceId,
           scheduled_date: form.scheduled_date,
           address: {
@@ -143,10 +163,9 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
             uf: form.uf,
           },
           notes: form.notes,
+          phone: form.phone,
         }),
-      });
-      
-      if (!res.ok) {
+      });      if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Erro ao criar ordem");
       }
@@ -161,6 +180,7 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
         cidade: "",
         uf: "",
         notes: "",
+        phone: "",
       });
       
       onSuccess();
@@ -172,18 +192,18 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
     }
     setLoading(false);
   };  return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black bg-opacity-40 p-2 sm:p-4">
-      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg mx-auto max-h-[95vh] sm:max-h-[85vh] overflow-hidden flex flex-col mt-8 sm:mt-0">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black bg-opacity-40 p-4 sm:p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full sm:max-w-lg mx-auto max-h-[85vh] sm:max-h-[85vh] overflow-hidden flex flex-col mb-4 sm:mb-0">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-2 sm:p-3 rounded-t-2xl flex-shrink-0">
-          <h2 className="text-base sm:text-lg font-bold">Solicitar Serviço</h2>
-          <p className="text-blue-100 text-xs mt-1">Preencha os dados para solicitar o serviço</p>
-        </div>        {/* Formulário */}
-        <form onSubmit={handleSubmit} className="p-2 sm:p-3 space-y-1.5 sm:space-y-2 flex-1 overflow-y-auto">
-          {/* Data Agendada */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3 sm:p-3 rounded-t-2xl flex-shrink-0">
+          <h2 className="text-lg sm:text-lg font-bold">Solicitar Serviço</h2>
+          <p className="text-blue-100 text-sm mt-1">Preencha os dados para solicitar o serviço</p>
+        </div>{/* Formulário */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-3 space-y-3 sm:space-y-2 pb-6">          {/* Data Agendada */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              <Calendar className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Calendar className="inline w-4 h-4 mr-2" />
               Data Agendada
             </label>
             <input
@@ -192,17 +212,16 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
               value={form.scheduled_date}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* CEP */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              <MapPin className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <MapPin className="inline w-4 h-4 mr-2" />
               CEP
-            </label>
-            <input
+            </label>            <input
               type="text"
               name="cep"
               value={form.cep}
@@ -216,18 +235,16 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
               }}
               required
               maxLength={9}
-              className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="00000-000"
             />
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-sm text-gray-500 mt-1">
               Digite o CEP e os demais campos serão preenchidos
             </p>
-          </div>
-
-          {/* Logradouro */}
+          </div>          {/* Logradouro */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              <Home className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Home className="inline w-4 h-4 mr-2" />
               Logradouro
             </label>
             <input
@@ -236,30 +253,30 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
               value={form.logradouro}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Rua, Avenida, etc."
             />
           </div>
 
           {/* Complemento */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              <Building2 className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Building2 className="inline w-4 h-4 mr-2" />
               Complemento
-            </label>            <input
+            </label>
+            <input
               type="text"
               name="complemento"
               value={form.complemento}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Apartamento, casa, bloco..."
             />
           </div>
 
           {/* Grid: Bairro, Cidade, UF */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2">            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bairro
               </label>
               <input
@@ -268,12 +285,12 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
                 value={form.bairro}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Bairro"
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cidade
               </label>
               <input
@@ -282,12 +299,12 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
                 value={form.cidade}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Cidade"
               />
             </div>
-            <div className="col-span-2 sm:col-span-1">
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 UF
               </label>
               <input
@@ -297,48 +314,65 @@ export function RequestOrderModal({ serviceId, open, onClose, onSuccess }: Reque
                 onChange={handleChange}
                 required
                 maxLength={2}
-                className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 uppercase"
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 uppercase"
                 placeholder="UF"
               />
-            </div>
+            </div>          </div>          {/* Telefone */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Phone className="inline w-4 h-4 mr-2" />
+              Telefone para contato
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              required
+              maxLength={15}
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="(11) 99999-9999"
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Telefone para o prestador entrar em contato
+            </p>
           </div>
 
           {/* Observações */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              <FileText className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <FileText className="inline w-4 h-4 mr-2" />
               Observações
             </label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
-              rows={2}
-              className="w-full border border-gray-300 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows={3}
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Informações adicionais..."
             />
-          </div>
-
-          {/* Erro */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}          {/* Botões */}
-          <div className="flex-shrink-0 flex flex-col sm:flex-row justify-end gap-2 p-2 sm:p-3 border-t border-gray-200 bg-gray-50">
-            <button 
-              type="button" 
-              onClick={onClose} 
-              className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-xs sm:text-sm font-medium text-gray-700"
-            >
-              Cancelar
-            </button>
+          </div>{/* Erro */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+          </div>          {/* Botões - footer fixo */}
+          <div className="flex-shrink-0 flex flex-col gap-3 p-4 border-t border-gray-200 bg-gray-50">
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white transition-colors text-xs sm:text-sm font-medium"
+              className="w-full px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white transition-colors text-base font-medium"
             >
               {loading ? "Enviando..." : "Solicitar Serviço"}
+            </button>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="w-full px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-base font-medium text-gray-700"
+            >
+              Cancelar
             </button>
           </div>
         </form>

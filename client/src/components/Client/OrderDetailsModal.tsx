@@ -5,6 +5,7 @@ interface OrderDetailsModalProps {
   orderId: string;
   open: boolean;
   onClose: () => void;
+  onRateProvider?: (orderId: string) => void; // Nova prop para avaliar
 }
 
 interface OrderDetails {
@@ -19,11 +20,12 @@ interface OrderDetails {
   notes?: string;
   address?: any; // Pode ser string ou objeto JSON
   rating?: number;
+  rating_comment?: string;
   provider_phone?: string;
   provider_email?: string;
 }
 
-export function OrderDetailsModal({ orderId, open, onClose }: OrderDetailsModalProps) {
+export function OrderDetailsModal({ orderId, open, onClose, onRateProvider }: OrderDetailsModalProps) {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -229,16 +231,14 @@ export function OrderDetailsModal({ orderId, open, onClose }: OrderDetailsModalP
                     <p className="text-gray-700 text-xs sm:text-sm">{orderDetails.notes}</p>
                   </div>
                 )}
-              </div>
-
-              {/* Avaliação */}
+              </div>              {/* Avaliação */}
               {orderDetails.rating && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-1.5 sm:p-2">
                   <div className="flex items-center gap-1 sm:gap-2 mb-1">
                     <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />
-                    <h4 className="font-semibold text-yellow-800 text-xs sm:text-sm">Avaliação</h4>
+                    <h4 className="font-semibold text-yellow-800 text-xs sm:text-sm">Sua Avaliação</h4>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 mb-1">
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
@@ -249,18 +249,40 @@ export function OrderDetailsModal({ orderId, open, onClose }: OrderDetailsModalP
                       {orderDetails.rating}/5
                     </span>
                   </div>
+                  {orderDetails.rating_comment && (
+                    <p className="text-gray-700 text-xs sm:text-sm mt-1 italic">
+                      "{orderDetails.rating_comment}"
+                    </p>
+                  )}
                 </div>
               )}
             </div>
           )}
         </div>        {/* Footer do Modal */}
         <div className="border-t border-gray-200 p-2 sm:p-3 flex-shrink-0">
-          <button
-            onClick={onClose}
-            className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm"
-          >
-            Fechar
-          </button>
+          <div className="flex gap-2 sm:gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm"
+            >
+              Fechar
+            </button>
+            {orderDetails && 
+             (orderDetails.status === 'done' || orderDetails.status === 'completed') && 
+             !orderDetails.rating && 
+             onRateProvider && (
+              <button
+                onClick={() => {
+                  onRateProvider(orderId);
+                  onClose();
+                }}
+                className="px-4 sm:px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium text-sm flex items-center gap-2"
+              >
+                <Star className="w-4 h-4" />
+                Avaliar Prestador
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

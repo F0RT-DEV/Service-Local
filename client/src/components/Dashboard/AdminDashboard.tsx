@@ -109,16 +109,15 @@ const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>
     const provider = pendingProviders.find((p) => p.id === id);
     if (provider) setSelectedProvider(provider);
   };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Painel Administrativo</h1>
         <p className="text-gray-600">Gerencie providers, serviços e monitore o sistema.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard
           icon={Users}
           iconColor="text-blue-600"

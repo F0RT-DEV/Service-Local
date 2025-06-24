@@ -5,7 +5,7 @@ import {ServiceCard} from "../Provider/ServiceCard";
 import {ProfileAlert} from "../Provider/ProfileAlert";
 import {Card, CardContent, CardHeader} from "../UI/Card";
 import {ActionButton} from "../UI/ActionButton";
-import {CreateService} from "../Provider/CreateService";
+import {CreateServiceModal} from "../Provider/CreateServiceModal";
 import {ServiceDetailsModal} from "../Provider/ServiceDetailsModal";
 import {ServiceEditModal} from "../Provider/ServiceEditModal";
 import {usePromptAlerts} from "../UI/AlertContainer";
@@ -200,23 +200,18 @@ export function ProviderDashboard({
 			alerts.error("Erro ao atualizar serviço!");
 		}
 	};
-
 	const handleCreateService = () => {
 		if (providerStatus === "pending") {
-			alert(
-				"Seu perfil está aguardando aprovação. Você não pode criar serviços ainda."
+			alerts.warning(
+				"Seu perfil está aguardando aprovação. Você não pode criar serviços ainda.",
+				"Perfil Pendente"
 			);
 			return;
 		}
 		setShowCreateService(true);
 	};
 
-	const handleBackToDashboard = () => {
-		setShowCreateService(false);
-	};
-
 	const handleServiceCreated = async (serviceData: any) => {
-		setShowCreateService(false);
 		try {
 			const res = await fetch("http://localhost:3333/services", {
 				method: "POST",
@@ -229,22 +224,14 @@ export function ProviderDashboard({
 			if (!res.ok) throw new Error("Erro ao criar serviço");
 			const created = await res.json();
 			setMyServices((prev) => [created, ...prev]);
+			// O modal já vai mostrar o alert de sucesso
 		} catch (err) {
-			alert("Erro ao cadastrar serviço!");
+			alerts.error("Erro ao cadastrar serviço!", "Falha na operação");
 		}
 	};
 
-	if (showCreateService && providerStatus !== "pending") {
-		return (
-			<CreateService
-				onBack={handleBackToDashboard}
-				onCreate={handleServiceCreated}
-			/>
-		);
-	}
-
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4">
 			<div>
 				<h1 className="text-2xl font-bold text-gray-900">
 					Dashboard do Prestador
@@ -409,9 +396,7 @@ export function ProviderDashboard({
 						</div>
 					</CardContent>
 				</Card>
-			</div>
-
-			<ServiceDetailsModal
+			</div>			<ServiceDetailsModal
 				open={showDetails}
 				service={selectedService}
 				onClose={() => setShowDetails(false)}
@@ -421,6 +406,11 @@ export function ProviderDashboard({
 				service={selectedService}
 				onClose={() => setShowEdit(false)}
 				onSave={handleUpdateService}
+			/>
+			<CreateServiceModal
+				open={showCreateService && providerStatus !== "pending"}
+				onClose={() => setShowCreateService(false)}
+				onCreate={handleServiceCreated}
 			/>
 		</div>
 	);

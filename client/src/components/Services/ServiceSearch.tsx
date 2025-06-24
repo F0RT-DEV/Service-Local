@@ -15,27 +15,11 @@ interface Service {
   images: string;
 }
 
-interface Provider {
-  id: string; // provider_id
-  user_id: string;
-  name?: string;
-  email?: string;
-  phone?: string;
-  cep?: string;
-  logradouro?: string;
-  complemento?: string;
-  bairro?: string;
-  localidade?: string;
-  uf?: string;
-  numero?: string;
-}
-
 export function ServiceSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [location, setLocation] = useState('');
   const [services, setServices] = useState<Service[]>([]);
-  const [users, setUsers] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,43 +31,19 @@ export function ServiceSearch() {
     const fetchServices = async () => {
       setLoading(true);
       setError('');
-      try {
-        const res = await fetch('http://localhost:3333/services');
-        if (!res.ok) throw new Error('Erro ao buscar serviços');        const data = await res.json();
+      try {        const res = await fetch('http://localhost:3333/services');
+        if (!res.ok) throw new Error('Erro ao buscar serviços');
+        const data = await res.json();
         setServices(data);
-        if (data.length === 0) {
-          alerts.info('Nenhum serviço encontrado no momento', 'Busca de Serviços');
-        } else {
-          alerts.success(`${data.length} serviços carregados com sucesso!`, 'Serviços Disponíveis');
-        }
       } catch (err: any) {
         const errorMessage = err.message || 'Erro ao buscar serviços';
         setError(errorMessage);
         alerts.error(errorMessage, 'Erro ao Carregar Serviços');
-      }
-      setLoading(false);
+      }      setLoading(false);
     };
-    fetchServices();
-  }, []);
+    fetchServices();  }, []);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch('http://localhost:3333/users');
-        if (!res.ok) throw new Error('Erro ao buscar usuários');
-        const data = await res.json();
-        setUsers(data);
-      } catch {
-        setUsers([]);
-      }
-    };
-    fetchUsers();
-  }, []);
-
-  // Mapeia user_id => user (para lookup rápido)
-  const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
-
-  // Filtro por localização (cidade)
+  // Filtro por termo de busca e categoria
   const filteredServices = services.filter((service) => {
     const matchesTerm =
       service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,16 +51,7 @@ export function ServiceSearch() {
     const matchesCategory =
       selectedCategory === 'all' || service.category_id === selectedCategory;
 
-    if (!location.trim()) {
-      return matchesTerm && matchesCategory;
-    }
-    // Busca o usuário (prestador) pelo provider_id do serviço
-    const user = userMap[service.provider_id];
-    if (!user) return false;
-    const matchesLocation =
-      user.localidade &&
-      user.localidade.toLowerCase().includes(location.trim().toLowerCase());
-    return matchesTerm && matchesCategory && matchesLocation;
+    return matchesTerm && matchesCategory;
   });
 
   const handleRequestService = (id: string) => {
@@ -111,9 +62,8 @@ export function ServiceSearch() {
     alerts.success('Ordem criada com sucesso!', 'Solicitação Enviada', 6000);
     // Aqui você pode atualizar a lista de ordens, se quiser
   };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <SearchFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

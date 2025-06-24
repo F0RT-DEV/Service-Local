@@ -97,3 +97,25 @@ export interface Category {
   id: string;
   name: string;
 }
+
+// Tipos para a Landing Page
+export interface ProviderLanding {
+  provider_id?: string;
+  id?: string;
+  bio?: string;
+  cnpj?: string;
+  categories?: { name: string }[];
+  avatar_url?: string;
+  verified?: boolean;
+  location?: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface ServiceLanding {
+  id: string;
+  title: string;
+  description?: string;
+  price_min?: number;
+  price_max?: number;
+}

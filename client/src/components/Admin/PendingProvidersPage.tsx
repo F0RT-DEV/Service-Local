@@ -64,10 +64,9 @@ export function PendingProvidersPage() {
 const handleViewProfile = (id: string) => {
     const provider = pendingProviders.find((p) => p.id === id);
     if (provider) setSelectedProvider(provider);
-  };
-  return (
-    <div className="max-w-4xl mx-auto py-4 sm:py-8 px-2 sm:px-4">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Prestadores Pendentes</h2>
+  };  return (
+    <div className="max-w-4xl mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Prestadores Pendentes</h2>
       <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
           <span className="text-base sm:text-lg font-semibold text-gray-900">Lista de Prestadores Pendentes</span>

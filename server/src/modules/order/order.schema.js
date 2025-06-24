@@ -15,7 +15,10 @@ export const CreateOrderSchema = z.object({
     .min(new Date(), "Data agendada não pode ser no passado")
     .optional(),
   notes: z.string().max(500).optional(),
-  address: AddressSchema
+  address: AddressSchema,
+  phone: z.string()
+    .regex(/^\(\d{2}\)\s\d{4,5}-\d{4}$/, "Telefone deve estar no formato (11) 99999-9999")
+    .nonempty("Telefone é obrigatório")
 });
 
 export const RateOrderSchema = z.object({

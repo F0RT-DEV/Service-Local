@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { traduzirStatus } from "../UI/orderStatus";
 import { OrderDetailsModal } from "./OrderDetailsModal";
+import { CancelOrderModal } from "./CancelOrderModal";
+import { RateProviderModal } from "./RateProviderForm";
 
 interface Order {
   id: string;
@@ -23,10 +25,18 @@ export function MyOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
-  // Estados para o modal de detalhes
+    // Estados para o modal de detalhes
   const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  
+  // Estados para o modal de cancelamento
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<string>('');
+  const [cancelLoading, setCancelLoading] = useState(false);
+  
+  // Estados para o modal de avaliação
+  const [rateModalOpen, setRateModalOpen] = useState(false);
+  const [orderToRate, setOrderToRate] = useState<string>('');
 
   const token = localStorage.getItem("token");
   
@@ -42,8 +52,7 @@ export function MyOrders() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Erro ao buscar ordens");
-      const data = await res.json();
-      const mapped = data.map((order: any) => ({
+      const data = await res.json();      const mapped = data.map((order: any) => ({
         id: order.id,
         service_id: order.service_id,
         service_name: order.service_name,
@@ -63,6 +72,15 @@ export function MyOrders() {
         cancelled_at: order.cancelled_at,
         cancel_reason: order.cancel_reason,
       }));
+      
+      // Debug: log para verificar se as ordens têm rating
+      console.log("Ordens carregadas:", mapped.map(o => ({ 
+        id: o.id, 
+        status: o.status, 
+        rating: o.rating,
+        service_name: o.service_name 
+      })));
+      
       setOrders(mapped);
     } catch (err: any) {
       setError(err.message || "Erro ao buscar ordens");
@@ -76,28 +94,53 @@ export function MyOrders() {
   }, []);
 
   const cancelOrder = async (id: string) => {
-    const motivo = prompt("Informe o motivo do cancelamento (mínimo 10 caracteres):");
-    if (!motivo || motivo.length < 10) {
-      alert("Motivo muito curto.");
-      return;
-    }
+    setOrderToCancel(id);
+    setCancelModalOpen(true);
+  };
+
+  const handleCancelConfirm = async (reason: string) => {
+    setCancelLoading(true);
     try {
-      const res = await fetch(`http://localhost:3333/clients/orders/${id}/cancel`, {
+      const res = await fetch(`http://localhost:3333/clients/orders/${orderToCancel}/cancel`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cancel_reason: motivo }),
+        body: JSON.stringify({ cancel_reason: reason }),
       });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Erro ao cancelar ordem");
       }
       fetchOrders();
-    } catch {
-      alert("Erro ao cancelar ordem");
-    }  };
+      setCancelModalOpen(false);
+      setOrderToCancel('');
+    } catch (error) {
+      console.error("Erro ao cancelar ordem:", error);
+    }
+    setCancelLoading(false);
+  };
+
+  const handleCancelClose = () => {
+    if (!cancelLoading) {
+      setCancelModalOpen(false);
+      setOrderToCancel('');
+    }
+  };
+
+  const handleRateProvider = (orderId: string) => {
+    setOrderToRate(orderId);
+    setRateModalOpen(true);
+  };
+
+  const handleRateClose = () => {
+    setRateModalOpen(false);
+    setOrderToRate('');
+  };
+  const handleRated = () => {
+    fetchOrders();
+  };
 
   // Funções do modal de detalhes
   const handleViewOrderDetails = (id: string) => {
@@ -112,9 +155,8 @@ export function MyOrders() {
 
   if (loading) return <div>Carregando...</div>;
   if (error) return <div className="text-red-600">Erro ao mostrar suas ordens</div>;
-
-  return (<div className="max-w-4xl mx-auto mt-2 sm:mt-6 px-4">
-      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 text-blue-800">Minhas Ordens</h2>
+  return (<div className="max-w-4xl mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-blue-800">Minhas Ordens</h2>
       {orders.length === 0 && (
         <div className="text-center py-8">
           <h1 className="text-lg font-semibold mb-2">Você não possui ordens de serviços.</h1>
@@ -125,11 +167,10 @@ export function MyOrders() {
         {orders.map((order) => (
           <div key={order.id} className="border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-blue-700">{order.service_name ?? <span className="text-red-500">NÃO ENVIADO</span>}</span>
-              <span className={`text-xs font-semibold px-2 py-1 rounded ${
+              <span className="font-semibold text-blue-700">{order.service_name ?? <span className="text-red-500">NÃO ENVIADO</span>}</span>              <span className={`text-xs font-semibold px-2 py-1 rounded ${
                 order.status === 'pending'
                   ? 'bg-yellow-100 text-yellow-800'
-                  : order.status === 'completed'
+                  : order.status === 'completed' || order.status === 'done'
                   ? 'bg-green-100 text-green-800'
                   : order.status === 'in_progress'
                   ? 'bg-blue-100 text-blue-800'
@@ -158,14 +199,13 @@ export function MyOrders() {
               <div className="text-sm text-red-600">
                 Cancelada em: {new Date(order.cancelled_at).toLocaleString("pt-BR")}
               </div>
-            )}
-            <div className="flex gap-2 mt-2">              <button
+            )}            <div className="flex gap-2 mt-2">
+              <button
                 className="px-3 py-1 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
                 onClick={() => handleViewOrderDetails(order.id)}
               >
                 Ver detalhes
-              </button>
-              {order.status === "pending" && !order.cancelled_at && (
+              </button>              {order.status === "pending" && !order.cancelled_at && (
                 <button
                   className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700"
                   onClick={() => cancelOrder(order.id)}
@@ -173,15 +213,34 @@ export function MyOrders() {
                   Cancelar
                 </button>
               )}
+              {(order.status === "completed" || order.status === "done") && !order.rating && (
+                <button
+                  className="px-3 py-1 rounded bg-yellow-600 text-white text-sm hover:bg-yellow-700"
+                  onClick={() => handleRateProvider(order.id)}
+                >
+                  Avaliar Prestador
+                </button>
+              )}
             </div>
           </div>        ))}
-      </div>
-
-      {/* Modal de detalhes da ordem */}
+      </div>      {/* Modal de detalhes da ordem */}
       <OrderDetailsModal
         orderId={selectedOrderId}
         open={orderDetailsModalOpen}
         onClose={handleCloseOrderDetails}
+        onRateProvider={handleRateProvider}
+      />{/* Modal de cancelamento */}
+      <CancelOrderModal
+        isOpen={cancelModalOpen}
+        onClose={handleCancelClose}
+        onConfirm={handleCancelConfirm}
+        loading={cancelLoading}
+      />      {/* Modal de avaliação */}
+      <RateProviderModal
+        open={rateModalOpen}
+        onClose={handleRateClose}
+        orderId={orderToRate}
+        onRated={handleRated}
       />
     </div>
   );

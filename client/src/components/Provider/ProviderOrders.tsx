@@ -10,6 +10,7 @@ interface Order {
   created_at: string;
   notes: string;
   address: string;
+  phone?: string;
 }
 
 export function ProviderOrders() {
@@ -21,7 +22,7 @@ export function ProviderOrders() {
 
   useEffect(() => {
     fetchOrders();
-    // eslint-disable-next-line
+     
   }, []);
 
   const fetchOrders = async () => {
@@ -121,10 +122,9 @@ export function ProviderOrders() {
     } catch {
       return <span>-</span>;
     }
-  };
-  return (
-    <div className="max-w-4xl mx-auto mt-2 sm:mt-6 px-4">
-      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 text-blue-800">Ordens Recebidas</h2>
+  };  return (
+    <div className="max-w-4xl mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-blue-800">Ordens Recebidas</h2>
       {loading && <div>Carregando...</div>}
       {error && <div className="text-red-600">{error}</div>}
       {!loading && !error && (
@@ -198,8 +198,10 @@ export function ProviderOrders() {
                     : selectedOrder.status === 'done' ? 'Finalizado'
                     : selectedOrder.status}
                 </span>
-              </div>
-              <div className="mb-2"><b>Cliente:</b> <span className="text-gray-800">{selectedOrder.client_name}</span></div>
+              </div>              <div className="mb-2"><b>Cliente:</b> <span className="text-gray-800">{selectedOrder.client_name}</span></div>
+              {selectedOrder.phone && (
+                <div className="mb-2"><b>Telefone:</b> <span className="text-gray-800">{selectedOrder.phone}</span></div>
+              )}
               <div className="mb-2"><b>Data agendada:</b> <span className="text-gray-800">{new Date(selectedOrder.scheduled_date).toLocaleString("pt-BR")}</span></div>
               <div className="mb-2"><b>Notas:</b> <span className="text-gray-800">{selectedOrder.notes || "Nenhuma"}</span></div>
               <div className="mb-2"><b>Endereço:</b> {renderAddress(selectedOrder.address)}</div>

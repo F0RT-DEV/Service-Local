@@ -5,6 +5,7 @@ import { RecommendedServiceCard } from '../Client/RecommendedServiceCard';
 import { Card, CardContent, CardHeader } from '../UI/Card';
 import { OrderDetailsModal } from '../Client/OrderDetailsModal';
 import { RequestOrderModal } from '../Services/RequestOrderModal';
+import { usePromptAlerts } from '../UI/AlertContainer';
 
 interface Order {
   id: string;
@@ -30,7 +31,9 @@ interface Service {
   rating?: number;
 }
 
-export function ClientDashboard() {  const token = localStorage.getItem('token');
+export function ClientDashboard() {
+  const token = localStorage.getItem('token');
+  const alerts = usePromptAlerts();
   const [orders, setOrders] = useState<Order[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   
@@ -149,16 +152,15 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
   const handleRequestService = (id: string) => {
     setSelectedServiceId(id);
     setModalOpen(true);
-  };
-  // Quando a ordem for criada com sucesso
+  };  // Quando a ordem for criada com sucesso
   const handleSuccess = () => {
-    alert('Ordem criada com sucesso!');
+    alerts.success('Ordem de serviço criada com sucesso!', 'Solicitação Enviada');
     setModalOpen(false);
-    // Aqui você pode atualizar a lista de ordens, se quiser
+    // Recarregar a lista de ordens para mostrar a nova ordem
+    fetchOrders();
   };
-
   return (
-    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
+    <div className="space-y-3 sm:space-y-4">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard do Cliente</h1>
         <p className="text-sm sm:text-base text-gray-600">Bem-vindo! Gerencie suas solicitações de serviços.</p>

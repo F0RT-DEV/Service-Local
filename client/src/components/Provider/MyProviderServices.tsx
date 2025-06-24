@@ -136,10 +136,9 @@ export function MyProviderServices() {
   };
 
   const getCategoryName = (id: string) =>
-    categories.find((cat) => cat.id === id)?.name || id;
-  return (
-    <div className="max-w-6xl mx-auto mt-2 sm:mt-6 px-4">
-      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 text-blue-800 flex items-center gap-2">
+    categories.find((cat) => cat.id === id)?.name || id;  return (
+    <div className="max-w-6xl mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-blue-800 flex items-center gap-2">
         <svg className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 7V6a2 2 0 012-2h2.5a2 2 0 012 2v1M3 7h18M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6" />
         </svg>

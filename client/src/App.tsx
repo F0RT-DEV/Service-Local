@@ -21,13 +21,21 @@ import { ServiceSettingsPage } from './components/Admin/ServiceSettingsPage';
 import { ReportPage } from './components/Admin/ReportPage';
 import { AdminOrdersPage } from './components/Admin/AdminOrdersPage';
 import { UsersListPage } from './components/Admin/UsersListPage';
+import PaginaInicial from './page/PaginaInicial';
 
 function AppContent() {
   const { user } = useAuth();
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [showLanding, setShowLanding] = useState(!user);
 
+  // Se não há usuário logado e ainda deve mostrar a landing page
+  if (!user && showLanding) {
+    return <PaginaInicial onNavigateToAuth={() => setShowLanding(false)} />;
+  }
+
+  // Se não há usuário logado e não deve mostrar landing, mostra auth
   if (!user) {
     return authView === 'login' ? (
       <LoginForm onSwitchToRegister={() => setAuthView('register')} />
@@ -100,9 +108,8 @@ function AppContent() {
         }}
       />
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
-        <Header />
-        <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
-          <div className="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 lg:px-8">
+        <Header />        <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+          <div className="max-w-7xl mx-auto py-2 sm:py-3 px-2 sm:px-4 lg:px-8">
             {renderCurrentView()}
           </div>
         </main>
