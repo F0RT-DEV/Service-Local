@@ -28,27 +28,15 @@ export function PendingProviderCard({
   onViewProfile 
 }: PendingProviderCardProps) {
   return (
-    <Card hover className="p-5 rounded-xl border border-gray-200 shadow group transition-all hover:shadow-lg bg-white">
-      <div className="flex items-center gap-4 mb-3">
+    <Card hover className="p-3 sm:p-5 rounded-xl border border-gray-200 shadow group transition-all hover:shadow-lg bg-white">
+      <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-3">
         {/* Avatar ou inicial */}
-        {/* {provider.avatar ? (
-          <img
-            src={
-              provider.avatar.startsWith('http')
-                ? provider.avatar
-                : `http://localhost:3333${provider.avatar}`
-            }
-            alt={provider.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-blue-200 shadow"
-          />
-        ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-300 flex items-center justify-center border-2 border-blue-200 shadow">
-            <span className="text-xl text-blue-700 font-bold">{provider.name[0]}</span>
-          </div>
-        )} */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-900 text-base">{provider.name}</h3>
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-300 flex items-center justify-center border-2 border-blue-200 shadow flex-shrink-0">
+          <span className="text-lg sm:text-xl text-blue-700 font-bold">{provider.name[0]}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{provider.name}</h3>
             <StatusBadge 
               status={provider.documents}
               variant={provider.documents === 'Completos' ? 'success' : 'warning'}
@@ -56,23 +44,25 @@ export function PendingProviderCard({
               Docs: {provider.documents}
             </StatusBadge>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            <span className="font-medium text-gray-700">Bio:</span> {provider.email}
-          </p>
-          <p className="text-xs text-gray-500">
-            <span className="font-medium text-gray-700">Especialidades:</span> {provider.specialties.join(', ') || 'Nenhuma'}
-          </p>
-          {provider.cnpj && (
+          <div className="space-y-1">
             <p className="text-xs text-gray-500">
-              <span className="font-medium text-gray-700">CNPJ:</span> {provider.cnpj}
+              <span className="font-medium text-gray-700">Bio:</span> {provider.email}
             </p>
-          )}
-          <p className="text-xs text-gray-400">
-            <span className="font-medium text-gray-600">Solicitado em:</span> {new Date(provider.requestDate).toLocaleDateString()}
-          </p>
+            <p className="text-xs text-gray-500">
+              <span className="font-medium text-gray-700">Especialidades:</span> {provider.specialties.join(', ') || 'Nenhuma'}
+            </p>
+            {provider.cnpj && (
+              <p className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">CNPJ:</span> {provider.cnpj}
+              </p>
+            )}
+            <p className="text-xs text-gray-400">
+              <span className="font-medium text-gray-600">Solicitado em:</span> {new Date(provider.requestDate).toLocaleDateString()}
+            </p>
+          </div>
         </div>
       </div>
-      <div className="flex space-x-2 mt-2">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
         <ActionButton variant="success" icon={Check} onClick={() => onApprove(provider.id)}>
           Aprovar
         </ActionButton>

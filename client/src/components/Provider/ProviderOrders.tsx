@@ -122,10 +122,9 @@ export function ProviderOrders() {
       return <span>-</span>;
     }
   };
-
   return (
-    <div className="max-w-4xl mx-auto mt-10 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-blue-800">Ordens Recebidas</h2>
+    <div className="max-w-4xl mx-auto mt-2 sm:mt-6 px-4">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 text-blue-800">Ordens Recebidas</h2>
       {loading && <div>Carregando...</div>}
       {error && <div className="text-red-600">{error}</div>}
       {!loading && !error && (
@@ -170,25 +169,22 @@ export function ProviderOrders() {
             ))}
           </div>
         )
-      )}
-
-      {showDetails && selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-fade-in border border-blue-100">
-            <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-100 to-white rounded-t-2xl border-b">
-              <div className="flex items-center gap-2">
-                <FileText className="text-blue-500" size={22} />
-                <h3 className="text-xl font-bold text-blue-800">{selectedOrder.service_name}</h3>
+      )}      {showDetails && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto relative animate-fade-in border border-blue-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-gradient-to-r from-blue-100 to-white rounded-t-2xl border-b">
+              <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+                <FileText className="text-blue-500 flex-shrink-0" size={22} />
+                <h3 className="text-lg sm:text-xl font-bold text-blue-800 truncate">{selectedOrder.service_name}</h3>
               </div>
               <button
-                className="text-gray-400 hover:text-gray-700 transition absolute top-4 right-4"
+                className="text-gray-400 hover:text-gray-700 transition flex-shrink-0"
                 onClick={() => setShowDetails(false)}
               >
                 ✕
-              </button>
-            </div>
-            <div className="px-6 py-5">
-              <div className="flex items-center gap-2 mb-2">
+              </button>            </div>
+            <div className="px-4 sm:px-6 py-5">
+              <div className="flex items-center gap-2 mb-3">
                 <span className={`text-xs font-bold px-2 py-1 rounded-full
                   ${selectedOrder.status === 'pending' ? 'bg-yellow-100 text-yellow-800'
                     : selectedOrder.status === 'completed' ? 'bg-green-100 text-green-800'

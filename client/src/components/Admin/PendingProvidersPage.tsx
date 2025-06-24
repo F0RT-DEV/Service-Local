@@ -65,22 +65,23 @@ const handleViewProfile = (id: string) => {
     const provider = pendingProviders.find((p) => p.id === id);
     if (provider) setSelectedProvider(provider);
   };
-
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      <h2 className="text-2xl font-bold mb-6">Prestadores Pendentes</h2>
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-gray-900">Lista de Prestadores Pendentes</span>
+    <div className="max-w-4xl mx-auto py-4 sm:py-8 px-2 sm:px-4">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Prestadores Pendentes</h2>
+      <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+          <span className="text-base sm:text-lg font-semibold text-gray-900">Lista de Prestadores Pendentes</span>
           <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
             {pendingProviders.length} pendente(s)
           </span>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {loading ? (
-            <div>Carregando...</div>
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
           ) : pendingProviders.length === 0 ? (
-            <div className="text-gray-500">Nenhum provider pendente.</div>
+            <div className="text-gray-500 text-center py-8 text-sm sm:text-base">Nenhum provider pendente.</div>
           ) : (
             pendingProviders.map((provider) => (
               <PendingProviderCard

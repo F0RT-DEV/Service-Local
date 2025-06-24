@@ -76,26 +76,21 @@ function AppContent() {
       case 'orders':
         if (user.role === 'admin') {
           return <AdminOrdersPage />;
-        }
-        if (user.role === 'client') {
+        }        if (user.role === 'client') {
           return selectedOrderId
             ? <OrderDetails orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
-            : <MyOrders onSelectOrder={setSelectedOrderId} />;
+            : <MyOrders />;
         }
         if (user.role === 'provider') {
           return <ProviderOrders />;
         }
         return <div>Gerenciar Ordens</div>;
-      //case 'providers':
-        return <div>Gerenciar Providers (Admin)</div>;
       case 'calendar':
         return <div>Agenda</div>;
       default:
         return <div>Página não encontrada</div>;
     }
-  };
-
-  return (
+  };  return (
     <div className="h-screen flex bg-gray-50">
       <Sidebar
         currentView={currentView}
@@ -104,10 +99,10 @@ function AppContent() {
           if (view !== 'orders') setSelectedOrderId(null);
         }}
       />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         <Header />
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+          <div className="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 lg:px-8">
             {renderCurrentView()}
           </div>
         </main>

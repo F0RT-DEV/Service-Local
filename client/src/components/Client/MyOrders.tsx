@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { traduzirStatus } from "../UI/orderStatus";
+import { OrderDetailsModal } from "./OrderDetailsModal";
 
 interface Order {
   id: string;
@@ -15,22 +16,23 @@ interface Order {
   notes?: string;
   rating?: number;
   rating_comment?: string;
-  cancelled_at?: string;
-  cancel_reason?: string;
+  cancelled_at?: string;  cancel_reason?: string;
 }
 
-interface MyOrdersProps {
-  onSelectOrder: (id: string) => void;
-}
-
-export function MyOrders({ onSelectOrder }: MyOrdersProps) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return <div className="text-red-600">Você precisa estar logado para ver suas ordens.</div>;
-  }
+export function MyOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Estados para o modal de detalhes
+  const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    return <div className="text-red-600">Você precisa estar logado para ver suas ordens.</div>;
+  }
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -95,15 +97,24 @@ export function MyOrders({ onSelectOrder }: MyOrdersProps) {
       fetchOrders();
     } catch {
       alert("Erro ao cancelar ordem");
-    }
+    }  };
+
+  // Funções do modal de detalhes
+  const handleViewOrderDetails = (id: string) => {
+    setSelectedOrderId(id);
+    setOrderDetailsModalOpen(true);
+  };
+
+  const handleCloseOrderDetails = () => {
+    setOrderDetailsModalOpen(false);
+    setSelectedOrderId('');
   };
 
   if (loading) return <div>Carregando...</div>;
   if (error) return <div className="text-red-600">Erro ao mostrar suas ordens</div>;
 
-  return (
-    <div className="max-w-4xl mx-auto mt-10 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-blue-800">Minhas Ordens</h2>
+  return (<div className="max-w-4xl mx-auto mt-2 sm:mt-6 px-4">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-5 text-blue-800">Minhas Ordens</h2>
       {orders.length === 0 && (
         <div className="text-center py-8">
           <h1 className="text-lg font-semibold mb-2">Você não possui ordens de serviços.</h1>
@@ -148,10 +159,9 @@ export function MyOrders({ onSelectOrder }: MyOrdersProps) {
                 Cancelada em: {new Date(order.cancelled_at).toLocaleString("pt-BR")}
               </div>
             )}
-            <div className="flex gap-2 mt-2">
-              <button
+            <div className="flex gap-2 mt-2">              <button
                 className="px-3 py-1 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
-                onClick={() => onSelectOrder(order.id)}
+                onClick={() => handleViewOrderDetails(order.id)}
               >
                 Ver detalhes
               </button>
@@ -164,9 +174,15 @@ export function MyOrders({ onSelectOrder }: MyOrdersProps) {
                 </button>
               )}
             </div>
-          </div>
-        ))}
+          </div>        ))}
       </div>
+
+      {/* Modal de detalhes da ordem */}
+      <OrderDetailsModal
+        orderId={selectedOrderId}
+        open={orderDetailsModalOpen}
+        onClose={handleCloseOrderDetails}
+      />
     </div>
   );
 }

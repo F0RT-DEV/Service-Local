@@ -57,34 +57,42 @@ export function ServiceSettingsPage() {
     setLoading(false);
   }
 };
-
   return (
-    <div className="max-w-2xl mx-auto py-8">
-<Card className="p-8">
-        <h2 className="text-2xl font-bold mb-2">Configurações de Serviços</h2>
-        <p className="text-gray-600 mb-6">Configurar parâmetros para serviços</p>
+    <div className="max-w-2xl mx-auto py-4 sm:py-8 px-2 sm:px-4">
+      <Card className="p-4 sm:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">Configurações de Serviços</h2>
+        <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Configurar parâmetros para serviços</p>
+        
         {/* Formulário de criação */}
-        <div className="mb-8 flex gap-2 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nova Categoria
-            </label>
-            <input
-              type="text"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="Nome da nova categoria"
-              className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-200 transition"
+        <div className="mb-6 sm:mb-8 bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 sm:items-end">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nova Categoria
+              </label>
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Nome da nova categoria"
+                className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-200 transition text-sm"
+                disabled={loading}
+              />
+            </div>
+            <ActionButton 
+              onClick={handleCreateCategory} 
+              variant="success" 
               disabled={loading}
-            />
+            >
+              {loading ? 'Criando...' : 'Criar Categoria'}
+            </ActionButton>
           </div>
-          <ActionButton onClick={handleCreateCategory} variant="success" disabled={loading}>
-            {loading ? 'Criando...' : 'Criar Categoria'}
-          </ActionButton>
         </div>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+        
+        {error && <p className="text-red-500 mb-2 text-sm">{error}</p>}
+        
         {/* Lista de categorias */}
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <h3 className="text-md font-semibold mb-4">Categorias Existentes:</h3>
           {loading ? (
             <div className="flex items-center gap-2 text-gray-500">
@@ -92,14 +100,14 @@ export function ServiceSettingsPage() {
               Carregando categorias...
             </div>
           ) : (
-            <div className="flex flex-wrap gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 shadow-sm hover:shadow transition"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 shadow-sm hover:shadow transition"
                 >
                   <span className="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
-                  <span className="font-medium text-blue-900">{category.name}</span>
+                  <span className="font-medium text-blue-900 text-sm sm:text-base">{category.name}</span>
                 </div>
               ))}
             </div>

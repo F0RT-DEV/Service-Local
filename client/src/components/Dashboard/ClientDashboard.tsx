@@ -3,9 +3,8 @@ import { Star, Calendar, Search, DollarSign } from 'lucide-react';
 import { StatsCard } from '../UI/StatsCard';
 import { RecommendedServiceCard } from '../Client/RecommendedServiceCard';
 import { Card, CardContent, CardHeader } from '../UI/Card';
-import { OrderDetails } from '../Client/OrderDetails';
-//import { traduzirStatus } from '../UI/orderStatus';
-import { RequestOrderModal } from '../Services/RequestOrderModal'; // <-- IMPORTANTE
+import { OrderDetailsModal } from '../Client/OrderDetailsModal';
+import { RequestOrderModal } from '../Services/RequestOrderModal';
 
 interface Order {
   id: string;
@@ -34,7 +33,10 @@ interface Service {
 export function ClientDashboard() {  const token = localStorage.getItem('token');
   const [orders, setOrders] = useState<Order[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  
+  // Estados para o modal de detalhes da ordem
+  const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
 
   // Estados para o modal de solicitação de serviço recomendado
   const [modalOpen, setModalOpen] = useState(false);
@@ -133,13 +135,14 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
       price: service.price_min,
       image: service.images,
     }));
-
   const handleViewOrderDetails = (id: string) => {
     setSelectedOrderId(id);
+    setOrderDetailsModalOpen(true);
   };
 
-  const handleBack = () => {
-    setSelectedOrderId(null);
+  const handleCloseOrderDetails = () => {
+    setOrderDetailsModalOpen(false);
+    setSelectedOrderId('');
   };
 
   // Quando clicar em solicitar no serviço recomendado, abre o modal
@@ -147,7 +150,6 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
     setSelectedServiceId(id);
     setModalOpen(true);
   };
-
   // Quando a ordem for criada com sucesso
   const handleSuccess = () => {
     alert('Ordem criada com sucesso!');
@@ -155,19 +157,15 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
     // Aqui você pode atualizar a lista de ordens, se quiser
   };
 
-  if (selectedOrderId) {
-    return <OrderDetails orderId={selectedOrderId} onBack={handleBack} />;
-  }
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard do Cliente</h1>
-        <p className="text-gray-600">Bem-vindo! Gerencie suas solicitações de serviços.</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard do Cliente</h1>
+        <p className="text-sm sm:text-base text-gray-600">Bem-vindo! Gerencie suas solicitações de serviços.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <StatsCard
           icon={Calendar}
           iconColor="text-green-600"
@@ -194,7 +192,7 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Orders */}
         <Card>
   <CardHeader>
@@ -205,57 +203,57 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
       {recentOrders.length === 0 && (
         <p className="text-gray-500">Você ainda não fez nenhuma ordem.</p>
       )}
-      {recentOrders.map((order) => (
-  <button
+      {recentOrders.map((order) => (  <button
     key={order.id}
     onClick={() => handleViewOrderDetails(order.id)}
     className={`
-      w-full text-left rounded-xl border border-gray-200 shadow-sm p-4
+      w-full text-left rounded-xl border border-gray-200 shadow-sm p-3 sm:p-4
       transition hover:shadow-md hover:border-blue-400 bg-white
-      flex items-center gap-4 group
+      flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 group
     `}
   >
     {/* Ícone de status */}
     <div className="flex-shrink-0">
       {order.status === 'pending' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-          <Calendar className="text-yellow-500" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+          <Calendar className="text-yellow-500" size={18} />
         </span>
       )}
       {order.status === 'accepted' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-          <Calendar className="text-blue-500" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+          <Calendar className="text-blue-500" size={18} />
         </span>
       )}
       {order.status === 'in_progress' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-          <Calendar className="text-purple-500" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center">
+          <Calendar className="text-purple-500" size={18} />
         </span>
       )}
       {order.status === 'done' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-          <Star className="text-green-600" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-100 flex items-center justify-center">
+          <Star className="text-green-600" size={18} />
         </span>
       )}
       {order.status === 'rejected' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-          <Calendar className="text-red-500" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-100 flex items-center justify-center">
+          <Calendar className="text-red-500" size={18} />
         </span>
       )}
       {order.status === 'cancelled' && (
-        <span className="inline-block w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-          <Calendar className="text-gray-500" size={22} />
+        <span className="inline-block w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          <Calendar className="text-gray-500" size={18} />
         </span>
       )}
     </div>
+    
     {/* Conteúdo principal */}
-    <div className="flex-1">
-      <div className="flex items-center gap-2 mb-1">
-        <span className="font-semibold text-base text-gray-900 group-hover:text-blue-700 transition">
+    <div className="flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+        <span className="font-semibold text-sm sm:text-base text-gray-900 group-hover:text-blue-700 transition truncate">
           {order.service_name || 'Serviço'}
         </span>
         <span className={`
-          text-xs px-2 py-0.5 rounded-full font-medium ml-2
+          text-xs px-2 py-0.5 rounded-full font-medium self-start sm:ml-2
           ${
             order.status === 'pending'
               ? 'bg-yellow-100 text-yellow-800'
@@ -278,10 +276,10 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
           {order.status === 'cancelled' && 'Cancelada'}
         </span>
       </div>
-      <div className="text-sm text-gray-600">
+      <div className="text-xs sm:text-sm text-gray-600 mb-1">
         <span className="font-medium">Prestador:</span> {order.provider_name || '---'}
       </div>
-      <div className="text-xs text-gray-400 mt-1">
+      <div className="text-xs text-gray-400">
         {order.scheduled_date
           ? `Agendada para: ${new Date(order.scheduled_date).toLocaleString('pt-BR')}`
           : order.created_at
@@ -289,18 +287,16 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
           : ''}
       </div>
     </div>
+    
     {/* Valor e botão Ver detalhes */}
-    <div className="flex flex-col items-end">
-      {order.price !== undefined && (        <span className="text-green-700 font-bold text-base mb-1">
+    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-2 mt-2 sm:mt-0">
+      {order.price !== undefined && (
+        <span className="text-green-700 font-bold text-sm sm:text-base">
           R$ {parseFloat(String(order.price || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
       )}
-      <span>
-        <span
-          className="inline-block px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition"
-        >
-          Ver detalhes
-        </span>
+      <span className="inline-block px-3 py-1.5 sm:py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:bg-blue-700 transition">
+        Ver detalhes
       </span>
     </div>
   </button>
@@ -327,9 +323,15 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
                 />
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </CardContent>        </Card>
       </div>
+
+      {/* Modal para detalhes da ordem */}
+      <OrderDetailsModal
+        orderId={selectedOrderId}
+        open={orderDetailsModalOpen}
+        onClose={handleCloseOrderDetails}
+      />
 
       {/* Modal para solicitar serviço recomendado */}
       <RequestOrderModal
@@ -337,7 +339,8 @@ export function ClientDashboard() {  const token = localStorage.getItem('token')
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={handleSuccess}
-      />
-    </div>
+      />    </div>
   );
 }
+
+export default ClientDashboard;
